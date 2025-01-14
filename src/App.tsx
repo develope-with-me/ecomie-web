@@ -1,35 +1,24 @@
 import logo from './logo';
+import { BrowserRouter, Routes, Route, Router } from "react-router-dom";
+
 import './App.css';
+import SignUp from './pages/Auth/SignUp';
+import Login from './pages/Auth/Login';
 
 function App() {
   return (
     <div className="">
-      <div className="w-full center max-w-xs">
-        <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="username">
-              Username
-            </label>
-            <input
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="username" type="text" placeholder="Username"/>
-          </div>
-        </form>
-      </div>
-      {/*<header className="App-header">*/}
-        {/*<img src="logo" className="App-logo" alt="logo" />*/}
-        {/*<p>*/}
-        {/*  Edit <code>src/App.js</code> and save to reload.*/}
-        {/*</p>*/}
-        {/*<a*/}
-        {/*  className="App-link"*/}
-        {/*  href="https://reactjs.org"*/}
-        {/*  target="_blank"*/}
-        {/*  rel="noopener noreferrer"*/}
-        {/*>*/}
-        {/*  Learn React*/}
-        {/*</a>*/}
-      {/*</header>*/}
+      <BrowserRouter>
+      <Routes>
+  <Route path="/signUp" element={ <SignUp/>} />
+  <Route path="/" element={ <Login/>} />
+
+  </Routes>
+  </BrowserRouter>
+
+     
+    
+      
     </div>
   );
 }

@@ -1,63 +1,25 @@
 import React, { useState } from "react";
-import InputField from '../../component/component UI/InputField'
+import InputField from '../../component/component UI/InputField';
 import { Link } from "react-router-dom";
-
-interface FormValues {
-    email: string;
-    password: string;
-   
-  }
+import bgPicture from '../../images/bg-ecomi.jpg';
+import { useLoginForm } from "./logic/useLoginForm";
   
 const Login: React.FC = () => {
-    const [formValues, setFormValues] = useState<FormValues>({
-        email: "",
-        password: "",
-        
-      });
-    
-      const [errors, setErrors] = useState<Partial<FormValues>>({});
-    
-      // Validation logic
-      const validate = (): boolean => {
-        const newErrors: Partial<FormValues> = {};
-    
-        if (!formValues.email) {
-          newErrors.email = "Email is required";
-        } else if (!/\S+@\S+\.\S+/.test(formValues.email)) {
-          newErrors.email = "Invalid email format";
-        }
-    
-        if (!formValues.password) {
-          newErrors.password = "Password is required";
-        } else if (formValues.password.length < 6) {
-          newErrors.password = "Password must be at least 6 characters long";
-        }
-
-    
-        setErrors(newErrors);
-    
-        return Object.keys(newErrors).length === 0;
-      };
-    
-      // Handle input changes
-      const handleChange = (field: keyof FormValues, value: string) => {
-        setFormValues({ ...formValues, [field]: value });
-      };
-    
-      // Handle form submission
-      const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (validate()) {
-          console.log("Form submitted successfully", formValues);
-        }
-      };
+    const {
+      formValues,
+      errors,
+      handleChange,
+      handleSubmit,
+    } = useLoginForm();
     
       return (
-        <div className="flex flex-col justify-center items-center h-screen bg-white">
+        <div className="flex flex-col justify-center items-center h-screen relative bg-cover " style={{backgroundImage:`url(${bgPicture})`,
+        }}>
+        <div className=" bg-white p-6 md:p-16 rounded-lg ">
           {/* Title */}
           <h1 className="text-3xl font-bold text-black mb-20">LOGIN</h1>
     
-          <form onSubmit={handleSubmit} className="w-80 space-y-4">
+          <form onSubmit={handleSubmit} className="md:w-80 w-64 space-y-4">
             <InputField
               type="email"
               placeholder="Enter your email"
@@ -80,7 +42,7 @@ const Login: React.FC = () => {
               <p className="text-red-500 text-sm mt-1">{errors.password}</p>
             )}
     
-    <div className="w-80 text-right ">
+    <div className="md:w-80  w-64 text-right ">
         <a
           href="#"
           className="text-sm text-gray-600 hover:underline hover:text-gray-900"
@@ -102,6 +64,7 @@ LOGIN            </button>
          <Link to='/signUp'>SIGN UP</Link>   
         </a>
       </p>
+        </div>
         </div>
       );
 }

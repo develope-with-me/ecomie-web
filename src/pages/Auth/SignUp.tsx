@@ -1,79 +1,46 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import InputField from '../../component/component UI/InputField';
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
-
-interface FormValues {
-    email: string;
-    password: string;
-    role: string;
-    telephone: string;
-  }
-  
+import bgPicture from '../../images/bg-ecomi.jpg';
+import { useSignUpForm } from "./logic/useSignUpForm";
 const SignUp: React.FC = () => {
-    const navigate = useNavigate();
+  const {
+    formValues,
+    errors,
+    isFormComplete,
+    handleChange,
+    handleSubmit,
+  } = useSignUpForm();
 
-    const [formValues, setFormValues] = useState<FormValues>({
-        email: "",
-        password: "",
-        role: "",
-        telephone: "",
-      });
-    
-      const [errors, setErrors] = useState<Partial<FormValues>>({});
-    
-      // Validation logic
-      const validate = (): boolean => {
-        const newErrors: Partial<FormValues> = {};
-    
-        if (!formValues.email) {
-          newErrors.email = "Email is required";
-        } else if (!/\S+@\S+\.\S+/.test(formValues.email)) {
-          newErrors.email = "Invalid email format";
-        }
-    
-        if (!formValues.password) {
-          newErrors.password = "Password is required";
-        } else if (formValues.password.length < 6) {
-          newErrors.password = "Password must be at least 6 characters long";
-        }
-    
-        if (!formValues.role) {
-          newErrors.role = "Role is required";
-        }
-    
-        if (!formValues.telephone) {
-          newErrors.telephone = "Telephone number is required";
-        } else if (!/^\d{10}$/.test(formValues.telephone)) {
-          newErrors.telephone = "Telephone number must be 10 digits";
-        }
-    
-        setErrors(newErrors);
-    
-        return Object.keys(newErrors).length === 0;
-      };
-    
-      // Handle input changes
-      const handleChange = (field: keyof FormValues, value: string) => {
-        setFormValues({ ...formValues, [field]: value });
-      };
-    
-      // Handle form submission
-      const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (validate()) {
-          console.log("Form submitted successfully", formValues);
-          navigate("/"); // Correctly use navigate here
-
-        }
-      };
-    
       return (
-        <div className="flex flex-col justify-center items-center h-screen bg-white">
+        <div className=" h-screen flex flex-col justify-center items-center relative bg-cover " style={{backgroundImage:`url(${bgPicture})`,
+      }}>                <div className=" bg-white py-6 md:py-16 md:px-28 px-7 rounded-lg ">
+
           {/* Title */}
           <h1 className="text-3xl font-bold text-black mb-20">SIGN UP</h1>
     
-          <form onSubmit={handleSubmit} className="w-80 space-y-4">
+          <form onSubmit={handleSubmit} className="md:w-80 w-64 space-y-4">
+            <InputField
+              type="firstname"
+              placeholder="Enter your firstname"
+              icon="person"
+              value={formValues.firstname}
+              onChange={(e) => handleChange("firstname", e.target.value)}
+            />
+            {errors.firstname && (
+              <p className="text-red-500 text-sm mt-1">{errors.firstname}</p>
+            )}
+            <InputField
+              type="lastname"
+              placeholder="Enter your lastname"
+              icon="person"
+              value={formValues.lastname}
+              onChange={(e) => handleChange("lastname", e.target.value)}
+            />
+            {errors.lastname && (
+              <p className="text-red-500 text-sm mt-1">{errors.lastname}</p>
+            )}
             <InputField
               type="email"
               placeholder="Enter your email"
@@ -85,26 +52,16 @@ const SignUp: React.FC = () => {
               <p className="text-red-500 text-sm mt-1">{errors.email}</p>
             )}
     
-            <InputField
-              type="password"
-              placeholder="Enter your password"
-              icon="lock"
-              value={formValues.password}
-              onChange={(e) => handleChange("password", e.target.value)}
-            />
-            {errors.password && (
-              <p className="text-red-500 text-sm mt-1">{errors.password}</p>
-            )}
-    
-            <InputField
+           
+            {/* <InputField
               type="text"
-              placeholder="Enter your role"
+              placeholder="Enter your locality"
               icon="person"
-              value={formValues.role}
-              onChange={(e) => handleChange("role", e.target.value)}
+              value={formValues.locality}
+              onChange={(e) => handleChange("locality", e.target.value)}
             />
-            {errors.role && (
-              <p className="text-red-500 text-sm mt-1">{errors.role}</p>
+            {errors.locality && (
+              <p className="text-red-500 text-sm mt-1">{errors.locality}</p>
             )}
     
             <InputField
@@ -116,10 +73,32 @@ const SignUp: React.FC = () => {
             />
             {errors.telephone && (
               <p className="text-red-500 text-sm mt-1">{errors.telephone}</p>
+            )} */}
+
+<InputField
+              type="password"
+              placeholder="Enter your password"
+              icon="lock"
+              value={formValues.password}
+              onChange={(e) => handleChange("password", e.target.value)}
+            />
+            {errors.password && (
+              <p className="text-red-500 text-sm mt-1">{errors.password}</p>
             )}
+              {/* <InputField
+          type="password"
+          placeholder="Confirm your password"
+          icon="lock"
+          value={formValues.confirmPassword}
+          onChange={(e) => handleChange("confirmPassword", e.target.value)}
+        />
+        {errors.confirmPassword && (
+          <p className="text-red-500 text-sm mt-1">{errors.confirmPassword}</p>
+        )} */}
+    
       {/* Forgot Password */}
 
-<div className="w-80 text-right ">
+<div className="md:w-80  w-64 text-right ">
         <a
           href="#"
           className="text-sm text-gray-600 hover:underline hover:text-gray-900"
@@ -132,7 +111,10 @@ const SignUp: React.FC = () => {
             {/* Login Button */}
             <button
               type="submit"
-              className="w-full bg-blue-900 text-white py-2 rounded-full mt-32  hover:bg-blue-800 "
+              className={`w-full py-2 rounded-full mt-32 ${
+                isFormComplete ? "bg-blue-900 hover:bg-blue-800 text-white" : "bg-gray-300 text-gray-600 cursor-not-allowed"
+              }`}
+              disabled={!isFormComplete}
             >
               SIGN UP
             </button>
@@ -145,6 +127,7 @@ const SignUp: React.FC = () => {
         </a>
       </p>
       </Link>
+        </div>
         </div>
       );
 }

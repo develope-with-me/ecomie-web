@@ -3,6 +3,9 @@ import InputField from '../../component/component UI/InputField';
 import { Link } from "react-router-dom";
 import bgPicture from '../../images/bg-ecomi.jpg';
 import { useLoginForm } from "./logic/useLoginForm";
+import { ToastContainer } from "react-toastify";
+import { FaEye, FaEyeSlash } from "react-icons/fa"; // Import eye icons
+
   
 const Login: React.FC = () => {
     const {
@@ -11,11 +14,16 @@ const Login: React.FC = () => {
       handleChange,
       handleSubmit,
     } = useLoginForm();
-    
+    const [showPassword, setShowPassword]= useState(true);
+    const togglePasswordVisibility = () => {
+      setShowPassword((prevState) => !prevState);
+    };
       return (
         <div className="flex flex-col justify-center items-center h-screen relative bg-cover " style={{backgroundImage:`url(${bgPicture})`,
         }}>
-        <div className=" bg-white p-6 md:p-16 rounded-lg ">
+                <ToastContainer />
+
+        <div className=" bg-white p-6 md:p-16 rounded-lg relative">
           {/* Title */}
           <h1 className="text-3xl font-bold text-black mb-20">LOGIN</h1>
     
@@ -32,12 +40,18 @@ const Login: React.FC = () => {
             )}
     
             <InputField
-              type="password"
-              placeholder="Enter your password"
+type={showPassword ? "password":"text" }              placeholder="Enter your password"
               icon="lock"
               value={formValues.password}
               onChange={(e) => handleChange("password", e.target.value)}
             />
+            <button
+              type="button"
+              onClick={togglePasswordVisibility}
+              className=" absolute right-14 top-1/2 transform -translate-y-1/2 z-50 flex items-center text-gray-600"
+            >
+              {showPassword?<FaEyeSlash />:  <FaEye /> }
+            </button>
             {errors.password && (
               <p className="text-red-500 text-sm mt-1">{errors.password}</p>
             )}

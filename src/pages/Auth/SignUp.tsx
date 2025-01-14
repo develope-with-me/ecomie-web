@@ -4,6 +4,10 @@ import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import bgPicture from '../../images/bg-ecomi.jpg';
 import { useSignUpForm } from "./logic/useSignUpForm";
+import { FaEye, FaEyeSlash } from "react-icons/fa"; // Import eye icons
+import { ToastContainer } from "react-toastify";
+
+
 const SignUp: React.FC = () => {
   const {
     formValues,
@@ -12,10 +16,13 @@ const SignUp: React.FC = () => {
     handleChange,
     handleSubmit,
   } = useSignUpForm();
-
+const [showPassword, setShowPassword]= useState(true);
+    const togglePasswordVisibility = () => {
+      setShowPassword((prevState) => !prevState);
+    };
       return (
         <div className=" h-screen flex flex-col justify-center items-center relative bg-cover " style={{backgroundImage:`url(${bgPicture})`,
-      }}>                <div className=" bg-white py-6 md:py-16 md:px-28 px-7 rounded-lg ">
+      }}>                <div className=" bg-white py-6 md:py-16 md:px-28 px-7 rounded-lg relative">
 
           {/* Title */}
           <h1 className="text-3xl font-bold text-black mb-20">SIGN UP</h1>
@@ -76,12 +83,21 @@ const SignUp: React.FC = () => {
             )} */}
 
 <InputField
-              type="password"
-              placeholder="Enter your password"
+type={showPassword ? "password":"text" }               placeholder="Enter your password"
               icon="lock"
               value={formValues.password}
+              
               onChange={(e) => handleChange("password", e.target.value)}
             />
+          
+            <button
+              type="button"
+              onClick={togglePasswordVisibility}
+              className=" absolute right-24 bottom-[195px] transform -translate-y-1/2 z-50 flex items-center text-gray-600"
+            >
+                            {showPassword?<FaEyeSlash />:  <FaEye /> }
+              
+            </button>
             {errors.password && (
               <p className="text-red-500 text-sm mt-1">{errors.password}</p>
             )}

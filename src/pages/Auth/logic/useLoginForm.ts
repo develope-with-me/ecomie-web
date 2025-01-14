@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { authenticateUser } from "../../../services/authService";
 import LOCAL_STORAGE_KEYS from "../../../constants/localStorageKeys";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"; // Import toast styles
 interface FormValues {
   email: string;
   password: string;
@@ -56,10 +58,13 @@ export const useLoginForm = () => {
              const   authToken=response.token;
               // Save token to localStorage or context
               localStorage.setItem(LOCAL_STORAGE_KEYS.AuthToken, authToken);
-              alert("Login successful!");
-            }
+              toast.success("Login successful!");
+                        }else{
+                            toast.error("Your credentials don't match. Please try again.");
+                        }
           } catch (error: any) {
             setApiError(error.message);
+            toast.error("Your credentials don't match. Please try again.");
           } finally {
             setLoading(false); // Stop loading indicator
           }

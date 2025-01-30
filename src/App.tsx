@@ -7,6 +7,7 @@ import Login from './pages/Auth/Login';
 import UserProfilePage from "./pages/user-profile-page/user-profile-page";
 import React from 'react';
 import EvangelistPage from "./pages/Evangelist-page/evangelist-page";
+import UserAccount from "./pages/user-accounts/user-accounts";
 
 function App() {
     return (
@@ -17,6 +18,7 @@ function App() {
                     <Route path="/" element={<Login/>}/>
                     <Route path="/ui/evangelist-page" element={<EvangelistPage/>}/>
                     <Route path="/ui/user-profile" element={<UserProfilePage/>}/>
+                    <Route path="/ui/user-accounts" element={<UserAccount/>}/>
 
                 </Routes>
             </BrowserRouter>

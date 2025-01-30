@@ -5,6 +5,7 @@ import Layout from "../layout";
 const UserProfilePage: React.FC = () => {
     return (
         // <div className="h-screen flex">
+
             <Layout>
                 {/*< DashboardComponent />*/}
                 <div className="w-3/4 ">

@@ -1,8 +1,11 @@
 import React from "react";
 import './evangelist-page.scss';
 import DashboardComponent from "../../component/dashboard/dashboard";
+import {EvangelistPageLogic} from "./EvangelistPageLogic";
+
 
 const EvangelistPage: React.FC = () => {
+    const { getProfileDetails } = EvangelistPageLogic();
     return (
         <div className="h-screen flex">
             <DashboardComponent />

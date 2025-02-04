@@ -1,6 +1,6 @@
 import React from "react";
 import './evangelist-page.scss';
-import DashboardComponent from "../../component/dashboard/dashboard";
+import DashboardComponent from "../../component/dashboard/SideBar";
 import {EvangelistPageLogic} from "./EvangelistPageLogic";
 
 

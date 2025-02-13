@@ -8,6 +8,7 @@ import UserProfilePage from "./pages/user-profile-page/user-profile-page";
 import React from 'react';
 import EvangelistPage from "./pages/Evangelist-page/evangelist-page";
 import UserAccount from "./pages/user-accounts/user-accounts";
+import EvangelistStatisticsPage from "./pages/evangelist-statistics-page/evangelist-statistics-page";
 
 function App() {
     return (
@@ -19,6 +20,7 @@ function App() {
                     <Route path="/ui/evangelist-page" element={<EvangelistPage/>}/>
                     <Route path="/ui/user-profile" element={<UserProfilePage/>}/>
                     <Route path="/ui/user-accounts" element={<UserAccount/>}/>
+                    <Route path="/ui/statistics" element={<EvangelistStatisticsPage/>}/>
 
                 </Routes>
             </BrowserRouter>

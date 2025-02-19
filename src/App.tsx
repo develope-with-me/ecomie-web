@@ -9,6 +9,7 @@ import React from 'react';
 import EvangelistPage from "./pages/Evangelist-page/evangelist-page";
 import UserAccount from "./pages/user-accounts/user-accounts";
 import EcomistPage from './pages/Admin/Ecomist-page/Ecomist-adminPage';
+import EvangelistStatisticsPage from "./pages/evangelist-statistics-page/evangelist-statistics-page";
 
 function App() {
     return (
@@ -22,6 +23,7 @@ function App() {
                     <Route path="/ui/user-accounts" element={<UserAccount/>}/>
                     <Route path="/ui/EcomistPage" element={<EcomistPage/>}/>
 
+                    <Route path="/ui/statistics" element={<EvangelistStatisticsPage/>}/>
 
                 </Routes>
             </BrowserRouter>

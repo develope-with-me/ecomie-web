@@ -1,6 +1,7 @@
 import {useState} from "react";
 import {authenticateUser} from "../../../services/authService";
 import LOCAL_STORAGE_KEYS from "../../../constants/localStorageKeys";
+import { useNavigate } from "react-router-dom";
 import {toast} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"; // Import toast styles
 interface FormValues {
@@ -13,6 +14,9 @@ export const useLoginForm = () => {
         email: "",
         password: "",
     });
+
+    const navigate = useNavigate(); // Initialize the navigate function
+
 
     const [errors, setErrors] = useState<Partial<FormValues>>({});
     const [loading, setLoading] = useState(false);
@@ -58,6 +62,8 @@ export const useLoginForm = () => {
                     const authToken = response.token;
                     // Save token to localStorage or context
                     localStorage.setItem(LOCAL_STORAGE_KEYS.AuthToken, authToken);
+                    
+                   navigate ('/ui/EcomistPage');
                     toast.success("Login successful!");
                 } else {
                     toast.error("Your credentials don't match. Please try again.");

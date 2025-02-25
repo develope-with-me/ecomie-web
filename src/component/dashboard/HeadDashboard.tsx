@@ -1,29 +1,30 @@
 import React from 'react'
 import Button from '../component UI/Button';
-interface HeadDashboardProps{
-    leftButtonProps:{
-            title:string;
-            onClick: () => void;
-        };
-        rightButtonProps:{
-            title:string;
-            onClick: () => void;
-        };
+
+interface HeadDashboardProps {
+    selectButtonProps?: {
+        title?: string;
+        onClick: () => void;
     };
-const HeadDashboard: React.FC<HeadDashboardProps>  = ({leftButtonProps, rightButtonProps }) => {
+    addModalButtonProps?: {
+        title?: string;
+        onClick: () => void;
+    };
+};
+const HeadDashboard: React.FC<HeadDashboardProps> = ({selectButtonProps, addModalButtonProps}) => {
 
 
-  return (
-    <div>
-      <div className='flex justify-between '>
-      <div className='flex gap-[60px]'>       
-         <input  type="text" className='w-64 border-2 border-gray-500 '/>      
-          <Button title={leftButtonProps.title} onClick={leftButtonProps.onClick} />
-      </div>
-      <Button title={rightButtonProps.title} onClick={rightButtonProps.onClick} />
-      </div>
-    </div>
-  )
+    return (
+        <div>
+            <div className='flex justify-between '>
+                <div className='flex gap-[30px]'>
+                    <input type="text" className='w-64 border-2 rounded border-gray-500 '/>
+                    <Button title={selectButtonProps?.title || ''} onClick={selectButtonProps?.onClick}/>
+                </div>
+                <Button title={addModalButtonProps?.title || ''} onClick={addModalButtonProps?.onClick}/>
+            </div>
+        </div>
+    )
 }
 
 export default HeadDashboard

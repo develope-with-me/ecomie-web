@@ -3,6 +3,7 @@ import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
 
 import {EvangelistStatisticsPageLogic} from "./evangelist-statistics-page-logic";
+import DashboardWrapper from "../wrapper-layout/DashboardWrapper";
 
 const EvangelistStatisticsPage: React.FC = () => {
     const [activeIndex, setActiveIndex] = useState(1);
@@ -13,65 +14,27 @@ const EvangelistStatisticsPage: React.FC = () => {
     // const { isOpenAccordion, showAccordion} = EvangelistStatisticsPageLogic();
     // let isOpenAccordion = false;
 
+    const handleLeftButtonClick = () => {
+
+    };
+
+    const handleAddFormEcomist = () => {
+
+    };
+
+    const selectButtonProps = {
+        title: 'Select year',
+        onClick: handleLeftButtonClick,
+    }
+    const addModalButtonProps = {
+        title: 'Add account',
+        onClick: handleAddFormEcomist,
+    }
     return (
-        <div className="w-3/4">
-            <div>
-                <Menu as="div" className="relative inline-block text-left">
-                    <div>
-                        <MenuButton className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50">
-                            Options
-                            <ChevronDownIcon aria-hidden="true" className="-mr-1 size-5 text-gray-400" />
-                        </MenuButton>
-                    </div>
-
-                    <MenuItems
-                        transition
-                        className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white ring-1 shadow-lg ring-black/5 transition focus:outline-hidden data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
-                    >
-                        <div className="py-1">
-                            <MenuItem>
-                                <a
-                                    href="#"
-                                    className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:text-gray-900 data-focus:outline-hidden"
-                                >
-                                    Account settings
-                                </a>
-                            </MenuItem>
-                            <MenuItem>
-                                <a
-                                    href="#"
-                                    className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:text-gray-900 data-focus:outline-hidden"
-                                >
-                                    Support
-                                </a>
-                            </MenuItem>
-                            <MenuItem>
-                                <a
-                                    href="#"
-                                    className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:text-gray-900 data-focus:outline-hidden"
-                                >
-                                    License
-                                </a>
-                            </MenuItem>
-                            <form action="#" method="POST">
-                                <MenuItem>
-                                    <button
-                                        type="submit"
-                                        className="block w-full px-4 py-2 text-left text-sm text-gray-700 data-focus:bg-gray-100 data-focus:text-gray-900 data-focus:outline-hidden"
-                                    >
-                                        Sign out
-                                    </button>
-                                </MenuItem>
-                            </form>
-                        </div>
-                    </MenuItems>
-                </Menu>
-                <div>
-
-                </div>
-            </div>
-            <h5 className="text-xl font-medium">My Statistics for 2023/2024</h5>
-            <div id="accordion-collapse" data-accordion="collapse" className="bg-customBlue/70 rounded-xl"
+        <DashboardWrapper selectButtonProps={selectButtonProps} addModalButtonProps={addModalButtonProps}>
+            <div className="w-3/4">
+            <h5 className="text-xl pt-7 font-medium">My Statistics for 2023/2024</h5>
+            <div id="accordion-collapse" data-accordion="collapse" className="bg-customBlue/70 mt-4 rounded-xl"
                  onClick={handleToggle}>
                 <h2 id="accordion-collapse-heading-1">
                     <button type="button"
@@ -169,12 +132,12 @@ const EvangelistStatisticsPage: React.FC = () => {
                         </div>
                     ) : null}
                 </div>
-
             </div>
 
 
         </div>
-    )
+        </DashboardWrapper>
+    );
 };
 
 export default EvangelistStatisticsPage;

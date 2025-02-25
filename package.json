@@ -3,18 +3,28 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.7.2",
+    "@fortawesome/free-solid-svg-icons": "^6.7.2",
+    "@fortawesome/react-fontawesome": "^0.2.2",
+    "@headlessui/react": "^2.2.0",
+    "@heroicons/react": "^2.2.0",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "axios": "^1.7.9",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-hook-form": "^7.53.2",
+    "react-icons": "^5.4.0",
+    "react-router-dom": "^7.0.2",
     "react-scripts": "5.0.1",
+    "react-toastify": "^11.0.2",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
+    "start": "craco start",
+    "build": "craco build",
+    "test": "craco test",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -36,11 +46,16 @@
     ]
   },
   "devDependencies": {
-    "@types/react": "^18.3.4",
+    "@craco/craco": "^7.1.0",
+    "@types/axios": "^0.14.4",
+    "@types/node": "^22.10.5",
+    "@types/react": "^18.3.13",
     "@types/react-dom": "^18.3.0",
     "autoprefixer": "^10.4.20",
+    "html-loader": "^5.1.0",
     "postcss": "^8.4.41",
+    "sass": "^1.83.0",
     "tailwindcss": "^3.4.10",
-    "typescript": "^5.5.4"
+    "typescript": "^4.9.5"
   }
 }

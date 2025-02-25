@@ -1,37 +1,35 @@
 import logo from './logo';
+import {BrowserRouter, Routes, Route, Router} from "react-router-dom";
+
 import './App.css';
+import SignUp from './pages/Auth/SignUp';
+import Login from './pages/Auth/Login';
+import UserProfilePage from "./pages/user-profile-page/user-profile-page";
+import React from 'react';
+import EvangelistPage from "./pages/Evangelist-page/evangelist-page";
+import UserAccount from "./pages/user-accounts/user-accounts";
+import EcomistPage from './pages/Admin/Ecomist-page/Ecomist-adminPage';
+import EvangelistStatisticsPage from "./pages/evangelist-statistics-page/evangelist-statistics-page";
 
 function App() {
-  return (
-    <div className="">
-      <div className="w-full center max-w-xs">
-        <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="username">
-              Username
-            </label>
-            <input
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="username" type="text" placeholder="Username"/>
-          </div>
-        </form>
-      </div>
-      {/*<header className="App-header">*/}
-        {/*<img src="logo" className="App-logo" alt="logo" />*/}
-        {/*<p>*/}
-        {/*  Edit <code>src/App.js</code> and save to reload.*/}
-        {/*</p>*/}
-        {/*<a*/}
-        {/*  className="App-link"*/}
-        {/*  href="https://reactjs.org"*/}
-        {/*  target="_blank"*/}
-        {/*  rel="noopener noreferrer"*/}
-        {/*>*/}
-        {/*  Learn React*/}
-        {/*</a>*/}
-      {/*</header>*/}
-    </div>
-  );
+    return (
+        <div className="">
+            <BrowserRouter>
+                <Routes>
+                    <Route path="/signUp" element={<SignUp/>}/>
+                    <Route path="/" element={<Login/>}/>
+                    <Route path="/ui/evangelist-page" element={<EvangelistPage/>}/>
+                    <Route path="/ui/user-profile" element={<UserProfilePage/>}/>
+                    <Route path="/ui/user-accounts" element={<UserAccount/>}/>
+                    <Route path="/ui/EcomistPage" element={<EcomistPage/>}/>
+
+                    <Route path="/ui/statistics" element={<EvangelistStatisticsPage/>}/>
+
+                </Routes>
+            </BrowserRouter>
+
+        </div>
+    );
 }
 
 export default App;

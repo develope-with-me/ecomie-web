@@ -21,7 +21,7 @@ const HeadDashboard: React.FC<HeadDashboardProps> = ({selectButtonProps, addModa
                     <input type="text" className='w-64 border-2 rounded border-gray-500 '/>
                     <Button title={selectButtonProps?.title || ''} onClick={selectButtonProps?.onClick}/>
                 </div>
-                <Button title={addModalButtonProps?.title || ''} onClick={addModalButtonProps?.onClick}/>
+                <Button title={addModalButtonProps?.title || ''} icon={'fa-solid fa-plus pr-3'} onClick={addModalButtonProps?.onClick}/>
             </div>
         </div>
     )

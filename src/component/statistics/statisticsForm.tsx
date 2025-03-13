@@ -1,5 +1,4 @@
-import React, {useState} from "react";
-import Input from '../dashboard/Input'
+import React from "react";
 import {useForm} from "react-hook-form";
 import {Button} from "@headlessui/react";
 import InputComponent from "../component UI/inputComponent";
@@ -10,8 +9,9 @@ const StatisticsForm: React.FC = () => {
         handleSubmit,
         formState: {errors}} = useForm();
     console.log(register(''));
-    const data = useForm()
-    console.log(data)
+
+    // const data = useForm()
+    // console.log(data)
 
     // const [statisticsForm, setForm] = useState([
     //
@@ -83,9 +83,8 @@ const StatisticsForm: React.FC = () => {
                         </textarea>
                     </div>
                 </div>
-                <div className='mt-10 flex items-center justify-center bg-red-900'>
-                    <Button title="Save statistics" className="text-5xl"></Button>
-                    <button className="text-xl bg-customBlue">Save statistics</button>
+                <div className='mt-10 flex items-center justify-center'>
+                    <button className="text-sm p-2 px-6 rounded rounded-tl-xl rounded-br-xl bg-customBlue text-white">Save statistics</button>
                 </div>
 
             </form>

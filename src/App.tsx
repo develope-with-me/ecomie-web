@@ -1,5 +1,4 @@
-import logo from './logo';
-import {BrowserRouter, Routes, Route, Router} from "react-router-dom";
+import {BrowserRouter, Routes, Route} from "react-router-dom";
 
 import './App.css';
 import SignUp from './pages/Auth/SignUp';

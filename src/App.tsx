@@ -10,11 +10,16 @@ import EvangelistPage from "./pages/Evangelist-page/evangelist-page";
 import UserAccount from "./pages/user-accounts/user-accounts";
 import EcomistPage from './pages/Admin/Ecomist-page/Ecomist-adminPage';
 import EvangelistStatisticsPage from "./pages/evangelist-statistics-page/evangelist-statistics-page";
+import Navbar from './component/component UI/Navbar';
 
 function App() {
     return (
         <div className="">
+            
             <BrowserRouter>
+            <div><Navbar/></div>
+            
+
                 <Routes>
                     <Route path="/signUp" element={<SignUp/>}/>
                     <Route path="/" element={<Login/>}/>

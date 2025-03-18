@@ -125,13 +125,13 @@ const SignUp: React.FC = () => {
                             Forgot password?
                         </a>
                     </div>
-
+MM
 
                     {/* Login Button */}
                     <button
                         type="submit"
                         className={`w-full py-2 rounded-full mt-32 ${
-                            isFormComplete ? "bg-blue-900 hover:bg-blue-800 text-white" : "bg-gray-300 text-gray-600 cursor-not-allowed"
+                            isFormComplete ? "bg-blue-900 hover:bg-blue-800 text-white" : "bg-blue-800 text-white cursor-not-allowed"
                         }`}
                         disabled={!isFormComplete}
                     >

@@ -1,8 +1,4 @@
 import React, {useState} from "react";
-import {Menu, MenuButton, MenuItem, MenuItems} from '@headlessui/react'
-import {ChevronDownIcon} from '@heroicons/react/20/solid'
-
-import {EvangelistStatisticsPageLogic} from "./evangelist-statistics-page-logic";
 import DashboardWrapper from "../wrapper-layout/DashboardWrapper";
 import Modal from "../../component/modal/Modal";
 import StatisticsData from "../../component/statistics/statisticsData";

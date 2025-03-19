@@ -1,6 +1,6 @@
 import React, {useState} from 'react'
-import Input from '../Input'
-import Button from '../../component UI/Button';
+import Input from '../dashboard/Input'
+import Button from '../component UI/Button';
 
 
 interface EcomistFormProps {

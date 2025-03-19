@@ -1,5 +1,4 @@
-import logo from './logo';
-import {BrowserRouter, Routes, Route, Router} from "react-router-dom";
+import {BrowserRouter, Routes, Route} from "react-router-dom";
 
 import './App.css';
 import SignUp from './pages/Auth/SignUp';
@@ -26,7 +25,7 @@ function App() {
                     <Route path="/ui/evangelist-page" element={<EvangelistPage/>}/>
                     <Route path="/ui/user-profile" element={<UserProfilePage/>}/>
                     <Route path="/ui/user-accounts" element={<UserAccount/>}/>
-                    <Route path="/ui/EcomistPage" element={<EcomistPage/>}/>
+                    {/*<Route path="/ui/EcomistPage" element={<EcomistPage/>}/>*/}
 
                     <Route path="/ui/statistics" element={<EvangelistStatisticsPage/>}/>
 

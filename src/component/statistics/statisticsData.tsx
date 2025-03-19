@@ -1,20 +1,32 @@
 import React, {useState} from "react";
+import StatisticsForm from "./statisticsForm";
+import Modal from "../modal/Modal";
 
 const StatisticsData: React.FC = () => {
     const [isOpenAccordion, showAccordion] = useState(false);
     const handleToggle = () => {
         showAccordion(!isOpenAccordion);
     };
+    const [openForm, setOpenForm] = useState(false);
+    const handleAddStatisticsForm = () => {
+        setOpenForm(!openForm);
+    };
+    const [editIndex, setEditIndex] = useState<number | null>(null);
+    const closeForm = () => {
+        setOpenForm(false);
+        setEditIndex(null);
+    }
 
     return (
         <div>
             <div id="accordion-collapse" data-accordion="collapse" className="bg-customBlue/70 mt-4 rounded-xl"
-                 onClick={handleToggle}>
+                 >
                 <h2 id="accordion-collapse-heading-1">
                     <button type="button"
                             className="flex items-center justify-between w-full p-3 font-medium rtl:text-right text-gray-500
                             border border-b-0 border-gray-200 rounded-xl text-white
                             dark:focus:ring-gray-800 hover:bg-customBlue/70 bg-customBlue/70:hover:bg-gray-800 gap-3"
+                            onClick={handleToggle}
                     >
                         <div className="flex w-full mr-5">
                             <div className="flex-grow flex justify-start">
@@ -102,7 +114,14 @@ const StatisticsData: React.FC = () => {
                             </div>
                             <div className="flex px-5 pb-3">
                                 <p className="flex-grow">Lastly updated yesterday at 9am</p>
-                                <p className="flex justify-end underline pr-6">Edit</p>
+                                <p className="flex justify-end underline cursor-pointer pr-6" onClick={handleAddStatisticsForm}>Edit</p>
+                                <div className={`overlay-menu ${openForm ? 'block' : 'hidden'}`}>
+                                    <Modal onClose={closeForm}>
+                                        <div className=''>
+                                            <StatisticsForm/>
+                                        </div>
+                                    </Modal>
+                                </div>
                             </div>
                         </div>
                     )

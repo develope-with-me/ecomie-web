@@ -16,7 +16,7 @@ const Navbar: React.FC = () => {
     const [langContainer, SetlangContainer] = useState(false);
     
   return (
-    <div className='bg-white py-1 flex justify-end'>
+    <div className='bg-white py-1 flex justify-end shadow-xl'>
         <div className='items-center relative cursor-pointer justify-items-center left-30px]' onClick={()=>SetlangContainer(!langContainer)}>
         <img className='w-[6%]' src={iconLang} alt="" />
     <p className='relative bottom-1 text-sm'>{languageNames[i18n.language]}</p>

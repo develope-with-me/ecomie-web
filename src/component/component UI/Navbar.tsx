@@ -1,6 +1,10 @@
 import React, { useState } from 'react'
+import DashboardComponent from '../dashboard/SideBar';
+
 import iconLang from '../../images/language.png'
 import { useTranslation } from "react-i18next";
+import MenuIcon from '@mui/icons-material/Menu';
+
 
 
 const Navbar: React.FC = () => {
@@ -12,14 +16,23 @@ const Navbar: React.FC = () => {
         en: 'English',
         fr: 'Français',
     }
-
     const [langContainer, SetlangContainer] = useState(false);
+
+    const [displaySidebar, setDisplaySidebar]= useState(false);
     
   return (
-    <div className='bg-white py-1 flex justify-end shadow-xl'>
+    <div>
+    <div className='bg-white py-1 shadow-xl'>
+
+<div className='flex justify-between' onClick={()=>setDisplaySidebar(!displaySidebar)}>
+  <div className='md:hidden block'>
+<MenuIcon/>
+</div>
+
         <div className='items-center relative cursor-pointer justify-items-center left-30px]' onClick={()=>SetlangContainer(!langContainer)}>
         <img className='w-[6%]' src={iconLang} alt="" />
     <p className='relative bottom-1 text-sm'>{languageNames[i18n.language]}</p>
+        </div>
         </div>
 
     <div className=''>
@@ -31,6 +44,18 @@ const Navbar: React.FC = () => {
     </ul>)}
     </div>
       
+    </div>
+    {displaySidebar &&(
+      <div className="fixed inset-0 bg-gray-900 bg-opacity-50 z-50 md:hidden">
+      <button className=" top-4 right-72 z-50 fixed text-white text-xl" onClick={() => setDisplaySidebar(false)}>
+        ✖
+      </button>
+      <div className='relative bottom-9'>
+      <DashboardComponent style=" w-[50%] h-[100vh] py-5 dashboard px-7 md:hidden block" />
+      </div>
+    </div>
+     
+    )}
     </div>
   )
 }

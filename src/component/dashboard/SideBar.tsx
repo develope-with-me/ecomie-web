@@ -81,10 +81,16 @@ const DashboardComponent: React.FC = () => {
                 <i className="fas fa-chart-bar text-xl"></i>
                 <p className="ml-10">My statistics</p>
             </Link>
+
+            {/* FEATURE FOR ADMIN ONLY */}
+
             <Link to="/ui/user-accounts" className="flex mt-7">
                 <i className="fa-solid fa-user-shield text-xl"></i>
                 <p className="ml-9">Manage accounts</p>
             </Link>
+
+            {/* END ADMIN */}
+
             <Link to="/ui/user-profile" className="flex mt-7">
                 <i className="fa-solid fa-user text-xl"></i>
                 <p className="ml-11">My profile</p>

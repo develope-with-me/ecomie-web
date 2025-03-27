@@ -17,8 +17,8 @@ const HeadDashboard: React.FC<HeadDashboardProps> = ({selectButtonProps, addModa
     return (
         <div>
             <div className='flex justify-between '>
-                <div className='flex gap-[30px]'>
-                    <input type="text" className='w-64 border-2 rounded border-gray-500 '/>
+                <div className='flex md:gap-[30px] gap-[15px]'>
+                    <input type="text" className='md:w-64 w-40 h-9  border-2 rounded border-gray-500 '/>
                     <Button title={selectButtonProps?.title || ''} onClick={selectButtonProps?.onClick}/>
                 </div>
                 <Button title={addModalButtonProps?.title || ''}

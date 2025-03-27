@@ -1,10 +1,14 @@
 import React from "react";
 import {Link} from "react-router-dom";
 
-const DashboardComponent: React.FC = () => {
+interface DashboardComponentProps {
+    style?: string;
+  }
+
+const DashboardComponent: React.FC<DashboardComponentProps> =  ({ style }) => {
     return (
         // <div className="h-screen">
-        <div className="w-1/5 dashboard px-10">
+        <div className={style || "w-1/5 dashboard px-10 md:block hidden"}>
             <div>
                 <div className="flex mt-20">
                     <i className="fa-solid fa-users text-xl"></i>

@@ -4,6 +4,7 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import {document} from "postcss";
+import './translate/i18n'
 
 const rootElement = window.document.getElementById('root');
 

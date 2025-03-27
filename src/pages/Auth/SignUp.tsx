@@ -96,7 +96,7 @@ const SignUp: React.FC = () => {
                     <button
                         type="button"
                         onClick={togglePasswordVisibility}
-                        className=" absolute right-24 bottom-[195px] transform -translate-y-1/2 z-50 flex items-center text-gray-600"
+                        className=" relative md:left-[300px] left-[240px] bottom-[40px] z-50 flex items-center text-gray-600"
                     >
                         {showPassword ? <FaEyeSlash/> : <FaEye/>}
 
@@ -126,12 +126,11 @@ const SignUp: React.FC = () => {
                         </a>
                     </div>
 
-
                     {/* Login Button */}
                     <button
                         type="submit"
                         className={`w-full py-2 rounded-full mt-32 ${
-                            isFormComplete ? "bg-blue-900 hover:bg-blue-800 text-white" : "bg-gray-300 text-gray-600 cursor-not-allowed"
+                            isFormComplete ? "bg-customBlue hover:bg-blue-800 text-white" : "bg-customBlue text-white cursor-not-allowed"
                         }`}
                         disabled={!isFormComplete}
                     >

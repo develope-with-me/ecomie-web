@@ -1,0 +1,12 @@
+{
+    "welcome": "Welcome to our website!",
+    "language": "Language",
+    "description": "This is a simple multi-language app.",
+    "emailPlaceholder": "Enter your email",
+    "passwordPlaceholder": "Enter your password",
+    "forgotPassword": "Forgot password?",
+    "loginButton": "LOGIN",
+    "signUpPrompt": "Don't have an account?",
+    "signUpLink": "SIGN UP"
+
+}

@@ -14,8 +14,8 @@ const Modal: React.FC<ModalProps> = ({onClose, children}) => {
                 <div className='bg-white rounded-lg shadow-md w-11/12 md:w-1/2 lg:w-1/3 p-8 '>
 
 
-                    <button className='float-right bg-red-600 text-white px-2 py-1 rounded ' onClick={onClose}>
-                        close
+                    <button className='float-right text-black text-2xl  rounded ' onClick={onClose}>
+                    ✖
                     </button>
 
                     <div className='mt-9'>{children}</div>

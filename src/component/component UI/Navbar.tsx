@@ -21,11 +21,11 @@ const Navbar: React.FC = () => {
     const [displaySidebar, setDisplaySidebar]= useState(false);
     
   return (
-    <div>
-    <div className='bg-white py-1 shadow-xl'>
+    <div className=''>
+    <div className='bg-white py-1 shadow-xl '>
 
-<div className='flex justify-between' onClick={()=>setDisplaySidebar(!displaySidebar)}>
-  <div className='md:hidden block'>
+<div className='flex justify-between' >
+  <div className='md:hidden block' onClick={()=>setDisplaySidebar(!displaySidebar)}>
 <MenuIcon/>
 </div>
 

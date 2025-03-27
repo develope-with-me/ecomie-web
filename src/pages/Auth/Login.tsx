@@ -40,7 +40,7 @@ const Login: React.FC = () => {
               onChange={(e) => handleChange("email", e.target.value)}
             />
             {errors.email && (
-              <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+              <p className="text-red-500 text-sm ">{errors.email}</p>
             )}
     
             <InputField
@@ -52,12 +52,12 @@ type={showPassword ? "password":"text" }              placeholder={t("passwordPl
             <button
               type="button"
               onClick={togglePasswordVisibility}
-              className=" absolute right-14 top-1/2 transform -translate-y-1/2 z-50 flex items-center text-gray-600"
+              className=" absolute md:left-[370px] left-[260px] bottom-[200px] z-50 flex items-center text-gray-600"
             >
               {showPassword?<FaEyeSlash />:  <FaEye /> }
             </button>
             {errors.password && (
-              <p className="text-red-500 text-sm mt-1">{errors.password}</p>
+              <p className="text-red-500 text-sm ">{errors.password}</p>
             )}
     
     <div className="md:w-80  w-64 text-right ">
@@ -72,7 +72,7 @@ type={showPassword ? "password":"text" }              placeholder={t("passwordPl
             {/* Login Button */}
             <button
               type="submit"
-              className="w-full bg-blue-900 text-white py-2 rounded-full mt-6 hover:bg-blue-800"
+              className="w-full bg-customBlue text-white py-2 rounded-full mt-6 hover:bg-blue-800"
             >
 {t("loginButton")}           </button>
           </form>

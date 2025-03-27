@@ -40,7 +40,7 @@ const EcomistForm: React.FC<EcomistFormProps> = ({onSubmit}) => {
 
                 <div className="space-y-2">
                     <Input
-                        label='fullName'
+                        label='FullName'
                         type="text"
                         name="fullName"
                         placeholder="Full name"
@@ -48,7 +48,7 @@ const EcomistForm: React.FC<EcomistFormProps> = ({onSubmit}) => {
                         onChange={handleChange}
                     />
                     <Input
-                        label='email'
+                        label='Email'
                         type="email"
                         name="email"
                         placeholder="Email"
@@ -56,7 +56,7 @@ const EcomistForm: React.FC<EcomistFormProps> = ({onSubmit}) => {
                         onChange={handleChange}
                     />
                     <Input
-                        label='locality'
+                        label='Locality'
                         type="text"
                         name="locality"
                         placeholder="Locality"
@@ -64,7 +64,7 @@ const EcomistForm: React.FC<EcomistFormProps> = ({onSubmit}) => {
                         onChange={handleChange}
                     />
                     <Input
-                        label='locality'
+                        label='Role'
 
                         type="text"
                         name="role"

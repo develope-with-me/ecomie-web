@@ -20,8 +20,8 @@ const StatisticsForm: React.FC = () => {
     return (
         <div>
             <form onSubmit={handleSubmit(data => console.log(data))}>
-                <h2 className="text-2xl font-bold mb-6 text-center">Add Statistics</h2>
-                <div className="space-y-3">
+                <h2 className="text-2xl font-bold mb-6 text-center  text-gray-950">Add Statistics</h2>
+                <div className="space-y-3 text-gray-950">
                     <InputComponent
                         label='Ecomist challenge'
                         type="text"
@@ -78,7 +78,7 @@ const StatisticsForm: React.FC = () => {
                         <textarea {...register('difficulties')}
                                   id="message" rows="4"
                                   name="difficulties"
-                                  className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                  className=" mt-2 w-full px-4 py-1 border border-gray-400 rounded-lg  block w-full p-2.5 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                                   placeholder="Write your difficuties here...">
                         </textarea>
                     </div>

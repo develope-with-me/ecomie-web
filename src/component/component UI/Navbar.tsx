@@ -22,15 +22,15 @@ const Navbar: React.FC = () => {
     
   return (
     <div className=''>
-    <div className='bg-white py-1 shadow-xl '>
+    <div className='bg-white py-1 shadow-md w-auto '>
 
-<div className='flex justify-between' >
+<div className='flex justify-between'>
   <div className='md:hidden block' onClick={()=>setDisplaySidebar(!displaySidebar)}>
 <MenuIcon/>
 </div>
 
-        <div className='items-center relative cursor-pointer justify-items-center left-30px]' onClick={()=>SetlangContainer(!langContainer)}>
-        <img className='w-[6%]' src={iconLang} alt="" />
+        <div className='items-center relative cursor-pointer justify-items-center left-30px]'>
+        <img className='w-[6%]' src={iconLang} alt=""  onClick={()=>SetlangContainer(!langContainer)}/>
     <p className='relative bottom-1 text-sm'>{languageNames[i18n.language]}</p>
         </div>
         </div>
@@ -40,18 +40,20 @@ const Navbar: React.FC = () => {
         <li className='hover:bg-gray-200 px-2 py-1'> <button onClick={() => changeLanguage("en")}>English</button></li>
         <li className='hover:bg-gray-200 px-2 py-1'> <button onClick={() => changeLanguage("fr")}>Français</button></li>
        
-     
+                
     </ul>)}
     </div>
       
     </div>
     {displaySidebar &&(
-      <div className="fixed inset-0 bg-gray-900 bg-opacity-50 z-50 md:hidden">
-      <button className=" top-4 right-72 z-50 fixed text-white text-xl" onClick={() => setDisplaySidebar(false)}>
+      <div className="fixed inset-0 bg-gray-900 bg-opacity-50 z-50 md:hidden" onClick={()=>setDisplaySidebar(!displaySidebar)} >
+        <div className=' bg-customBlue w-[215px]'>
+      <button className=" top-4 relative left-44  text-white text-xl" onClick={() => setDisplaySidebar(false)}>
         ✖
       </button>
-      <div className='relative bottom-9'>
-      <DashboardComponent style=" w-[50%] h-[100vh] py-5 dashboard px-7 md:hidden block" />
+      <div className='relative top-0'>
+      <DashboardComponent style="  h-[140vh]  dashboard px-7 md:hidden block" />
+      </div>
       </div>
     </div>
      

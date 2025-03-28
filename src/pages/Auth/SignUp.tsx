@@ -130,7 +130,7 @@ const SignUp: React.FC = () => {
                     <button
                         type="submit"
                         className={`w-full py-2 rounded-full mt-32 ${
-                            isFormComplete ? "bg-customBlue hover:bg-blue-800 text-white" : "bg-customBlue text-white cursor-not-allowed"
+                            isFormComplete ? "bg-customBlue  hover:bg-blue-950 text-white" : "bg-customBlue text-white cursor-not-allowed"
                         }`}
                         disabled={!isFormComplete}
                     >

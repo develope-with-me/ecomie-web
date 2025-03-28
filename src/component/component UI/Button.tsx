@@ -9,7 +9,7 @@ interface ButtonProps {
 const Button: React.FC<ButtonProps> = ({title, onClick, icon}) => {
     return (
         <div>
-            <button className="p-1 px-5 rounded rounded-tl-xl rounded-br-xl bg-customBlue text-white"
+            <button className="p-1 md:px-5 px-3 rounded rounded-tl-xl md:text-[1rem] text-[0.85rem] rounded-br-xl bg-customBlue text-white"
                     onClick={onClick}>
                 <i className={icon}></i>
                 {title}

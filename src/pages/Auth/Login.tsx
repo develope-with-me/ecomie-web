@@ -52,7 +52,7 @@ type={showPassword ? "password":"text" }              placeholder={t("passwordPl
             <button
               type="button"
               onClick={togglePasswordVisibility}
-              className=" absolute md:left-[370px] left-[260px] bottom-[200px] z-50 flex items-center text-gray-600"
+              className=" absolute md:left-[370px] left-[260px] md:bottom-[200px] bottom-[160px] z-50 flex items-center text-gray-600"
             >
               {showPassword?<FaEyeSlash />:  <FaEye /> }
             </button>
@@ -72,7 +72,7 @@ type={showPassword ? "password":"text" }              placeholder={t("passwordPl
             {/* Login Button */}
             <button
               type="submit"
-              className="w-full bg-customBlue text-white py-2 rounded-full mt-6 hover:bg-blue-800"
+              className="w-full bg-customBlue text-white py-2 rounded-full mt-6 hover:bg-blue-950"
             >
 {t("loginButton")}           </button>
           </form>

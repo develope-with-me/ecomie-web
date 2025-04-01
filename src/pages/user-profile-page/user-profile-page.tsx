@@ -1,8 +1,19 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import DashboardComponent from "../../component/dashboard/SideBar";
 import Layout from "../wrapper-layout/layout";
+import axios from "axios";
+import {ProfileDto} from "../../model/profileDto";
 
 const UserProfilePage: React.FC = () => {
+  const [profile, setProfile] = useState([]);
+
+  const baseUrl = process.env.REACT_APP_BASE_URL
+
+  // useEffect(() => {
+  //   axios.get<ProfileDto>(`${baseUrl}/secure/user/me`)
+  //       .then(res => console.log(res))
+  // })
+
   return (
     // <div className="h-screen flex">
 

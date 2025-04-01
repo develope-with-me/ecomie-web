@@ -24,7 +24,7 @@ const SignUp: React.FC = () => {
         <div className=" h-screen flex flex-col justify-center items-center relative bg-cover " style={{
             backgroundImage: `url(${bgPicture})`,
         }}>
-            <div className=" bg-white py-6 md:py-16 md:px-28 px-7 rounded-lg relative">
+            <div className=" bg-white py-6 md:py-16 md:px-16 px-7 rounded-lg relative">
 
                 {/* Title */}
                 <h1 className="text-3xl font-bold text-black mb-20">SIGN UP</h1>

@@ -19,9 +19,9 @@ const UserProfilePage: React.FC = () => {
 
     <Layout>
       {/*< DashboardComponent />*/}
-      <div className="w-3/4 ">
+      <div className="md:w-3/4 w-auto ">
         <h5 className="text-2xl px-12 pt-6">Account Profile</h5>
-        <div className="w-4/5 mt-5 ml-12 rounded-xl profile pl-8 pt-5">
+        <div className="w-4/5 mt-5 md:ml-12 ml-8 rounded-xl profile md:pl-8 pl-6 pt-5">
           <h6 className="font-bold text-xl">User Information</h6>
           <div className="mt-4">
             <p>Full name:</p>

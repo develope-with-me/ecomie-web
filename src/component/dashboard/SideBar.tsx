@@ -90,7 +90,7 @@ const DashboardComponent: React.FC<DashboardComponentProps> =  ({ style }) => {
 
             <Link to="/ui/user-accounts" className="flex mt-7">
                 <i className="fa-solid fa-user-shield text-xl"></i>
-                <p className="ml-9">Manage accounts</p>
+                <p className="ml-9 ">Manage accounts</p>
             </Link>
 
             {/* END ADMIN */}
@@ -102,7 +102,7 @@ const DashboardComponent: React.FC<DashboardComponentProps> =  ({ style }) => {
             <div className="relative inline-block">
                 <div className="relative flex mt-20">
                     <i className="fa-solid fa-right-from-bracket text-xl"></i>
-                    <p className="ml-11">Logout</p>
+                    <p className="ml-11 ">Logout</p>
                     <span
                         className="absolute left-full top-0 ml-2 text-gray-500 text-sm italic opacity-0 transition-opacity duration-300 hover:opacity-100">
                         To be implemented shortly

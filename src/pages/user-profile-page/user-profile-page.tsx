@@ -3,16 +3,23 @@ import DashboardComponent from "../../component/dashboard/SideBar";
 import Layout from "../wrapper-layout/layout";
 import axios from "axios";
 import {ProfileDto} from "../../model/profileDto";
+import localStorageKeys from "../../constants/localStorageKeys";
 
 const UserProfilePage: React.FC = () => {
   const [profile, setProfile] = useState([]);
 
   const baseUrl = process.env.REACT_APP_BASE_URL
 
-  // useEffect(() => {
-  //   axios.get<ProfileDto>(`${baseUrl}/secure/user/me`)
-  //       .then(res => console.log(res))
-  // })
+  useEffect(() => {
+    axios.get<ProfileDto>(`${baseUrl}/secure/user/me`, {
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Accept': 'application/json, text/plain, */*',
+        Authorization: `Bearer ${localStorage.getItem(localStorageKeys.AuthToken)}`,
+      }
+    })
+        .then(res => console.log(res))
+  })
 
   return (
     // <div className="h-screen flex">

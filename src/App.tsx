@@ -27,9 +27,9 @@ function App() {
                     <Route path="/ui/user-profile" element={<UserProfilePage/>}/>
                     <Route path="/ui/user-accounts"
                            element={
-                               <AuthorizeRoute isAuthenticated={isAuthenticated}>
+                               // <AuthorizeRoute isAuthenticated={isAuthenticated}>
                                    <UserAccount/>
-                               </AuthorizeRoute>
+                               // </AuthorizeRoute>
                            }
                     />
                     {/*<Route path="/ui/EcomistPage" element={<EcomistPage/>}/>*/}

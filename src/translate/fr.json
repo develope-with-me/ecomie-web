@@ -7,5 +7,7 @@
   "forgotPassword": "Mot de passe oublié ?",
   "loginButton": "CONNEXION",
   "signUpPrompt": "Vous n'avez pas de compte ?",
-  "signUpLink": "INSCRIPTION"
-  }
+  "signUpLink": "INSCRIPTION",
+  "updateProfile": "Modifier votre profile"
+
+}

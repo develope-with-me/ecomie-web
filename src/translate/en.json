@@ -7,6 +7,16 @@
     "forgotPassword": "Forgot password?",
     "loginButton": "LOGIN",
     "signUpPrompt": "Don't have an account?",
-    "signUpLink": "SIGN UP"
-
+    "signUpLink": "SIGN UP",
+    "updateProfile": "Update Profile",
+    "fullName": "Full name",
+    "email": "Email",
+    "locality": "Locality",
+    "role": "Role",
+    "contact": "Contact",
+    "editProfile": "Edit profile",
+    "ecomistRequest": "Do you want to become an ecomist",
+    "clickToBeAnEcomist": "Click to request to be an ecomist",
+    "userInformation": "User Information",
+    "accountProfile": "Account Profile"
 }

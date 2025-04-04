@@ -7,16 +7,16 @@ interface ButtonProps{
     onClick: () => void;
 }
 interface DashboardWrapperProps {
-  leftButtonProps: ButtonProps;
-  rightButtonProps: ButtonProps; 
+  selectButtonProps: ButtonProps;
+  addModalButtonProps: ButtonProps;
   children?: React.ReactNode;  
 }
 
-const DashboardWrapper: React.FC<DashboardWrapperProps> = ({leftButtonProps, rightButtonProps, children} ) => {
+const DashboardWrapper: React.FC<DashboardWrapperProps> = ({selectButtonProps, addModalButtonProps, children} ) => {
   return (
     <Layout>
-    <div className='px-7 py-20'>
-      <HeadDashboard leftButtonProps={leftButtonProps} rightButtonProps={rightButtonProps} />
+    <div className='md:px-7 py-20 px-5 '>
+      <HeadDashboard selectButtonProps={selectButtonProps} addModalButtonProps={addModalButtonProps} />
       <div>
       {children}
       </div>

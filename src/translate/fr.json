@@ -1,0 +1,13 @@
+{
+    "welcome": "Bienvenue sur notre site web!",
+    "language": "Langue",
+    "description": "Ceci est une application multilingue simple.",
+    "emailPlaceholder": "Entrez votre email",
+  "passwordPlaceholder": "Entrez votre mot de passe",
+  "forgotPassword": "Mot de passe oublié ?",
+  "loginButton": "CONNEXION",
+  "signUpPrompt": "Vous n'avez pas de compte ?",
+  "signUpLink": "INSCRIPTION",
+  "updateProfile": "Modifier votre profile"
+
+}

@@ -26,14 +26,14 @@ const UserProfilePage: React.FC = () => {
     const baseUrl = process.env.REACT_APP_BASE_URL
 
     useEffect(() => {
-        axios.get<ProfileDto>(`${baseUrl}/secure/user/me`, {
-            headers: {
-                'Content-Type': 'application/json; charset=UTF-8',
-                'Accept': 'application/json',
-                Authorization: `Bearer ${localStorage.getItem(localStorageKeys.AuthToken)}`,
-            }
-        })
-            .then(res => console.log(res))
+        // axios.get<ProfileDto>(`${baseUrl}/secure/user/me`, {
+        //     headers: {
+        //         'Content-Type': 'application/json; charset=UTF-8',
+        //         'Accept': 'application/json',
+        //         Authorization: `Bearer ${localStorage.getItem(localStorageKeys.AuthToken)}`,
+        //     }
+        // })
+        //     .then(res => console.log(res))
     })
 
     return (

@@ -47,7 +47,7 @@ const Navbar: React.FC = () => {
     </div>
     {displaySidebar &&(
       <div className="fixed inset-0 bg-gray-900 bg-opacity-50 z-50 md:hidden" onClick={()=>setDisplaySidebar(!displaySidebar)} >
-        <div className=' bg-customBlue w-[215px]'>
+        <div className=' bg-customBlue w-[215px]'  onClick={(e) => e.stopPropagation()}>
       <button className=" top-4 relative left-44  text-white text-xl" onClick={() => setDisplaySidebar(false)}>
         ✖
       </button>

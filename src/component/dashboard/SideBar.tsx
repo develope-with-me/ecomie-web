@@ -1,11 +1,26 @@
-import React from "react";
-import {Link} from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import Modal from "../modal/Modal";
 
 interface DashboardComponentProps {
     style?: string;
   }
 
 const DashboardComponent: React.FC<DashboardComponentProps> =  ({ style }) => {
+   const navigate = useNavigate();
+   const [confirmLogout, setConfirmLogout]=useState(false);
+
+   const handleLogout = () =>{
+
+    
+        localStorage.removeItem("authToken");  // Clear authentication token
+        localStorage.removeItem("userData");   // If you store user data, clear it too
+        navigate("/");  // Redirect to homepage or login page
+  
+   }
+   
+   
+   
     return (
         // <div className="h-screen">
         <div className={style || "w-1/5 dashboard px-10 md:block hidden"}>
@@ -94,21 +109,39 @@ const DashboardComponent: React.FC<DashboardComponentProps> =  ({ style }) => {
                 <p className="ml-11">My profile</p>
             </Link>
             <div className="relative inline-block">
-                <div className="relative flex mt-20">
+                <div className="relative flex mt-20 cursor-pointer" onClick={() => setConfirmLogout(true) } >
                     <i className="fa-solid fa-right-from-bracket text-xl"></i>
                     <p className="ml-11 ">Logout</p>
-                    <span
-                        className="absolute left-full top-0 ml-2 text-gray-500 text-sm italic opacity-0 transition-opacity duration-300 hover:opacity-100">
-                        To be implemented shortly
-                    </span>
-                </div>
+
+</div>
+</div>
+                   
+    
+      {/* Custom Confirmation Modal */}
+      {confirmLogout && (
+        <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-md shadow-lg w-80">
+            <h2 className="text-lg font-semibold mb-4 text-gray-700">Confirm Logout</h2>
+            <p className="text-gray-700 mb-6">Are you sure you want to log out?</p>
+            <div className="flex justify-end space-x-40">
+              <button
+                className=" h-8 px-2 bg-gray-300 text-gray-800 rounded text-sm hover:bg-gray-400"
+                onClick={() => setConfirmLogout(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="h-8 px-2 bg-red-600 text-white text-sm rounded hover:bg-red-700"
+                onClick={handleLogout}
+              >
+                Logout
+              </button>
             </div>
-
+          </div>
         </div>
-
-        // </div>
-
-    );
+      )}
+    </div>
+  );
 };
 
 export default DashboardComponent;

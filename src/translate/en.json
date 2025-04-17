@@ -7,6 +7,35 @@
     "forgotPassword": "Forgot password?",
     "loginButton": "LOGIN",
     "signUpPrompt": "Don't have an account?",
-    "signUpLink": "SIGN UP"
+    "signUpLink": "SIGN UP",
+    "dashboard": {
+    "ecomieBody": "Ecomie body",
+    "evangelists": "Evangelists",
+    "toBeImplemented": "To be implemented shortly",
+    "myStatistics": "My statistics",
+    "manageAccounts": "Manage accounts",
+    "myProfile": "My profile",
+    "logout": "Logout"
+  },
+  "logoutModal": {
+    "title": "Confirm Logout",
+    "message": "Are you sure you want to log out?",
+    "cancel": "Cancel",
+    "logout": "Logout"
+  },
+  "signUp": {
+    "title": "SIGN UP",
+    "placeholders": {
+      "firstname": "Enter your first name",
+      "lastname": "Enter your last name",
+      "email": "Enter your email",
+      "password": "Enter your password"
+    },
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "forgotPassword": "Forgot password?",
+    "submitButton": "SIGN UP",
+    "loginLink": "LOGIN"
+  }
 
 }

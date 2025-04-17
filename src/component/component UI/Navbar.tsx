@@ -29,20 +29,21 @@ const Navbar: React.FC = () => {
 <MenuIcon/>
 </div>
 
-        <div className='items-center relative cursor-pointer justify-items-center left-30px]'>
-        <img className='w-[6%]' src={iconLang} alt=""  onClick={()=>SetlangContainer(!langContainer)}/>
-    <p className='relative bottom-1 text-sm'>{languageNames[i18n.language]}</p>
-        </div>
-        </div>
-
+        <div className='items-center relative cursor-pointer justify-items-center '>
+        <img className='w-[6%] relative left-9' src={iconLang} alt=""  onClick={()=>SetlangContainer(!langContainer)}/>
+    <p className='relative bottom-1 text-sm left-9'>{languageNames[i18n.language]}</p>
     <div className=''>
-    {langContainer &&(<ul className='bg-white fixed z-10 right-52 top-16 ' onClick={()=>SetlangContainer(false)}>
+    {langContainer &&(<ul className='bg-white absolute z-10 md:top-[60px] top-[55px] shadow-md ' onClick={()=>SetlangContainer(false)}>
         <li className='hover:bg-gray-200 px-2 py-1'> <button onClick={() => changeLanguage("en")}>English</button></li>
         <li className='hover:bg-gray-200 px-2 py-1'> <button onClick={() => changeLanguage("fr")}>Français</button></li>
        
                 
     </ul>)}
     </div>
+        </div>
+        </div>
+
+   
       
     </div>
     {displaySidebar &&(

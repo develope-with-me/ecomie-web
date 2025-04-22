@@ -8,6 +8,34 @@
   "loginButton": "CONNEXION",
   "signUpPrompt": "Vous n'avez pas de compte ?",
   "signUpLink": "INSCRIPTION",
-  "updateProfile": "Modifier votre profile"
-
-}
+  "updateProfile": "Modifier votre profile",
+  "dashboard": {
+    "ecomieBody": "Membres Ecomie",
+    "evangelists": "Évangélistes",
+    "toBeImplemented": "À implémenter prochainement",
+    "myStatistics": "Mes statistiques",
+    "manageAccounts": "Gérer les comptes",
+    "myProfile": "Mon profil",
+    "logout": "Déconnexion"
+  },
+  "logoutModal": {
+    "title": "Confirmer la déconnexion",
+    "message": "Êtes-vous sûr de vouloir vous déconnecter?",
+    "cancel": "Annuler",
+    "logout": "Déconnexion"
+  },
+  "signUp": {
+    "title": "INSCRIPTION",
+    "placeholders": {
+      "firstname": "Entrez votre prénom",
+      "lastname": "Entrez votre nom",
+      "email": "Entrez votre email",
+      "password": "Entrez votre mot de passe"
+    },
+    "showPassword": "Afficher le mot de passe",
+    "hidePassword": "Masquer le mot de passe",
+    "forgotPassword": "Mot de passe oublié ?",
+    "submitButton": "S'INSCRIRE",
+    "loginLink": "CONNEXION"
+  }
+  }

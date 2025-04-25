@@ -9,7 +9,7 @@ import UserProfileForm from "./user-profile-form";
 import {useGlobalTranslation} from "../../translate/translation-provider";
 
 const UserProfilePage: React.FC = () => {
-    const [profile, setProfile] = useState([]);
+    const [profile, setProfile] = useState<ProfileDto>();
     const [openForm, setOpenForm] = useState(false);
     const [editIndex, setEditIndex] = useState<number | null>(null);
 
@@ -26,15 +26,15 @@ const UserProfilePage: React.FC = () => {
     const baseUrl = process.env.REACT_APP_BASE_URL
 
     useEffect(() => {
-        // axios.get<ProfileDto>(`${baseUrl}/secure/user/me`, {
-        //     headers: {
-        //         'Content-Type': 'application/json; charset=UTF-8',
-        //         'Accept': 'application/json',
-        //         Authorization: `Bearer ${localStorage.getItem(localStorageKeys.AuthToken)}`,
-        //     }
-        // })
-        //     .then(res => console.log(res))
-    })
+        axios.get<ProfileDto>(`${baseUrl}/secure/user/me`, {
+            headers: {
+                'Content-Type': 'application/json; charset=UTF-8',
+                'Accept': 'application/json',
+                Authorization: `Bearer ${localStorage.getItem(localStorageKeys.AuthToken)}`,
+            }
+        })
+            .then(res => console.log(res.data?.firstName));
+    }, [])
 
     return (
         <Layout>
@@ -44,7 +44,7 @@ const UserProfilePage: React.FC = () => {
                     <h6 className="font-bold text-xl">{t("userInformation")}</h6>
                     <div className="mt-4">
                         <p>{t("fullName")}:</p>
-                        <p className="font-bold">Hotou Njiowouo Morelle Olivia</p>
+                        <p className="font-bold">{profile?.firstName}</p>
                     </div>
                     <div className="mt-4">
                         <p>{t("email")}:</p>

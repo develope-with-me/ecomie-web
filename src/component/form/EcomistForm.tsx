@@ -35,7 +35,7 @@ const EcomistForm: React.FC<EcomistFormProps> = ({onSubmit}) => {
 
     return (
         <div>
-            <form onSubmit={handleSubmitForm} className="max-w-md mx-auto ">
+            <form onSubmit={handleSubmitForm} className="">
                 <h2 className="text-2xl font-bold mb-6 text-center">Create an account</h2>
 
                 <div className="space-y-2">

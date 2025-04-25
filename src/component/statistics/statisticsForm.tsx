@@ -19,7 +19,7 @@ const StatisticsForm: React.FC = () => {
 
     return (
         <div>
-            <form onSubmit={handleSubmit(data => console.log(data))}>
+            <form onSubmit={handleSubmit(data => console.log(data))} className="">
                 <h2 className="text-2xl font-bold mb-6 text-center  text-gray-950">Add Statistics</h2>
                 <div className="space-y-3 text-gray-950">
                     <InputComponent

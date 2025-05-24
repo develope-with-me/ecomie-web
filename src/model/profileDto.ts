@@ -1,6 +1,6 @@
 export interface ProfileDto {
-    firstName: "",
-    lastName: string,
+    firstname: string,
+    lastname: string,
     email: string,
     role: string,
     phoneNumber: string,

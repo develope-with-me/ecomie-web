@@ -1,12 +1,16 @@
 import axios from 'axios';
 import {ProfileDto} from "../../model/profileDto";
-const userBaseUrl = process.env.userSecuredUrl
+import localStorageKeys from "../../constants/localStorageKeys";
 
-// const api = axios.create({
-//     baseURL: 'http://34.224.81.76:80',
-// });
-
+const baseUrl = process.env.REACT_APP_BASE_URL
 export const getUserProfile = async (): Promise<ProfileDto> => {
-    const response = await axios.get<ProfileDto>(`${userBaseUrl}/me`);
-    return response.data;
+    const userProfileData = await axios.get<ProfileDto>(`${baseUrl}/secure/user/me`, {
+        headers: {
+            'Content-Type': 'application/json; charset=UTF-8',
+            'Accept': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem(localStorageKeys.AuthToken)}`,
+        }
+    })
+    return userProfileData.data;
 };
+

@@ -46,7 +46,10 @@
     "hidePassword": "Hide password",
     "forgotPassword": "Forgot password?",
     "submitButton": "SIGN UP",
-    "loginLink": "LOGIN"
+    "loginLink": "LOGIN",
+    "english": "English",
+    "french": "French",
+    "home": "Home"
   }
 
 }

@@ -36,6 +36,8 @@
     "hidePassword": "Masquer le mot de passe",
     "forgotPassword": "Mot de passe oublié ?",
     "submitButton": "S'INSCRIRE",
-    "loginLink": "CONNEXION"
+    "loginLink": "CONNEXION",
+    "english": "eng",
+    "french": "Freh"
   }
   }

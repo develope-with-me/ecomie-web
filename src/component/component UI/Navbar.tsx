@@ -21,7 +21,7 @@ const Navbar: React.FC = () => {
 
     return (
         <div className=''>
-            <nav className='bg-customBlue text-white p-1 shadow-md w-auto '>
+            <nav className='bg-customBlue text-white shadow-md w-auto '>
                 <div className='flex align-items-center justify-between'>
                     <div className='nav-item pl-5'>
                         <a className="flex w-2/12">

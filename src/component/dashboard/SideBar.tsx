@@ -13,21 +13,16 @@ const DashboardComponent: React.FC<DashboardComponentProps> =  ({ style }) => {
    const [confirmLogout, setConfirmLogout]=useState(false);
 
    const handleLogout = () =>{
-
-    
         localStorage.removeItem("authToken");  // Clear authentication token
         localStorage.removeItem("userData");   // If you store user data, clear it too
         navigate("/");  // Redirect to homepage or login page
-  
    }
-   
-   
    
     return (
         // <div className="h-screen">
         <div className={style || "w-1/5 dashboard px-10 md:block hidden"}>
             <div>
-                <div className="flex mt-20">
+                <div className="flex mt-10">
                     <i className="fa-solid fa-users text-xl"></i>
                     <p className="ml-8">{t('dashboard.ecomieBody')}</p>
                 </div>

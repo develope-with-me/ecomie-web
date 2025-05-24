@@ -5,14 +5,14 @@ import Modal from "../../component/modal/Modal";
 import UserProfileForm from "./user-profile-form";
 import {useGlobalTranslation} from "../../translate/translation-provider";
 import {getUserProfile} from "../../services/userProfileServices/userProfileService"
-
+import LoaderProvider, {useLoader} from "../../component/loader/loaderProvider"
 
 const UserProfilePage: React.FC = () => {
     const [profile, setProfile] = useState<ProfileDto>();
     const [openForm, setOpenForm] = useState(false);
     const [editIndex, setEditIndex] = useState<number | null>(null);
-
     const {t} = useGlobalTranslation();
+    const {setLoading} = useLoader();
 
     const handleAddStatisticsForm = () => {
         setOpenForm(!openForm);
@@ -23,7 +23,11 @@ const UserProfilePage: React.FC = () => {
     }
 
     useEffect(() => {
-        getUserProfile().then(res => setProfile(res))
+        // setLoading(true);
+        getUserProfile().then(res => {
+            setProfile(res);
+            // setLoading(false);
+        })
             .catch(error => {
                 console.log("Error: ", error.message);
             });
@@ -31,8 +35,9 @@ const UserProfilePage: React.FC = () => {
 
     return (
         <Layout>
+            <LoaderProvider />
             <div className="md:w-3/4 w-auto ">
-                {/*<Loader></Loader>*/}
+                {/*<LoaderProvider></LoaderProvider>*/}
                 <h5 className="text-2xl px-12 pt-6">{t("accountProfile")}</h5>
                 <div className="w-4/5 mt-5 md:ml-12 ml-8 rounded-xl profile md:pl-8 pl-6 pt-5">
                     <h6 className="font-bold text-xl">{t("userInformation")}</h6>

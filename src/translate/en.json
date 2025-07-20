@@ -1,0 +1,55 @@
+{
+    "welcome": "Welcome to our website!",
+    "language": "Language",
+    "description": "This is a simple multi-language app.",
+    "emailPlaceholder": "Enter your email",
+    "passwordPlaceholder": "Enter your password",
+    "forgotPassword": "Forgot password?",
+    "loginButton": "LOGIN",
+    "signUpPrompt": "Don't have an account?",
+    "signUpLink": "SIGN UP",
+    "updateProfile": "Update Profile",
+    "fullName": "Full name",
+    "email": "Email",
+    "locality": "Locality",
+    "role": "Role",
+    "contact": "Contact",
+    "editProfile": "Edit profile",
+    "ecomistRequest": "Do you want to become an ecomist",
+    "clickToBeAnEcomist": "Click to request to be an ecomist",
+    "userInformation": "User Information",
+    "accountProfile": "Account Profile",
+    "dashboard": {
+    "ecomieBody": "Ecomie body",
+    "evangelists": "Evangelists",
+    "toBeImplemented": "To be implemented shortly",
+    "myStatistics": "My statistics",
+    "manageAccounts": "Manage accounts",
+    "myProfile": "My profile",
+    "logout": "Logout"
+  },
+  "logoutModal": {
+    "title": "Confirm Logout",
+    "message": "Are you sure you want to log out?",
+    "cancel": "Cancel",
+    "logout": "Logout"
+  },
+  "signUp": {
+    "title": "SIGN UP",
+    "placeholders": {
+      "firstname": "Enter your first name",
+      "lastname": "Enter your last name",
+      "email": "Enter your email",
+      "password": "Enter your password"
+    },
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "forgotPassword": "Forgot password?",
+    "submitButton": "SIGN UP",
+    "loginLink": "LOGIN",
+    "english": "English",
+    "french": "French",
+    "home": "Home"
+  }
+
+}

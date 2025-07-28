@@ -1,8 +1,8 @@
 import React, {useState} from "react";
 import DashboardWrapper from "../wrapper-layout/DashboardWrapper";
-import Modal from "../../component/modal/Modal";
-import StatisticsData from "../../component/statistics/statisticsData";
-import StatisticsForm from "../../component/statistics/statisticsForm";
+import Modal from "@/components/modal/Modal";
+import StatisticsData from "@/components/statistics/statisticsData";
+import StatisticsForm from "@/components/statistics/statisticsForm";
 
 const EvangelistStatisticsPage: React.FC = () => {
     const [activeIndex, setActiveIndex] = useState(1);

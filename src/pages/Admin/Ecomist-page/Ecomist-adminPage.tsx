@@ -1,6 +1,6 @@
 import React, {useState} from 'react'
-import EcomistForm from '../../../component/form/EcomistForm';
-import Modal from '../../../component/modal/Modal';
+import EcomistForm from '@/components/form/EcomistForm';
+import Modal from '@/components/modal/Modal';
 import DashboardWrapper from '../../wrapper-layout/DashboardWrapper';
 import ListEcomist from '../component/ListEcomist';
 

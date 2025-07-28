@@ -1,6 +1,6 @@
 import React, {useState} from 'react'
 import Input from '../dashboard/Input'
-import Button from '../component UI/Button';
+import ButtonCinthia from '@/components/ui/ButtonCinthia';
 
 
 interface EcomistFormProps {
@@ -83,7 +83,7 @@ const EcomistForm: React.FC<EcomistFormProps> = ({onSubmit}) => {
                 </div>
 
                 <div className='mt-10 flex items-center justify-center'>
-                    <Button title='Create an Account'/>
+                    <ButtonCinthia title='Create an Account'/>
                 </div>
             </form>
 

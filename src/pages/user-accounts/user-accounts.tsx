@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import DashboardWrapper from "../wrapper-layout/DashboardWrapper";
-import Modal from "../../component/modal/Modal";
-import EcomistForm from "../../component/form/EcomistForm";
+import Modal from "@/components/modal/Modal";
+import EcomistForm from "@/components/form/EcomistForm";
 import ListEcomist from "../Admin/component/ListEcomist";
 
 const UserAccount: React.FC = () => {

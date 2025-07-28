@@ -6,7 +6,7 @@ interface ButtonProps {
     icon?: string;
 }
 
-const Button: React.FC<ButtonProps> = ({title, onClick, icon}) => {
+const ButtonCinthia: React.FC<ButtonProps> = ({title, onClick, icon}) => {
     return (
         <div>
             <button className="p-1 md:px-5 px-3 rounded rounded-tl-xl md:text-[1rem] text-[0.85rem] rounded-br-xl bg-customBlue text-white"
@@ -18,4 +18,4 @@ const Button: React.FC<ButtonProps> = ({title, onClick, icon}) => {
     )
 }
 
-export default Button
+export default ButtonCinthia

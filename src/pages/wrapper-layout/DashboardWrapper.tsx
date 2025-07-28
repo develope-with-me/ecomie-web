@@ -1,5 +1,5 @@
 import React from 'react'
-import HeadDashboard from '../../component/dashboard/HeadDashboard'
+import HeadDashboard from '@/components/dashboard/HeadDashboard'
 import Layout from './layout'
 
 interface ButtonProps{

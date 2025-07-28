@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import InputField from '../../component/component UI/InputField';
+import InputField from '@/components/ui/InputField';
 import {Link} from "react-router-dom";
 import bgPicture from '../../images/bg-ecomi.jpg';
 import {useLoginForm} from "./logic/useLoginForm";

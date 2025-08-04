@@ -10,15 +10,24 @@ import LoaderProvider, {useLoader} from "../../component/loader/loaderProvider"
 const UserProfilePage: React.FC = () => {
     const [profile, setProfile] = useState<ProfileDto>();
     const [openForm, setOpenForm] = useState(false);
+    const [requestModal, setRequestModal] = useState(false);
     const [editIndex, setEditIndex] = useState<number | null>(null);
     const {t} = useGlobalTranslation();
     const {setLoading} = useLoader();
 
     const handleAddStatisticsForm = () => {
         setOpenForm(!openForm);
+        setProfile(profile);
+        console.log(profile);
+    };
+    const handleRequest = () => {
+        setRequestModal(!requestModal);
+        // setProfile(profile);
+        // console.log(profile);
     };
     const closeForm = () => {
         setOpenForm(false);
+        setRequestModal(false);
         setEditIndex(null);
     }
 
@@ -35,7 +44,7 @@ const UserProfilePage: React.FC = () => {
 
     return (
         <Layout>
-            <LoaderProvider />
+            {/*<LoaderProvider />*/}
             <div className="md:w-3/4 w-auto ">
                 {/*<LoaderProvider></LoaderProvider>*/}
                 <h5 className="text-2xl px-12 pt-6">{t("accountProfile")}</h5>
@@ -67,10 +76,17 @@ const UserProfilePage: React.FC = () => {
                                 {t("ecomistRequest")}?
                                 <span>
                   <i>
-                    <a className="text-blue-500 cursor-pointer">
-                      {" "}
-                        {t("clickToBeAnEcomist")}.
-                    </a>
+                          <span className="text-blue-500 cursor-pointer" onClick={handleRequest}>
+                              {" "}
+                              {t("clickToBeAnEcomist")}.
+                            </span>
+                      <div className={`overlay-menu ${requestModal ? 'block' : 'hidden'}`}>
+                            <Modal onClose={closeForm}>
+                                <div></div>
+                                {/*<UserProfileForm profileData ={profile}/>*/}
+                            </Modal>
+                        </div>
+
                   </i>
                 </span>
                             </p>
@@ -82,7 +98,7 @@ const UserProfilePage: React.FC = () => {
                         </button>
                         <div className={`overlay-menu ${openForm ? 'block' : 'hidden'}`}>
                             <Modal onClose={closeForm}>
-                                <UserProfileForm/>
+                                <UserProfileForm profileData={profile}/>
                             </Modal>
                         </div>
                     </div>

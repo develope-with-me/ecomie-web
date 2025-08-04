@@ -26,6 +26,7 @@
     "myStatistics": "My statistics",
     "manageAccounts": "Manage accounts",
     "myProfile": "My profile",
+      "profile_updated_successfully": "Your profile has been updated successfully",
     "logout": "Logout"
   },
   "logoutModal": {

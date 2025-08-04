@@ -63,7 +63,7 @@ export const useLoginForm = () => {
                     // Save token to localStorage or context
                     localStorage.setItem(LOCAL_STORAGE_KEYS.AuthToken, authToken);
                     
-                   navigate ('/ui/EcomistPage');
+                   navigate ('/ui/user-profile');
                     toast.success("Login successful!");
                 } else {
                     toast.error("Your credentials don't match. Please try again.");

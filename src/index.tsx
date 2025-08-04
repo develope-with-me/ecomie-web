@@ -4,6 +4,9 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import {document} from "postcss";
+import './translate/i18n'
+import {TranslationProvider} from "./translate/translation-provider";
+import LoaderProvider from "./component/loader/loaderProvider";
 
 const rootElement = window.document.getElementById('root');
 
@@ -11,7 +14,11 @@ if (rootElement) {
     const root = ReactDOM.createRoot(rootElement); // Create the root
     root.render(
         <React.StrictMode>
-            <App />
+            <TranslationProvider>
+                <LoaderProvider>
+                    <App/>
+                </LoaderProvider>
+            </TranslationProvider>
         </React.StrictMode>
     );
 } else {

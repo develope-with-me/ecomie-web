@@ -15,7 +15,7 @@ interface DashboardWrapperProps {
 const DashboardWrapper: React.FC<DashboardWrapperProps> = ({selectButtonProps, addModalButtonProps, children} ) => {
   return (
     <Layout>
-    <div className='px-7 py-20'>
+    <div className='md:px-7 py-20 px-5 '>
       <HeadDashboard selectButtonProps={selectButtonProps} addModalButtonProps={addModalButtonProps} />
       <div>
       {children}

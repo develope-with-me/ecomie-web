@@ -16,12 +16,16 @@ const HeadDashboard: React.FC<HeadDashboardProps> = ({selectButtonProps, addModa
 
     return (
         <div>
-            <div className='flex justify-between '>
-                <div className='flex gap-[30px]'>
-                    <input type="text" className='w-64 border-2 rounded border-gray-500 '/>
+            <div className='md:flex md:justify-between left-[-50px] '>
+                <div className='flex  md:gap-[30px] gap-[15px]'>
+                    <input type="text" className='md:w-64 w-[145px] h-7  border-2 rounded border-gray-500 '/>
                     <Button title={selectButtonProps?.title || ''} onClick={selectButtonProps?.onClick}/>
                 </div>
-                <Button title={addModalButtonProps?.title || ''} onClick={addModalButtonProps?.onClick}/>
+                <div className='ml-[147px] mt-6 md:mt-0'>
+                <Button title={addModalButtonProps?.title || ''}
+                        icon={'fa-solid fa-plus pr-3'}
+                        onClick={addModalButtonProps?.onClick}/>
+                        </div>
             </div>
         </div>
     )

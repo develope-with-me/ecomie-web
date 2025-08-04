@@ -6,9 +6,11 @@ import bgPicture from '../../images/bg-ecomi.jpg';
 import {useSignUpForm} from "./logic/useSignUpForm";
 import {FaEye, FaEyeSlash} from "react-icons/fa"; // Import eye icons
 import {ToastContainer} from "react-toastify";
+import { useGlobalTranslation } from "../../hooks/useGlobalTranslation";
 
 
 const SignUp: React.FC = () => {
+    const { t } = useGlobalTranslation();
     const {
         formValues,
         errors,
@@ -24,15 +26,15 @@ const SignUp: React.FC = () => {
         <div className=" h-screen flex flex-col justify-center items-center relative bg-cover " style={{
             backgroundImage: `url(${bgPicture})`,
         }}>
-            <div className=" bg-white py-6 md:py-16 md:px-28 px-7 rounded-lg relative">
+            <div className=" bg-white py-6 md:py-16 md:px-16 px-7 rounded-lg relative">
 
                 {/* Title */}
-                <h1 className="text-3xl font-bold text-black mb-20">SIGN UP</h1>
+                <h1 className="text-3xl font-bold text-black mb-20">{t('signUp.title')}</h1>
 
                 <form onSubmit={handleSubmit} className="md:w-80 w-64 space-y-4">
                     <InputField
                         type="firstname"
-                        placeholder="Enter your firstname"
+                        placeholder={t('signUp.placeholders.firstname')}
                         icon="person"
                         value={formValues.firstname}
                         onChange={(e) => handleChange("firstname", e.target.value)}
@@ -42,7 +44,7 @@ const SignUp: React.FC = () => {
                     )}
                     <InputField
                         type="lastname"
-                        placeholder="Enter your lastname"
+                        placeholder={t('signUp.placeholders.lastname')}
                         icon="person"
                         value={formValues.lastname}
                         onChange={(e) => handleChange("lastname", e.target.value)}
@@ -52,7 +54,7 @@ const SignUp: React.FC = () => {
                     )}
                     <InputField
                         type="email"
-                        placeholder="Enter your email"
+                        placeholder={t('signUp.placeholders.email')}
                         icon="email"
                         value={formValues.email}
                         onChange={(e) => handleChange("email", e.target.value)}
@@ -86,7 +88,7 @@ const SignUp: React.FC = () => {
 
                     <InputField
                         type={showPassword ? "password" : "text"}
-                        placeholder="Enter your password"
+                        placeholder={t('signUp.placeholders.password')}
                         icon="lock"
                         value={formValues.password}
 
@@ -96,7 +98,7 @@ const SignUp: React.FC = () => {
                     <button
                         type="button"
                         onClick={togglePasswordVisibility}
-                        className=" absolute right-24 bottom-[195px] transform -translate-y-1/2 z-50 flex items-center text-gray-600"
+                        className=" relative md:left-[300px] left-[240px] bottom-[40px] z-50 flex items-center text-gray-600"
                     >
                         {showPassword ? <FaEyeSlash/> : <FaEye/>}
 
@@ -122,31 +124,31 @@ const SignUp: React.FC = () => {
                             href="#"
                             className="text-sm text-gray-600 hover:underline hover:text-gray-900"
                         >
-                            Forgot password?
+                             {t('signUp.forgotPassword')}
                         </a>
                     </div>
-
 
                     {/* Login Button */}
                     <button
                         type="submit"
                         className={`w-full py-2 rounded-full mt-32 ${
-                            isFormComplete ? "bg-blue-900 hover:bg-blue-800 text-white" : "bg-gray-300 text-gray-600 cursor-not-allowed"
+                            isFormComplete ? "bg-customBlue  hover:bg-blue-950 text-white" : "bg-customBlue text-white cursor-not-allowed"
                         }`}
                         disabled={!isFormComplete}
                     >
-                        SIGN UP
+                         {t('signUp.submitButton')}
                     </button>
                 </form>
                 {/* Sign Up Link */}
                 <Link to="/">
                     <p className="text-sm text-gray-600 mt-4">
                         <a href="#" className="hover:underline hover:text-gray-900">
-                            lOGIN
+                        {t('signUp.loginLink')}
                         </a>
                     </p>
                 </Link>
             </div>
+            <ToastContainer />
         </div>
     );
 }

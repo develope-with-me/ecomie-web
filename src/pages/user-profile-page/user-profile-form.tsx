@@ -1,6 +1,6 @@
 import React from "react";
 import {useGlobalTranslation} from "../../translate/translation-provider";
-import InputComponent from "../../component/component UI/inputComponent";
+import InputComponent from "@/components/ui/inputComponent";
 
 const UserProfileForm: React.FC = () => {
     const {t} = useGlobalTranslation();

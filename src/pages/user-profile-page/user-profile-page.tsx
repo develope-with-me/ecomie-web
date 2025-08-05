@@ -1,11 +1,11 @@
 import React, {useEffect, useState} from "react";
 import Layout from "../wrapper-layout/layout";
 import {ProfileDto} from "../../model/profileDto";
-import Modal from "../../component/modal/Modal";
+import Modal from "@/components/modal/Modal";
 import UserProfileForm from "./user-profile-form";
 import {useGlobalTranslation} from "../../translate/translation-provider";
 import {getUserProfile} from "../../services/userProfileServices/userProfileService"
-import LoaderProvider, {useLoader} from "../../component/loader/loaderProvider"
+import LoaderProvider, {useLoader} from "@/components/loader/loaderProvider"
 
 const UserProfilePage: React.FC = () => {
     const [profile, setProfile] = useState<ProfileDto>();

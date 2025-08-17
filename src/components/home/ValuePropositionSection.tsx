@@ -43,7 +43,7 @@ const ValuePropositionSection = () => {
                 {/* Header */}
                 <div className="text-center max-w-3xl mx-auto mb-16">
                     <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-6">
-                        Why Choose <span className="text-primary">EvangeTrack</span>?
+                        Why Choose <span className="text-primary">ECOMIE</span>?
                     </h2>
                     <p className="text-xl text-muted-foreground leading-relaxed">
                         We're not just another tracking app. We're a ministry partner designed
@@ -58,7 +58,7 @@ const ValuePropositionSection = () => {
                             Built on Biblical Principles
                         </h3>
                         <p className="text-lg text-muted-foreground mb-6 leading-relaxed">
-                            Every feature in EvangeTrack is designed with scripture in mind. From the Great Commission
+                            Every feature in ECOMIE is designed with scripture in mind. From the Great Commission
                             to the Parable of the Sower, we help you apply biblical wisdom to modern evangelism methods.
                         </p>
                         <ul className="space-y-3 text-muted-foreground">

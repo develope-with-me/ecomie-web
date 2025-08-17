@@ -7,7 +7,7 @@ const SocialProofSection = () => {
         {
             name: "Pastor Michael Johnson",
             role: "Senior Pastor, Grace Community Church",
-            content: "EvangeTrack has revolutionized how our church approaches evangelism. We've seen a 300% increase in meaningful conversations and follow-ups.",
+            content: "ECOMIE has revolutionized how our church approaches evangelism. We've seen a 300% increase in meaningful conversations and follow-ups.",
             rating: 5,
             image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face"
         },

@@ -14,10 +14,10 @@ const Header = () => {
                     {/* Logo */}
                     <div className="flex items-center space-x-3">
                         <div className="w-10 h-10 bg-gradient-heavenly rounded-full flex items-center justify-center shadow-gentle">
-                            <img src={ecomieLogo} className="w-full h-full" alt="Ecomie Logo"/>
+                            <img src={ecomieLogo} className="w-full h-full" alt="ECOMIE Logo"/>
                             {/*<Heart className="w-6 h-6 text-primary-foreground" fill="currentColor" />*/}
                         </div>
-                        <span className="text-xl font-bold text-primary-foreground">Ecomie</span>
+                        <span className="text-xl font-bold text-primary-foreground">ECOMIE</span>
                     </div>
 
                     {/* Desktop Navigation */}

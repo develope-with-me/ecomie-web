@@ -6,6 +6,7 @@ import UserProfileForm from "./user-profile-form";
 import {useGlobalTranslation} from "@/translate/translation-provider";
 import {getUserProfile} from "@/services/userProfileServices/userProfileService"
 import LoaderProvider, {useLoader} from "@/components/loader/loaderProvider"
+import Navbar from "@/components/ui/Navbar";
 
 const UserProfilePage: React.FC = () => {
     const [profile, setProfile] = useState<ProfileDto>();
@@ -34,6 +35,8 @@ const UserProfilePage: React.FC = () => {
     }, [])
 
     return (
+        <div>
+            <Navbar/>
         <Layout>
             <LoaderProvider />
             <div className="md:w-3/4 w-auto ">
@@ -89,6 +92,7 @@ const UserProfilePage: React.FC = () => {
                 </div>
             </div>
         </Layout>
+         </div>
     );
 };
 

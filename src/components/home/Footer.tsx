@@ -1,6 +1,9 @@
 import React from 'react';
 import { Heart, Mail, MapPin, Phone, Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import ecomieLogo from "@/images/ecomie-logo.png";
+
+const apiDomain = import.meta.env.VITE_API_DOMAIN;
 
 const Footer = () => {
     const quickLinks = [
@@ -15,7 +18,7 @@ const Footer = () => {
         { name: "Getting Started Guide", href: "#" },
         { name: "Video Tutorials", href: "#" },
         { name: "Ministry Best Practices", href: "#" },
-        { name: "API Documentation", href: "#" },
+        { name: "API Documentation", href: `${apiDomain}/swagger-ui/index.html` },
         { name: "Mobile Apps", href: "#" }
     ];
 
@@ -35,10 +38,11 @@ const Footer = () => {
                     {/* Company Info */}
                     <div className="lg:col-span-1">
                         <div className="flex items-center space-x-3 mb-6">
-                            <div className="w-10 h-10 bg-gradient-divine rounded-full flex items-center justify-center">
-                                <Heart className="w-6 h-6 text-primary-foreground" fill="currentColor" />
+                            <div className="w-10 h-10 bg-gradient-heavenly rounded-full flex items-center justify-center">
+                                {/*<Heart className="w-6 h-6 text-primary-foreground" fill="currentColor" />*/}
+                                <img src={ecomieLogo} className="w-full h-full" alt="ECOMIE Logo"/>
                             </div>
-                            <span className="text-xl font-bold">EvangeTrack</span>
+                            <span className="text-xl font-bold">ECOMIE</span>
                         </div>
                         <p className="text-primary-foreground/80 mb-6 leading-relaxed">
                             Empowering evangelists worldwide to track, measure, and celebrate their Kingdom impact.
@@ -116,11 +120,11 @@ const Footer = () => {
                         <div className="space-y-3 text-sm">
                             <div className="flex items-center text-primary-foreground/80">
                                 <Mail className="w-4 h-4 mr-2" />
-                                hello@evangeltrack.com
+                                domoubrice@gmail.com
                             </div>
                             <div className="flex items-center text-primary-foreground/80">
                                 <Phone className="w-4 h-4 mr-2" />
-                                +1 (555) 123-4567
+                                +237 650 954 190
                             </div>
                             <div className="flex items-start text-primary-foreground/80">
                                 <MapPin className="w-4 h-4 mr-2 mt-0.5" />
@@ -136,7 +140,7 @@ const Footer = () => {
                 <div className="container mx-auto px-4 py-6">
                     <div className="flex flex-col md:flex-row justify-between items-center text-sm">
                         <div className="text-primary-foreground/60 mb-4 md:mb-0">
-                            © 2024 EvangeTrack. All rights reserved. Built for His Glory.
+                            © 2025 ECOMIE. All rights reserved. Built for His Glory.
                         </div>
                         <div className="flex items-center space-x-6 text-primary-foreground/60">
                             <a href="#" className="hover:text-accent transition-colors">Privacy Policy</a>

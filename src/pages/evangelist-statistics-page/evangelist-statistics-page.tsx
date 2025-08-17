@@ -3,6 +3,7 @@ import DashboardWrapper from "../wrapper-layout/DashboardWrapper";
 import Modal from "@/components/modal/Modal";
 import StatisticsData from "@/components/statistics/statisticsData";
 import StatisticsForm from "@/components/statistics/statisticsForm";
+import Navbar from "@/components/ui/Navbar";
 
 const EvangelistStatisticsPage: React.FC = () => {
     const [activeIndex, setActiveIndex] = useState(1);
@@ -30,6 +31,8 @@ const EvangelistStatisticsPage: React.FC = () => {
         setEditIndex(null);
     }
     return (
+        <div>
+            <Navbar/>
         <DashboardWrapper selectButtonProps={selectButtonProps} addModalButtonProps={addModalButtonProps}>
             <div className="w-3/4">
                 <h5 className="text-xl pt-7 font-medium">My Statistics for 2023/2024</h5>
@@ -44,6 +47,7 @@ const EvangelistStatisticsPage: React.FC = () => {
 
             </div>
         </DashboardWrapper>
+        </div>
     );
 };
 

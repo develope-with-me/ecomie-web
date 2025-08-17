@@ -28,7 +28,7 @@ const Navbar: React.FC = () => {
                             <div>
                                 <img src={ecomieLogo} className="w-full" alt=""/>
                             </div>
-                            <i className="flex mt-5 text-sm text-center">Ecomie</i>
+                            <i className="flex mt-5 text-sm text-center">ECOMIE</i>
                         </a>
                     </div>
 

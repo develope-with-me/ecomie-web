@@ -2,6 +2,7 @@
 
 interface ImportMetaEnv {
   readonly VITE_API_BASE_URL: string
+  readonly VITE_API_DOMAIN: string
   readonly REACT_APP_API_BASE_URL: string
 }
 

@@ -2,38 +2,40 @@ import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { BarChart3, Heart, Globe, Shield, Users, Zap } from 'lucide-react';
 import bibleLight from '@/assets/bible-light.jpg';
+import {useGlobalTranslation} from "@/translate/translation-provider";
 
 const ValuePropositionSection = () => {
+    const {t} = useGlobalTranslation();
     const features = [
         {
             icon: BarChart3,
-            title: "Track Your Impact",
-            description: "Monitor conversations, follow-ups, and conversions with detailed analytics and beautiful visualizations."
+            title: t("homePage.trackYourImpact"),
+            description: t("homePage.monitorConversations...")
         },
         {
             icon: Heart,
-            title: "Heart-Centered Ministry",
-            description: "Focus on what matters most - building genuine relationships and sharing God's love effectively."
+            title: t("homePage.heartCenteredMinistry"),
+            description: t("homePage.focusOnWhatMattersMost...")
         },
         {
             icon: Globe,
-            title: "Global Community",
-            description: "Connect with evangelists worldwide, share experiences, and learn from each other's journeys."
+            title: t("homePage.globalCommunity"),
+            description: t("homePage.connectWithEvangelistsWorldwide...")
         },
         {
             icon: Shield,
-            title: "Secure & Private",
-            description: "Your ministry data is protected with enterprise-grade security and privacy measures."
+            title: t("homePage.secure&Private"),
+            description: t("homePage.yourMinistryDataIsProtected...")
         },
         {
             icon: Users,
-            title: "Team Collaboration",
-            description: "Coordinate with your church team, share insights, and work together more effectively."
+            title: t("homePage.teamCollaboration"),
+            description: t("homePage.coordinateWithYourTeam...")
         },
         {
             icon: Zap,
-            title: "Instant Insights",
-            description: "Get immediate feedback on your evangelism efforts with real-time reporting and suggestions."
+            title: t("homePage.instantInsights"),
+            description: t("homePage.getImmediateFeedback...")
         }
     ];
 
@@ -43,11 +45,10 @@ const ValuePropositionSection = () => {
                 {/* Header */}
                 <div className="text-center max-w-3xl mx-auto mb-16">
                     <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-6">
-                        Why Choose <span className="text-primary">EvangeTrack</span>?
+                        {t("homePage.why")} <span className="text-primary">ECOMIE</span>?
                     </h2>
                     <p className="text-xl text-muted-foreground leading-relaxed">
-                        We're not just another tracking app. We're a ministry partner designed
-                        specifically for modern evangelists who want to measure their Kingdom impact.
+                        {t("homePage.we'reNotJust...")}
                     </p>
                 </div>
 
@@ -55,24 +56,23 @@ const ValuePropositionSection = () => {
                 <div className="grid lg:grid-cols-2 gap-12 items-center mb-20">
                     <div>
                         <h3 className="text-2xl md:text-4xl font-bold text-foreground mb-6">
-                            Built on Biblical Principles
+                            {t("homePage.builtOnBiblicalPrinciples")}
                         </h3>
                         <p className="text-lg text-muted-foreground mb-6 leading-relaxed">
-                            Every feature in EvangeTrack is designed with scripture in mind. From the Great Commission
-                            to the Parable of the Sower, we help you apply biblical wisdom to modern evangelism methods.
+                            {t("homePage.everyFeatureIn...")}
                         </p>
                         <ul className="space-y-3 text-muted-foreground">
                             <li className="flex items-center">
                                 <div className="w-2 h-2 bg-accent rounded-full mr-3"></div>
-                                Scripture-based tracking categories
+                                {t("homePage.scriptureBasedTrackingCategories")}
                             </li>
                             <li className="flex items-center">
                                 <div className="w-2 h-2 bg-accent rounded-full mr-3"></div>
-                                Prayer integration for every contact
+                                {t("homePage.prayerIntegrationForEveryContact")}
                             </li>
                             <li className="flex items-center">
                                 <div className="w-2 h-2 bg-accent rounded-full mr-3"></div>
-                                Discipleship journey mapping
+                                {t("homePage.discipleshipJourneyMapping")}
                             </li>
                         </ul>
                     </div>

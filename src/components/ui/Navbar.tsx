@@ -5,6 +5,8 @@ import ecomieLogo from '../../images/ecomie-logo.png'
 import {useTranslation} from "react-i18next";
 import MenuIcon from '@mui/icons-material/Menu';
 import {useGlobalTranslation} from "../../translate/translation-provider";
+import {Link} from "react-router-dom";
+import localStorageKeys from "@/constants/localStorageKeys";
 
 
 const Navbar: React.FC = () => {
@@ -18,6 +20,8 @@ const Navbar: React.FC = () => {
         setLanguage(selectedLanguage);
         i18n.changeLanguage(selectedLanguage)
     }
+
+    const [isToken, setIsToken] = useState<boolean>(() => !!localStorage.getItem(localStorageKeys.AuthToken));
 
     return (
         <div className=''>
@@ -37,6 +41,9 @@ const Navbar: React.FC = () => {
                             {t("home")}</a></div>
                         <div><a>Team</a></div>
                         <div><a>About us</a></div>
+                        {isToken && (
+                            <div><Link to={'/ui/login'}>Login</Link></div>
+                        )}
                         <div className='w-1/4 text-black bg-customBlue'>
                             <select name="language" className="bg-customBlue text-white border-transparent"
                                     value={language} onChange={handleLangChange}>

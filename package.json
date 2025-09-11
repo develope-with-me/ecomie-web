@@ -2,7 +2,7 @@
   "name": "ecomie-app",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://107.21.67.222",
+  "proxy": "http://13.247.159.172",
   "scripts": {
     "start": "craco start",
     "build": "craco build",

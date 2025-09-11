@@ -49,7 +49,9 @@ const SocialProofSection = () => {
                 {/* Header */}
                 <div className="text-center max-w-3xl mx-auto mb-16">
                     <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-6">
-                        Trusted by <span className="text-primary">Thousands</span> of Evangelists
+                        Trusted by
+                        {/*<span className="text-primary">Thousands</span>of*/}
+                        &nbsp;Evangelists
                     </h2>
                     <p className="text-xl text-muted-foreground">
                         Join a growing community of faithful servants making a measurable impact for the Kingdom
@@ -92,18 +94,6 @@ const SocialProofSection = () => {
                             </CardContent>
                         </Card>
                     ))}
-                </div>
-
-                {/* Church Logos */}
-                <div className="text-center">
-                    <p className="text-muted-foreground mb-8">Trusted by leading churches worldwide</p>
-                    <div className="flex flex-wrap justify-center items-center gap-8 opacity-60">
-                        {churches.map((church, index) => (
-                            <div key={index} className="text-lg font-semibold text-muted-foreground">
-                                {church}
-                            </div>
-                        ))}
-                    </div>
                 </div>
             </div>
         </section>

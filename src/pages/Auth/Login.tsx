@@ -9,8 +9,6 @@ import {useTranslation} from "react-i18next";
 
 const Login: React.FC = () => {
     const {t, i18n} = useTranslation();
-
-
     const {
         formValues,
         errors,
@@ -82,7 +80,7 @@ const Login: React.FC = () => {
 
                 <p className="text-sm text-gray-600 mt-4">
                     <a href="#" className="hover:underline hover:text-gray-900">
-                        <Link to='/signUp'>{t("signUpLink")}</Link>
+                        <Link to='/ui/signUp'>{t("signUpLink")}</Link>
                     </a>
                 </p>
             </div>

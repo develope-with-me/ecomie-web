@@ -3,6 +3,7 @@ import DashboardWrapper from "../wrapper-layout/DashboardWrapper";
 import Modal from "@/components/modal/Modal";
 import EcomistForm from "@/components/form/EcomistForm";
 import ListEcomist from "../Admin/component/ListEcomist";
+import Navbar from "@/components/ui/Navbar";
 
 const UserAccount: React.FC = () => {
     const [openForm, setOpenForm] = useState(false);
@@ -56,6 +57,8 @@ const UserAccount: React.FC = () => {
 
 
     return (
+        <div>
+            <Navbar/>
         <DashboardWrapper selectButtonProps={selectButtonProps} addModalButtonProps={addModalButtonProps}>
             <div className={`overlay-menu ${openForm ? 'block' : 'hidden'}`}>
                 <Modal onClose={closeForm}>
@@ -71,6 +74,7 @@ const UserAccount: React.FC = () => {
                 <ListEcomist data={data} OnEdite={handleEdit} OnDelete={handleDelete}/>
             </div>
         </DashboardWrapper>
+        </div>
 
     );
 }

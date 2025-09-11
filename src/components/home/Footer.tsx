@@ -1,6 +1,7 @@
 import React from 'react';
 import { Heart, Mail, MapPin, Phone, Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+const apiDomain = import.meta.env.VITE_API_DOMAIN;
 import ecomieLogo from "@/images/ecomie-logo.png";
 import {useGlobalTranslation} from "@/translate/translation-provider";
 
@@ -17,6 +18,7 @@ const Footer = () => {
         { name: t("homePage.gettingStartedGuide"), href: "#" },
         { name: t("homePage.videoTutorials"), href: "#" },
         { name: t("homePage.ministryBestPractices"), href: "#" },
+        { name: "API Documentation", href: `${apiDomain}/swagger-ui/index.html` },
     ];
 
     const support = [
@@ -113,7 +115,7 @@ const Footer = () => {
                         <div className="space-y-3 text-sm">
                             <div className="flex items-center text-primary-foreground/80">
                                 <Mail className="w-4 h-4 mr-2" />
-                                hello@evangeltrack.com
+                                domoubrice@gmail.com
                             </div>
                             {/*Update to real number*/}
                             {/*<div className="flex items-center text-primary-foreground/80">*/}

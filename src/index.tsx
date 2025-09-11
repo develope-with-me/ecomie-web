@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import {document} from "postcss";
 import './translate/i18n'
 import {TranslationProvider} from "./translate/translation-provider";
 import LoaderProvider from "@/components/loader/loaderProvider";

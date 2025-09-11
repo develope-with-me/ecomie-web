@@ -39,7 +39,7 @@ const ContactSection = () => {
                         Let's Connect and <span className="text-primary">Serve Together</span>
                     </h2>
                     <p className="text-xl text-muted-foreground leading-relaxed">
-                        Have questions about EvangeTrack? Want to discuss how we can support your ministry?
+                        Have questions about ECOMIE? Want to discuss how we can support your ministry?
                         We'd love to hear from you and explore how we can work together for the Kingdom.
                     </p>
                 </div>
@@ -75,7 +75,7 @@ const ContactSection = () => {
                                     <div>
                                         <label className="block text-sm font-medium text-foreground mb-2">How can we help you?</label>
                                         <Textarea
-                                            placeholder="Tell us about your ministry and how EvangeTrack can support your evangelism efforts..."
+                                            placeholder="Tell us about your ministry and how ECOMIE can support your evangelism efforts..."
                                             rows={4}
                                         />
                                     </div>

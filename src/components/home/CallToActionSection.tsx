@@ -33,7 +33,7 @@ const CallToActionSection = () => {
                         </h2>
 
                         <p className="text-xl mb-8 text-primary-foreground/90 leading-relaxed">
-                            Join thousands of evangelists who are already using EvangeTrack to make a measurable
+                            Join thousands of evangelists who are already using ECOMIE to make a measurable
                             impact for the Kingdom. Your ministry breakthrough is just one click away.
                         </p>
 

@@ -2,12 +2,16 @@ import React from "react";
 import './evangelist-page.scss';
 import DashboardComponent from "@/components/dashboard/SideBar";
 import {EvangelistPageLogic} from "./EvangelistPageLogic";
+import Navbar from "@/components/ui/Navbar";
 
 
 const EvangelistPage: React.FC = () => {
     const { getProfileDetails } = EvangelistPageLogic();
     return (
-        <div className="h-screen flex">
+
+
+        <div className="container h-screen flex">
+            <Navbar/>
             <DashboardComponent />
 
             <div className="w-3/4 ">

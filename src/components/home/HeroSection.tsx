@@ -17,7 +17,7 @@ const HeroSection = () => {
                     background: "linear-gradient(135deg, hsl(220 60% 15% / 0.95), hsl(220 80% 25% / 0.9))"
             }}
             >
-                <div className="absolute inset-0 bg-gradient-hero"></div>
+                <div className="left-0 right-0 w-full absolute inset-0 bg-gradient-hero"></div>
             </div>
 
             {/* Content */}

@@ -1,5 +1,5 @@
 import React from "react";
-import {useGlobalTranslation} from "../../translate/translation-provider";
+import {useGlobalTranslation} from "@/translate/translation-provider";
 import InputComponent from "@/components/ui/inputComponent";
 
 const UserProfileForm: React.FC = () => {

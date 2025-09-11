@@ -26,7 +26,9 @@
     "myStatistics": "My statistics",
     "manageAccounts": "Manage accounts",
     "myProfile": "My profile",
-    "logout": "Logout"
+    "logout": "Logout",
+    "aboutUs": "About us",
+    "team": "Team"
   },
   "logoutModal": {
     "title": "Confirm Logout",
@@ -50,6 +52,44 @@
     "english": "English",
     "french": "French",
     "home": "Home"
+  },
+  "homePage": {
+    "empoweringEvangelist": "Empowering Evangelists",
+    "trackYour": "Track Your",
+    "evangelismImpact": "Evangelism Impact",
+    "joinEvangelistsUsingOur...": "Join evangelists using our platform to record, track, and celebrate their ministry impact. Because every soul matters.",
+    "startYourJourney": "Start Your Journey",
+    "why": "Why",
+    "we'reNotJust...": "We're not just a tracking app. We're a ministry partner designed specifically for modern evangelists who want to measure their Kingdom impact.",
+    "builtOnBiblicalPrinciples": "Built on Biblical Principles",
+    "everyFeatureIn...": "Every feature in ECOMIE is designed with scripture in mind. From the Great Commission to the Parable of the Sower, we help you apply biblical wisdom to modern evangelism methods.",
+    "scriptureBasedTrackingCategories": "Scripture-based tracking categories",
+    "prayerIntegrationForEveryContact": "Prayer integration for every contact",
+    "discipleshipJourneyMapping": "Discipleship journey mapping",
+    "trackYourImpact": "Track Your Impact",
+    "monitorConversations...": "Monitor conversations, follow-ups, and conversions with detailed analytics and beautiful visualizations.",
+    "heartCenteredMinistry": "Heart-Centered Ministry",
+    "focusOnWhatMattersMost...": "Focus on what matters most - building genuine relationships and sharing God's love effectively.",
+    "globalCommunity": "Global Community",
+    "connectWithEvangelistsWorldwide...": "Connect with evangelists worldwide, share experiences, and learn from each other's journeys.",
+    "secure&Private": "Secure & Private",
+    "yourMinistryDataIsProtected...": "Your ministry data is protected with enterprise-grade security and privacy measures.",
+    "teamCollaboration": "Team Collaboration",
+    "coordinateWithYourTeam...": "Coordinate with your team, share insights, and work together more effectively.",
+    "instantInsights": "Instant Insights",
+    "getImmediateFeedback...": "Get immediate feedback on your evangelism efforts with real-time reporting and suggestions.",
+    "empoweringEvangelistsWorldwide...": "Empowering evangelists worldwide to track, measure, and celebrate their Kingdom impact. Because every soul matters.",
+    "quickLinks": "Quick Links",
+    "resources": "Resources",
+    "support": "Support",
+    "allRightsReserved...": "All rights reserved. Built for His Glory.",
+    "privacyPolicy": "Privacy Policy",
+    "termsOfService": "Terms of Service",
+    "cookies": "Cookies",
+    "gettingStartedGuide": "Getting Started Guide",
+    "videoTutorials": "Video Tutorials",
+    "ministryBestPractices": "Ministry Best Practices",
+    "contactSupport": "Contact Support"
   }
 
 }

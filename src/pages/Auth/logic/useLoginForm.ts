@@ -1,5 +1,5 @@
 import {useState} from "react";
-import {authenticateUser} from "../../../services/authService";
+import {authenticateUser} from "@/services/authService";
 import LOCAL_STORAGE_KEYS from "../../../constants/localStorageKeys";
 import { useNavigate } from "react-router-dom";
 import {toast} from "react-toastify";

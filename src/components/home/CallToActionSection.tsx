@@ -1,16 +1,21 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, CheckCircle, Gift } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 import evangelismShepherd from '@/assets/evangelism-shepherd.jpg';
 
 const CallToActionSection = () => {
-    const benefits = [
-        "Free 30-day trial",
-        "No setup fees",
-        "Instant access to all features",
-        "24/7 support included",
-        "Cancel anytime"
-    ];
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const benefits = [
+    "Free to get started",
+    "No setup fees",
+    "Track your evangelism impact",
+    "Connect with other evangelists",
+    "Join active challenges"
+  ];
 
     return (
         <section className="py-20 bg-gradient-divine text-primary-foreground relative overflow-hidden">
@@ -19,14 +24,14 @@ const CallToActionSection = () => {
                 <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_1px_1px,_rgba(255,255,255,0.4)_1px,_transparent_1px)] bg-[length:20px_20px]"></div>
             </div>
 
-            <div className="container mx-auto px-4 relative z-10">
-                <div className="grid lg:grid-cols-2 gap-12 items-center">
-                    {/* Content */}
-                    <div>
-                        <div className="inline-flex items-center px-4 py-2 rounded-full bg-primary-foreground/10 border border-primary-foreground/20 mb-6">
-                            <Gift className="w-4 h-4 mr-2" />
-                            <span className="text-sm font-medium">Limited Time Offer</span>
-                        </div>
+      <div className="container mx-auto px-4 relative z-10">
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
+          {/* Content */}
+          <div>
+            <div className="inline-flex items-center px-4 py-2 rounded-full bg-primary-foreground/10 border border-primary-foreground/20 mb-6">
+              <Gift className="w-4 h-4 mr-2" />
+              <span className="text-sm font-medium">Start Your Journey Today</span>
+            </div>
 
                         <h2 className="text-3xl md:text-5xl font-bold mb-6">
                             Ready to Transform Your Evangelism?
@@ -47,22 +52,56 @@ const CallToActionSection = () => {
                             ))}
                         </div>
 
-                        {/* CTA Buttons */}
-                        <div className="flex flex-col sm:flex-row gap-4">
-                            <Button variant="heavenly" size="lg" className="px-8 py-4 text-lg font-semibold">
-                                Start Free Trial
-                                <ArrowRight className="w-5 h-5 ml-2" />
-                            </Button>
-                            <Button variant="outline" size="lg" className="px-8 py-4 text-lg border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10">
-                                Schedule Demo
-                            </Button>
-                        </div>
+            {/* CTA Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4">
+              {user ? (
+                <>
+                  <Button
+                    variant="heavenly"
+                    size="lg"
+                    className="px-8 py-4 text-lg font-semibold"
+                    onClick={() => navigate('/dashboard')}
+                  >
+                    Go to Dashboard
+                    <ArrowRight className="w-5 h-5 ml-2" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="px-8 py-4 text-lg border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10"
+                    onClick={() => document.getElementById('sessions')?.scrollIntoView({ behavior: 'smooth' })}
+                  >
+                    View Sessions
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button
+                    variant="heavenly"
+                    size="lg"
+                    className="px-8 py-4 text-lg font-semibold"
+                    onClick={() => navigate('/auth')}
+                  >
+                    Create Account
+                    <ArrowRight className="w-5 h-5 ml-2" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="px-8 py-4 text-lg border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10"
+                    onClick={() => navigate('/auth')}
+                  >
+                    Sign In
+                  </Button>
+                </>
+              )}
+            </div>
 
-                        {/* Trust Badge */}
-                        <div className="mt-8 text-sm text-primary-foreground/70">
-                            <p>✓ No credit card required • ✓ Setup in under 2 minutes • ✓ SOC 2 Compliant</p>
-                        </div>
-                    </div>
+            {/* Trust Badge */}
+            <div className="mt-8 text-sm text-primary-foreground/70">
+              <p>✓ No credit card required • ✓ Setup in under 2 minutes • ✓ Secure & Private</p>
+            </div>
+          </div>
 
                     {/* Image */}
                     <div className="relative">

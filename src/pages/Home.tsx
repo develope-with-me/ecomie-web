@@ -4,6 +4,7 @@ import HeroSection from '@/components/home/HeroSection';
 import ValuePropositionSection from '@/components/home/ValuePropositionSection';
 import SocialProofSection from '@/components/home/SocialProofSection';
 import CallToActionSection from '@/components/home/CallToActionSection';
+import SessionsSection from '@/components/home/SessionsSection';
 import TeamSection from '@/components/home/TeamSection';
 import PricingSection from '@/components/home/PricingSection';
 import ContactSection from '@/components/home/ContactSection';
@@ -17,8 +18,10 @@ const Home = () => {
             <ValuePropositionSection />
             <SocialProofSection />
             <CallToActionSection />
+            <SessionsSection />
             <TeamSection />
-            <PricingSection />
+            {/*<TeamSection />*/}
+            {/*<PricingSection />*/}
             <ContactSection />
             <Footer />
         </div>

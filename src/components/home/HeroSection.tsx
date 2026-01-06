@@ -1,18 +1,23 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, BookOpen, Users } from 'lucide-react';
+import { ArrowRight, BookOpen, User } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 import heroBackground from '@/assets/hero-background.jpg';
 
 const HeroSection = () => {
-    return (
-        <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden">
-            {/* Background Image */}
-            <div
-                className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-                style={{ backgroundImage: `url(${heroBackground})` }}
-            >
-                <div className="left-0 right-0 w-full absolute inset-0 bg-gradient-hero"></div>
-            </div>
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  return (
+    <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      {/* Background Image */}
+      <div
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: `url(${heroBackground})` }}
+      >
+        <div className="absolute inset-0 bg-gradient-hero"></div>
+      </div>
 
             {/* Content */}
             <div className="relative z-10 container mx-auto px-4 text-center">
@@ -35,16 +40,52 @@ const HeroSection = () => {
                         their ministry impact. Because every soul matters.
                     </p>
 
-                    {/* CTA Buttons */}
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
-                        <Button variant="cta" size="lg" className="px-8 py-4 text-lg">
-                            Start Your Journey
-                            <ArrowRight className="w-5 h-5 ml-2" />
-                        </Button>
-                        <Button variant="heavenly" size="lg" className="px-8 py-4 text-lg">
-                            Watch Demo
-                        </Button>
-                    </div>
+          {/* CTA Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
+            {user ? (
+              <>
+                <Button
+                  variant="cta"
+                  size="lg"
+                  className="px-8 py-4 text-lg"
+                  onClick={() => navigate('/dashboard')}
+                >
+                  <User className="w-5 h-5 mr-2" />
+                  Go to Dashboard
+                </Button>
+                <Button
+                  variant="heavenly"
+                  size="lg"
+                  className="px-8 py-4 text-lg"
+                  onClick={() => {
+                    document.getElementById('sessions')?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                >
+                  View Sessions
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button
+                  variant="cta"
+                  size="lg"
+                  className="px-8 py-4 text-lg"
+                  onClick={() => navigate('/auth')}
+                >
+                  Start Your Journey
+                  <ArrowRight className="w-5 h-5 ml-2" />
+                </Button>
+                <Button
+                  variant="heavenly"
+                  size="lg"
+                  className="px-8 py-4 text-lg"
+                  onClick={() => navigate('/auth')}
+                >
+                  Sign In
+                </Button>
+              </>
+            )}
+          </div>
 
                     {/* Stats */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-2xl mx-auto">

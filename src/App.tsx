@@ -17,6 +17,12 @@ import AuthorizeRoute from "./guards/authentication/authorize-route";
 import Navbar from '@/components/ui/Navbar';
 import Home from "@/pages/Home";
 import NotFound from "./pages/NotFound";
+import Auth from "./pages/Auth";
+import Dashboard from "@/pages/Dashboard";
+import Subscribe from "@/pages/Subscribe";
+import ReportForm from "@/pages/ReportForm";
+import Admin from "@/pages/Admin";
+import { AuthProvider } from "./contexts/AuthContext";
 
 const queryClient = new QueryClient();
 const isAuthenticated = false;
@@ -24,11 +30,19 @@ const isAuthenticated = false;
 const App = () => (
     <QueryClientProvider client={queryClient}>
         <TooltipProvider>
+            <AuthProvider>
             <Toaster />
             <Sonner />
             <BrowserRouter>
                 <Routes>
                     <Route path="/" element={<Home/>}/>
+                    <Route path="/auth" element={<Auth />} />
+                    <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/subscribe/:challengeId" element={<Subscribe />} />
+                    <Route path="/report/new/:subscriptionId" element={<ReportForm />} />
+                    <Route path="/report/edit/:reportId" element={<ReportForm />} />
+                    <Route path="/admin" element={<Admin />} />
+
                     <Route path="/signUp" element={<SignUp/>}/>
                     <Route path="/login" element={<Login/>}/>
                     <Route path="/ui/evangelist-page" element={<EvangelistPage/>}/>
@@ -47,6 +61,7 @@ const App = () => (
                     <Route path="*" element={<NotFound/>} />
                 </Routes>
             </BrowserRouter>
+            </AuthProvider>
     </TooltipProvider>
     </QueryClientProvider>
 );

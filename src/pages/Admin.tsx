@@ -10,7 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useAuth } from '@/contexts/AuthContext';
-import { sessionApi, challengeApi, subscriptionApi, reportApi, profileApi, Session, Challenge, Subscription, ChallengeReport, Profile } from '@/lib/api';
+import { sessionApi, challengeApi, subscriptionApi, reportApi, userApi, Session, Challenge, Subscription, ChallengeReport, Profile } from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
 import { 
   Users, Calendar, Target, FileText, Heart, Home, LogOut,
@@ -67,7 +67,7 @@ const Admin = () => {
   const fetchAllData = async () => {
     try {
       const [usersRes, sessionsRes, challengesRes, subsRes, reportsRes] = await Promise.all([
-        profileApi.getAllProfiles(),
+        userApi.getAllUsers(),
         sessionApi.getAll(),
         challengeApi.getAll(),
         subscriptionApi.getAll(),
@@ -206,7 +206,7 @@ const Admin = () => {
   const handleDeleteUser = async (userId: string) => {
     if (!confirm('Delete this user profile?')) return;
     try {
-      await profileApi.deleteProfile(userId);
+      await userApi.deleteUser(userId);
       toast({ title: "User Deleted" });
       fetchAllData();
     } catch (error: any) {

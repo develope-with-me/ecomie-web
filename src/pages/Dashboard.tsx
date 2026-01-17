@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/contexts/AuthContext';
-import { profileApi, subscriptionApi, reportApi, challengeApi, sessionApi, Profile, Subscription, ChallengeReport, Challenge, Session } from '@/lib/api';
+import { userApi, subscriptionApi, reportApi, challengeApi, sessionApi, Profile, Subscription, ChallengeReport, Challenge, Session } from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
 import { 
   User, LogOut, Heart, Calendar, FileText, Target, 
@@ -48,7 +48,7 @@ const Dashboard = () => {
   const fetchData = async () => {
     try {
       // Fetch profile
-      const profileData = await profileApi.getProfile();
+      const profileData = await userApi.getMyUserProfile();
       setProfile(profileData);
       setFirstName(profileData.firstName);
       setLastName(profileData.lastName);
@@ -90,7 +90,7 @@ const Dashboard = () => {
 
   const handleUpdateProfile = async () => {
     try {
-      await profileApi.updateProfile({ firstName, lastName });
+      await userApi.updateMyProfile({ firstName, lastName });
       setProfile(prev => prev ? { ...prev, firstName, lastName } : null);
       setEditingProfile(false);
       toast({ title: "Profile Updated", description: "Your profile has been updated successfully." });

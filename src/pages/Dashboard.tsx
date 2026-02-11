@@ -7,7 +7,19 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/contexts/AuthContext';
-import { userApi, subscriptionApi, reportApi, challengeApi, sessionApi, Profile, Subscription, ChallengeReport, Challenge, Session } from '@/lib/api';
+import {
+    userApi,
+    subscriptionApi,
+    reportApi,
+    challengeApi,
+    sessionApi,
+    User as Profile,
+    Subscription,
+    ChallengeReport,
+    Challenge,
+    Session,
+    SessionStatus
+} from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
 import { 
   User, LogOut, Heart, Calendar, FileText, Target, 
@@ -15,7 +27,7 @@ import {
 } from 'lucide-react';
 
 interface EnrichedSubscription extends Subscription {
-  challenge?: Challenge & { session?: Session };
+  challenge?: Challenge & { sessions?: Session };
 }
 
 interface EnrichedReport extends ChallengeReport {
@@ -62,8 +74,8 @@ const Dashboard = () => {
 
       const enrichedSubs: EnrichedSubscription[] = subsData.map(sub => {
         const challenge = challengesData.find(c => c.id === sub.challengeId);
-        const session = challenge?.sessionId
-          ? sessionsData.find(s => s.id === challenge.sessionId)
+        const session = challenge?.sessions[0]
+          ? sessionsData.find(s => s.id === challenge.sessions[0].id)
           : undefined;
         return {
           ...sub,
@@ -262,8 +274,8 @@ const Dashboard = () => {
                       <CardHeader>
                         <CardTitle className="flex items-center justify-between">
                           <span>{sub.challenge?.name || 'Challenge'}</span>
-                          <Badge variant={sub.challenge?.session?.status === 'active' ? 'default' : 'secondary'}>
-                            {sub.challenge?.session?.status || 'Unknown'}
+                          <Badge variant={sub.challenge?.sessions[0]?.status === SessionStatus.ONGOING ? 'default' : 'secondary'}>
+                            {sub.challenge?.sessions?.status || 'Unknown'}
                           </Badge>
                         </CardTitle>
                       </CardHeader>
@@ -277,7 +289,7 @@ const Dashboard = () => {
                           {sub.name && (
                             <p className="text-muted-foreground">{sub.name}</p>
                           )}
-                          {sub.challenge?.session?.status === 'active' && (
+                          {sub.challenge?.sessions?.status === 'active' && (
                             <Button 
                               variant="outline" 
                               size="sm" 

@@ -41,8 +41,10 @@ const apiRequest = async <T>(
   const response = await fetch(url, config);
 
   if (!response.ok) {
-    const error = await response.json().catch(() => ({ message: 'An error occurred' }));
-    throw new Error(error.message || `HTTP error! status: ${response.status}`);
+    const error: EcomieError = await response.json().catch(() => ({ message: 'An error occurred' }));
+    console.log(error);
+    // throw new Error(error.detail || `HTTP error! status: ${response.status}`);
+    throw error;
   }
 
   // Handle empty responses
@@ -50,39 +52,57 @@ const apiRequest = async <T>(
   return text ? JSON.parse(text) : null;
 };
 
-class UserRole {
+export class UserRole {
+    static SUPER_ADMIN = 'SUPER_ADMIN';
     static ADMIN = 'ADMIN';
     static ECOMIEST = 'ECOMIEST';
     static USER = 'USER';
     static COACH = 'COACH';
 
     static isValid(role) {
-        return [UserRole.ADMIN, UserRole.USER, UserRole.ECOMIEST, UserRole.COACH].includes(role);
+        return [UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.USER, UserRole.ECOMIEST, UserRole.COACH].includes(role);
     }
 };
 
-class SessionStatus {
+export class SessionStatus {
     static INACTIVE = 'INACTIVE';
     static ONGOING = 'ONGOING';
+    static UPCOMING = 'UPCOMING';
     static PAUSED = 'PAUSED';
     static ENDED = 'ENDED';
 
     static isValid(status) {
-        return [SessionStatus.INACTIVE, SessionStatus.ONGOING, SessionStatus.PAUSED, SessionStatus.ENDED].includes(status);
+        return [SessionStatus.INACTIVE, SessionStatus.ONGOING,  SessionStatus.UPCOMING, SessionStatus.PAUSED, SessionStatus.ENDED].includes(status);
     }
 };
 
-class ChallengeType {
+export class ChallengeType {
     static NORMAL = 'NORMAL';
     static EVENT = 'EVENT';
+    static INDIVIDUAL = 'INDIVIDUAL';
 
     static isValid(type) {
-        return [ChallengeType.NORMAL, ChallengeType.EVENT].includes(type);
+        return [ChallengeType.NORMAL, ChallengeType.EVENT, ChallengeType.INDIVIDUAL].includes(type);
     }
 };
 
 
 // ============== Types ==============
+export interface ProblemError {
+    name: string | null | undefined;
+    reason: string | null | undefined;
+}
+
+export interface EcomieError extends Error {
+    type: string | null;
+    title: string | null;
+    status: number;
+    errorCode: string | null;
+    detail: string | null;
+    instance: string | null;
+    invalidParams: ProblemError[] | null;
+}
+
 export interface User {
   id: string | null | undefined;
   email: string | null | undefined;
@@ -105,7 +125,7 @@ export interface AuthResponse {
   token: string;
   message: string;
   success: boolean;
-  user: User;
+  user?: User;
 }
 
 export interface GenericResponse {
@@ -172,7 +192,7 @@ export interface Challenge {
   description: string | null;
   target: number;
   type: ChallengeType | null;
-  session?: Session | null;
+  sessions?: Session[] | null;
   createdOn: string | null | undefined;
   updatedOn: string | null | undefined;
   createdBy: string | null | undefined;
@@ -285,25 +305,27 @@ export const authApi = {
 
 // ============== User API ==============
 export const userApi = {
-  getMyUserProfile: async (): Promise<Profile> => {
-    return apiRequest<Profile>('/secure/user/me');
+  getMyUserProfile: async (): Promise<User> => {
+    return apiRequest<User>('/secure/user/me');
   },
 
-  getMyPix: async (): Promise<Profile> => {
-    return apiRequest<Profile>('/secure/user/my-pix');
+  getMyPix: async (): Promise<string> => {
+    return apiRequest<string>('/secure/user/my-pix');
   },
 
   getUserProfile: async (id: string): Promise<User> => {
     return apiRequest<User>(`/secure/admin/users/${id}`);
   },
 
-  getUserPix: async (id: string): Promise<User> => {
-    return apiRequest<User>(`/api/v1/secure/admin/user-pix/${id}`);
+  getUserPix: async (id: string): Promise<string> => {
+    return apiRequest<string>(`/api/v1/secure/admin/user-pix/${id}`);
   },
 
   getSessionUsers: async (sessionId: string): Promise<User> => {
     return apiRequest<User>(`/api/v1/secure/admin/sessions/${sessionId}/users`);
-  },  requestRoleChange: async (role: string): Promise<GenericResponse> => {
+  },
+
+    requestRoleChange: async (role: string): Promise<GenericResponse> => {
         return apiRequest<GenericResponse>(`/secure/user/request-to-become/${role}`, {
             method: 'POST'
         });
@@ -337,8 +359,8 @@ export const userApi = {
     });
   },
 
-  getAllUsers: async (): Promise<Profile[]> => {
-    return apiRequest<Profile[]>('/secure/admin/users');
+  getAllUsers: async (): Promise<User[]> => {
+    return apiRequest<User[]>('/secure/admin/users');
   },
 
   deleteUserPix: async (id: string): Promise<GenericResponse> => {
@@ -426,7 +448,7 @@ export const sessionApi = {
 // ============== Challenge API ==============
 export const challengeApi = {
 
-    create: async (data: Omit<Challenge, 'id' | 'session' | 'createdOn' | 'updatedOn' | 'createdBy' | 'updatedBy' >): Promise<GenericResponse> => {
+    create: async (data: Omit<Challenge, 'id' | 'sessions' | 'createdOn' | 'updatedOn' | 'createdBy' | 'updatedBy' >): Promise<GenericResponse> => {
         return apiRequest<GenericResponse>('/secure/admin/challenges', {
             method: 'POST',
             body: JSON.stringify(data),

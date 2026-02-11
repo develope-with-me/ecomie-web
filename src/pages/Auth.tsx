@@ -9,6 +9,7 @@ import { Heart, Mail, Lock, User, ArrowLeft } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { z } from 'zod';
 import ecomieLogo from "@/images/ecomie-logo.png";
+import {isNonNullArray} from "@/lib/utils";
 
 const loginSchema = z.object({
   email: z.string().trim().email({ message: "Invalid email address" }),
@@ -61,9 +62,10 @@ const Auth = () => {
         if (error) {
           toast({
             title: "Login Failed",
-            description: error.message === 'Invalid login credentials' 
-              ? 'Invalid email or password. Please try again.'
-              : error.message,
+            description: isNonNullArray(error.invalidParams)  ? error.invalidParams[0].reason : error.detail,
+            // description: error.message === 'Invalid login credentials'
+            //   ? 'Invalid email or password. Please try again.'
+            //   : error.message,
             variant: "destructive",
           });
         } else {
@@ -87,7 +89,7 @@ const Auth = () => {
 
         const { error } = await signUp(email, password, firstName, lastName);
         if (error) {
-          if (error.message.includes('already registered') || error.message.includes('already exists')) {
+          if (error.title === "Unique Constraint") {
             toast({
               title: "Account Exists",
               description: "This email is already registered. Please login instead.",
@@ -96,13 +98,14 @@ const Auth = () => {
           } else {
             toast({
               title: "Sign Up Failed",
-              description: error.message,
+                description: isNonNullArray(error.invalidParams)  ? error.invalidParams[0].reason : error.detail,
+                // description: error.message,
               variant: "destructive",
             });
           }
         } else {
           toast({
-            title: "Welcome to EvangeTrack!",
+            title: "Welcome to ECOMIE!",
             description: "Your account has been created successfully.",
           });
           navigate('/dashboard');
@@ -142,11 +145,11 @@ const Auth = () => {
               </div>
             </div>
             <h1 className="text-2xl font-bold text-foreground">
-              {isLogin ? 'Welcome Back' : 'Join EvangeTrack'}
+              {isLogin ? 'Welcome Back' : 'Join ECOMIE'}
             </h1>
             <p className="text-muted-foreground">
               {isLogin 
-                ? 'Sign in to continue your evangelism journey' 
+                ? 'Sign in to continue your Ecomie journey'
                 : 'Create an account to start tracking your ministry impact'}
             </p>
           </CardHeader>

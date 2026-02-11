@@ -10,19 +10,33 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useAuth } from '@/contexts/AuthContext';
-import { sessionApi, challengeApi, subscriptionApi, reportApi, userApi, Session, Challenge, Subscription, ChallengeReport, Profile } from '@/lib/api';
+import {
+    sessionApi,
+    challengeApi,
+    subscriptionApi,
+    reportApi,
+    userApi,
+    Session,
+    Challenge,
+    Subscription,
+    ChallengeReport,
+    Profile,
+    SessionStatus,
+    EcomieError, ChallengeType, User
+} from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
 import { 
   Users, Calendar, Target, FileText, Heart, Home, LogOut,
   Plus, Edit, Trash2, BookOpen, Shield
 } from 'lucide-react';
+import {isNonNullArray} from "@/lib/utils";
 
 const Admin = () => {
   const { user, isAdmin, signOut, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   
-  const [users, setUsers] = useState<Profile[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [sessions, setSessions] = useState<Session[]>([]);
   const [challenges, setChallenges] = useState<Challenge[]>([]);
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
@@ -36,7 +50,7 @@ const Admin = () => {
   const [sessionDescription, setSessionDescription] = useState('');
   const [sessionStartDate, setSessionStartDate] = useState('');
   const [sessionEndDate, setSessionEndDate] = useState('');
-  const [sessionStatus, setSessionStatus] = useState('upcoming');
+  const [sessionStatus, setSessionStatus] = useState<SessionStatus | null>(SessionStatus.UPCOMING);
 
   // Challenge form state
   const [challengeDialogOpen, setChallengeDialogOpen] = useState(false);
@@ -44,7 +58,7 @@ const Admin = () => {
   const [challengeName, setChallengeName] = useState('');
   const [challengeDescription, setChallengeDescription] = useState('');
   const [challengeTarget, setChallengeTarget] = useState('');
-  const [challengeType, setChallengeType] = useState('individual');
+  const [challengeType, setChallengeType] = useState<ChallengeType | null>(ChallengeType.INDIVIDUAL);
   const [challengeSessionId, setChallengeSessionId] = useState('');
 
   useEffect(() => {
@@ -109,7 +123,8 @@ const Admin = () => {
       resetSessionForm();
       fetchAllData();
     } catch (error: any) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+        const description =  isNonNullArray(error.invalidParams)  ? error.invalidParams[0].reason : error.detail;
+        toast({ title: "Error", description: description, variant: "destructive" });
     }
   };
 
@@ -131,7 +146,8 @@ const Admin = () => {
       toast({ title: "Session Deleted" });
       fetchAllData();
     } catch (error: any) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+        const description =  isNonNullArray(error.invalidParams)  ? error.invalidParams[0].reason : error.detail;
+      toast({ title: "Error", description: description, variant: "destructive" });
     }
   };
 
@@ -152,7 +168,6 @@ const Admin = () => {
         description: challengeDescription || null,
         target: parseInt(challengeTarget) || 0,
         type: challengeType,
-        sessionId: challengeSessionId || null,
       };
 
       if (editingChallenge) {
@@ -167,7 +182,8 @@ const Admin = () => {
       resetChallengeForm();
       fetchAllData();
     } catch (error: any) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+        const description =  isNonNullArray(error.invalidParams)  ? error.invalidParams[0].reason : error.detail;
+        toast({ title: "Error", description: description, variant: "destructive" });
     }
   };
 
@@ -177,7 +193,7 @@ const Admin = () => {
     setChallengeDescription(challenge.description || '');
     setChallengeTarget(challenge.target.toString());
     setChallengeType(challenge.type);
-    setChallengeSessionId(challenge.sessionId || '');
+    setChallengeSessionId(challenge.sessions[0].id);
     setChallengeDialogOpen(true);
   };
 
@@ -189,7 +205,8 @@ const Admin = () => {
       toast({ title: "Challenge Deleted" });
       fetchAllData();
     } catch (error: any) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+        const description =  isNonNullArray(error.invalidParams)  ? error.invalidParams[0].reason : error.detail;
+        toast({ title: "Error", description: description, variant: "destructive" });
     }
   };
 
@@ -198,7 +215,7 @@ const Admin = () => {
     setChallengeName('');
     setChallengeDescription('');
     setChallengeTarget('');
-    setChallengeType('individual');
+    setChallengeType(null);
     setChallengeSessionId('');
   };
 
@@ -210,7 +227,8 @@ const Admin = () => {
       toast({ title: "User Deleted" });
       fetchAllData();
     } catch (error: any) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+        const description =  isNonNullArray(error.invalidParams)  ? error.invalidParams[0].reason : error.detail;
+        toast({ title: "Error", description: description, variant: "destructive" });
     }
   };
 
@@ -221,7 +239,8 @@ const Admin = () => {
       toast({ title: "Subscription Deleted" });
       fetchAllData();
     } catch (error: any) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+        const description =  isNonNullArray(error.invalidParams)  ? error.invalidParams[0].reason : error.detail;
+        toast({ title: "Error", description: description, variant: "destructive" });
     }
   };
 
@@ -232,7 +251,8 @@ const Admin = () => {
       toast({ title: "Report Deleted" });
       fetchAllData();
     } catch (error: any) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+        const description =  isNonNullArray(error.invalidParams)  ? error.invalidParams[0].reason : error.detail;
+        toast({ title: "Error", description: description, variant: "destructive" });
     }
   };
 
@@ -341,7 +361,7 @@ const Admin = () => {
                     </div>
                     <div className="space-y-2">
                       <Label>Status</Label>
-                      <Select value={sessionStatus} onValueChange={setSessionStatus}>
+                      <Select value={sessionStatus.toString()} onValueChange={setSessionStatus}>
                         <SelectTrigger>
                           <SelectValue />
                         </SelectTrigger>
@@ -369,8 +389,8 @@ const Admin = () => {
                         <h3 className="font-semibold">{session.name}</h3>
                         <p className="text-sm text-muted-foreground">{session.description}</p>
                         <div className="flex items-center gap-4 mt-2">
-                          <Badge variant={session.status === 'active' ? 'default' : 'secondary'}>
-                            {session.status}
+                          <Badge variant={session.status === SessionStatus.ONGOING ? 'default' : 'secondary'}>
+                            {session.status.toString()}
                           </Badge>
                           <span className="text-xs text-muted-foreground">
                             {new Date(session.startDate).toLocaleDateString()} - {new Date(session.endDate).toLocaleDateString()}
@@ -426,7 +446,7 @@ const Admin = () => {
                       </div>
                       <div className="space-y-2">
                         <Label>Type</Label>
-                        <Select value={challengeType} onValueChange={setChallengeType}>
+                        <Select value={challengeType.toString()} onValueChange={setChallengeType}>
                           <SelectTrigger>
                             <SelectValue />
                           </SelectTrigger>
@@ -461,7 +481,7 @@ const Admin = () => {
 
             <div className="space-y-4">
               {challenges.map(challenge => {
-                const session = sessions.find(s => s.id === challenge.sessionId);
+                const session = sessions.find(s => s.id === challenge.sessions[0].id);
                 return (
                   <Card key={challenge.id} className="shadow-gentle">
                     <CardContent className="py-4">
@@ -470,7 +490,7 @@ const Admin = () => {
                           <h3 className="font-semibold">{challenge.name}</h3>
                           <p className="text-sm text-muted-foreground">{challenge.description}</p>
                           <div className="flex items-center gap-4 mt-2">
-                            <Badge variant="outline">{challenge.type}</Badge>
+                            <Badge variant="outline">{challenge.type.toString()}</Badge>
                             <span className="text-xs text-muted-foreground">Target: {challenge.target}</span>
                             {session && (
                               <span className="text-xs text-muted-foreground">Session: {session.name}</span>
@@ -524,7 +544,7 @@ const Admin = () => {
             <div className="space-y-4">
               {subscriptions.map(sub => {
                 const challenge = challenges.find(c => c.id === sub.challengeId);
-                const userProfile = users.find(u => u.userId === sub.userId);
+                const userProfile = users.find(u => u.id === sub.userId);
                 return (
                   <Card key={sub.id} className="shadow-gentle">
                     <CardContent className="py-4">

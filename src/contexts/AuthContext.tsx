@@ -1,12 +1,12 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { authApi, User } from '@/lib/api';
+import {authApi, EcomieError, User} from '@/lib/api';
 
 interface AuthContextType {
   user: User | null;
   isAdmin: boolean;
   loading: boolean;
-  signUp: (email: string, password: string, firstName: string, lastName: string) => Promise<{ error: Error | null }>;
-  signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
+  signUp: (email: string, password: string, firstName: string, lastName: string) => Promise<{ error: EcomieError | null }>;
+  signIn: (email: string, password: string) => Promise<{ error: EcomieError | null }>;
   signOut: () => Promise<void>;
 }
 
@@ -32,7 +32,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const currentUser = await authApi.getCurrentUser();
         if (currentUser) {
           setUser(currentUser);
-          setIsAdmin(currentUser.role === 'admin');
+          setIsAdmin(currentUser.role === 'ADMIN' || currentUser.role === 'SUPER_ADMIN');
         }
       } catch (error) {
         console.error('Error initializing auth:', error);
@@ -48,10 +48,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       const response = await authApi.signUp(email, password, firstName, lastName);
       setUser(response.user);
-      setIsAdmin(response.user.role === 'admin');
+      setIsAdmin(response.user.role === 'ADMIN' || response.user.role === 'SUPER_ADMIN');
       return { error: null };
     } catch (error) {
-      return { error: error as Error };
+      return { error: error as EcomieError };
     }
   };
 
@@ -59,10 +59,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       const response = await authApi.signIn(email, password);
       setUser(response.user);
-      setIsAdmin(response.user.role === 'admin');
+      setIsAdmin(response.user.role === 'ADMIN' || response.user.role === 'SUPER_ADMIN');
       return { error: null };
     } catch (error) {
-      return { error: error as Error };
+      return { error: error as EcomieError };
     }
   };
 

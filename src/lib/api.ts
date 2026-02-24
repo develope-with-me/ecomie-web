@@ -131,6 +131,7 @@ export interface AuthResponse {
 export interface GenericResponse {
     success: boolean;
     description: string;
+    data: User | Session | Challenge | Subscription | ChallengeReport | null;
 }
 
 export interface ConfirmAccountResponse {
@@ -177,7 +178,7 @@ export interface Session {
   description: string | null;
   startDate: string;
   endDate: string;
-  status: SessionStatus | null ;
+  status: SessionStatus | null;
   challenges?: Challenge[] | null;
   createdOn: string | null | undefined;
   updatedOn: string | null | undefined;
@@ -564,12 +565,31 @@ export const reportApi = {
     },
 
     getAll: async (sessionId?: string, challengeId?: string): Promise<ChallengeReport[]> => {
-    return apiRequest<ChallengeReport[]>(`/secure/ecomiest/reports?sessionId=${sessionId}&challengeId=${challengeId}`);
+        if (sessionId && challengeId) {
+            return apiRequest<ChallengeReport[]>(`/secure/ecomiest/reports?sessionId=${sessionId}&challengeId=${challengeId}`);
+        }
+        if (sessionId) {
+            return apiRequest<ChallengeReport[]>(`/secure/ecomiest/reports?sessionId=${sessionId}`);
+        }
+        if (challengeId) {
+            return apiRequest<ChallengeReport[]>(`/secure/ecomiest/reports?challengeId=${challengeId}`);
+        }
+
+    return apiRequest<ChallengeReport[]>('/secure/ecomiest/reports');
   },
 
   getMine: async (sessionId?: string, challengeId?: string): Promise<ChallengeReport[]> => {
-    return apiRequest<ChallengeReport[]>(`/secure/ecomiest/reports?sessionId=${sessionId}&challengeId=${challengeId}`);
-  },
+      if (sessionId && challengeId) {
+          return apiRequest<ChallengeReport[]>(`/secure/ecomiest/reports?sessionId=${sessionId}&challengeId=${challengeId}`);
+      }
+      if (sessionId) {
+          return apiRequest<ChallengeReport[]>(`/secure/ecomiest/reports?sessionId=${sessionId}`);
+      }
+      if (challengeId) {
+          return apiRequest<ChallengeReport[]>(`/secure/ecomiest/reports?challengeId=${challengeId}`);
+      }
+
+      return apiRequest<ChallengeReport[]>('/secure/ecomiest/reports');  },
 
   getById: async (id: string): Promise<ChallengeReport> => {
     return apiRequest<ChallengeReport>(`/secure/ecomiest/reports/${id}`);

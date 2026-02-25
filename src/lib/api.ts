@@ -1,6 +1,8 @@
 // Spring Boot API Configuration
 // const API_BASE_URL = 'http://localhost:8081/api/v1';
 // const API_BASE_URL =    'http://13.247.159.172:8080/api/v1';
+import {string} from "zod";
+
 const API_BASE_URL =    'http://localhost:8081/api/v1';
 
 // Token management
@@ -16,40 +18,47 @@ const removeAuthToken = (): void => {
   localStorage.removeItem('auth_token');
 };
 
-const getAuthHeaders = (): HeadersInit => {
+const getAuthHeaders = (contentType: string): HeadersInit => {
   const token = getAuthToken();
+  if (contentType) {
+      return {
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+      };
+  }
   return {
-    'Content-Type': 'application/json',
+    // 'Content-Type':  !contentType ? 'application/json' : contentType,
+    'Content-Type':  'application/json',
     ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
   };
 };
 
 // Generic fetch wrapper
 const apiRequest = async <T>(
-  endpoint: string,
-  options: RequestInit = {}
+    endpoint: string,
+    options: RequestInit = {},
+    contentType?: string | undefined | null,
 ): Promise<T> => {
-  const url = `${API_BASE_URL}${endpoint}`;
-  const config: RequestInit = {
-    ...options,
-    headers: {
-      ...getAuthHeaders(),
-      ...options.headers,
-    },
-  };
+    const url = `${API_BASE_URL}${endpoint}`;
+    const config: RequestInit = {
+        ...options,
+        headers: {
+            ...getAuthHeaders(contentType),
+            ...options.headers,
+        },
+    };
 
-  const response = await fetch(url, config);
+    const response = await fetch(url, config);
 
-  if (!response.ok) {
-    const error: EcomieError = await response.json().catch(() => ({ message: 'An error occurred' }));
-    console.log(error);
-    // throw new Error(error.detail || `HTTP error! status: ${response.status}`);
-    throw error;
-  }
+    if (!response.ok) {
+        const error: EcomieError = await response.json().catch(() => ({ message: 'An error occurred' }));
+        console.log(error);
+        // throw new Error(error.detail || `HTTP error! status: ${response.status}`);
+        throw error;
+    }
 
-  // Handle empty responses
-  const text = await response.text();
-  return text ? JSON.parse(text) : null;
+    // Handle empty responses
+    const text = await response.text();
+    return text ? JSON.parse(text) : null;
 };
 
 export class UserRole {
@@ -348,13 +357,57 @@ export const userApi = {
         });
     },
 
-    updateUserProfile: async (id: string, data: Partial<User>): Promise<GenericResponse> => {
+    // updateUserProfile: async (id: string, data: Partial<User>): Promise<GenericResponse> => {
+    //     return apiRequest<GenericResponse>(`/secure/admin/update/users/${id}`, {
+    //         method: 'PUT',
+    //         body: JSON.stringify(data),
+    //     });
+    // },
+
+    updateUserProfile: async (id: string, data: Partial<User> & { avatar?: File | null }): Promise<GenericResponse> => {
+        // Build FormData and append only provided fields
+        const form = new FormData();
+
+        // if (data.firstName !== undefined && data.firstName !== null) {
+        //     form.append('firstName', String(data.firstName));
+        // }
+        // if (data.lastName !== undefined && data.lastName !== null) {
+        //     form.append('lastName', String(data.lastName));
+        // }
+        // if (data.phoneNumber !== undefined && data.phoneNumber !== null) {
+        //     form.append('phoneNumber', String(data.phoneNumber));
+        // }
+        // if (data.country !== undefined && data.country !== null) {
+        //     form.append('country', String(data.country));
+        // }
+        // if (data.region !== undefined && data.region !== null) {
+        //     form.append('region', String(data.region));
+        // }
+        // if (data.city !== undefined && data.city !== null) {
+        //     form.append('city', String(data.city));
+        // }
+
+        const { avatar, ...newData } = data;
+
+        form.append('json', JSON.stringify(newData));
+        // If caller provided an avatar File, append it. Accept null to explicitly clear avatar if backend supports it.
+        if (data.avatar instanceof File) {
+            form.append('file', data.avatar, data.avatar.name);
+        }
+        else if (data.avatar === null) {
+            // Some backends expect an explicit empty value to clear files; use an empty string field named avatar-clear (adjust if your API differs)
+            form.append('file', '');
+        }
+
+        // Do not set Content-Type header; let the browser add the correct multipart boundary.
         return apiRequest<GenericResponse>(`/secure/admin/update/users/${id}`, {
             method: 'PUT',
-            body: JSON.stringify(data)
-        });
+            body: form,
+            // If your apiRequest helper automatically sets JSON headers for all requests,
+            // you may need to pass an option to prevent that behavior or call fetch directly:
+            // return fetch(`/secure/admin/update/users/${id}`, { method: 'PUT', body: form, credentials: 'include' }).then(res => res.json());
+        }, 'multipart/form-data');
     },
-
 
     updateMyProfile: async (data: Partial<User>): Promise<GenericResponse> => {
     return apiRequest<GenericResponse>('/secure/user/update', {

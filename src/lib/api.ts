@@ -233,15 +233,10 @@ export interface ChallengeReport {
 
 // ============== Auth API ==============
 export const authApi = {
-  signUp: async (
-    email: string,
-    password: string,
-    firstName: string,
-    lastName: string
-  ): Promise<AuthResponse> => {
+  signUp: async ( data: RegisterRequest): Promise<AuthResponse> => {
     const response = await apiRequest<AuthResponse>('/auth/register', {
       method: 'POST',
-      body: JSON.stringify({ email, password, firstName, lastName }),
+      body: JSON.stringify(data),
     });
     setAuthToken(response.token);
     return response;
@@ -306,6 +301,14 @@ export const authApi = {
 
 // ============== User API ==============
 export const userApi = {
+
+    create: async (data: RegisterRequest): Promise<AuthResponse> => {
+        return apiRequest<AuthResponse>('/secure/admin/users', {
+            method: 'POST',
+            body: JSON.stringify(data),
+        });
+    },
+
   getMyUserProfile: async (): Promise<User> => {
     return apiRequest<User>('/secure/user/me');
   },
@@ -319,11 +322,11 @@ export const userApi = {
   },
 
   getUserPix: async (id: string): Promise<string> => {
-    return apiRequest<string>(`/api/v1/secure/admin/user-pix/${id}`);
+    return apiRequest<string>(`/secure/admin/user-pix/${id}`);
   },
 
   getSessionUsers: async (sessionId: string): Promise<User> => {
-    return apiRequest<User>(`/api/v1/secure/admin/sessions/${sessionId}/users`);
+    return apiRequest<User>(`/secure/admin/sessions/${sessionId}/users`);
   },
 
     requestRoleChange: async (role: string): Promise<GenericResponse> => {
@@ -346,7 +349,7 @@ export const userApi = {
     },
 
     updateUserProfile: async (id: string, data: Partial<User>): Promise<GenericResponse> => {
-        return apiRequest<GenericResponse>(`/api/v1/secure/admin/update/users/${id}`, {
+        return apiRequest<GenericResponse>(`/secure/admin/update/users/${id}`, {
             method: 'PUT',
             body: JSON.stringify(data)
         });

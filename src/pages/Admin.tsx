@@ -49,6 +49,7 @@ import SessionDetails from "@/components/SessionDetails";
 import ChallengeDetails from "@/components/ChallengeDetails";
 import ConfirmRemoveDialog from "@/components/ConfirmRemoveDialog";
 import Validators from "@/components/Validators";
+import UserDetails from "@/components/UserDetails";
 
 const Admin = () => {
     const { user, isAdmin, signOut, loading: authLoading } = useAuth();
@@ -62,17 +63,25 @@ const Admin = () => {
     const [reports, setReports] = useState<ChallengeReport[]>([]);
     const [loading, setLoading] = useState(true);
 
+    // New: modal controls for viewing session and challenge
+    const [viewSessionDialogOpen, setViewSessionDialogOpen] = useState(false);
+    const [viewingSession, setViewingSession] = useState<Session | null>(null);
+
+    const [viewChallengeDialogOpen, setViewChallengeDialogOpen] = useState(false);
+    const [viewingChallenge, setViewingChallenge] = useState<Challenge | null>(null);
+
     const [expandedSessionId, setExpandedSessionId] = useState<string | null>(null);
+    const [expandedUserId, setExpandedUserId] = useState<string | null>(null);
     const [expandedChallengeId, setExpandedChallengeId] = useState<string | null>(null);
 
-    // Session
+    // Session (existing)
     const [sessionDialogOpen, setSessionDialogOpen] = useState(false);
     const [editingSession, setEditingSession] = useState<Session | null>(null);
     const [sessionName, setSessionName] = useState("");
     const [sessionDescription, setSessionDescription] = useState("");
     const [sessionStartDate, setSessionStartDate] = useState("");
     const [sessionEndDate, setSessionEndDate] = useState("");
-    const [sessionStatus, setSessionStatus] = useState<SessionStatus | null>(SessionStatus.UPCOMING);
+    const [sessionStatus, setSessionStatus] = useState<SessionStatus | null>(SessionStatus.INACTIVE);
 
     // Challenge
     const [challengeDialogOpen, setChallengeDialogOpen] = useState(false);
@@ -112,6 +121,7 @@ const Admin = () => {
     const [viewReportDialogOpen, setViewReportDialogOpen] = useState(false);
     const [editingReport, setEditingReport] = useState<ChallengeReport | null>(null);
     const [viewingReport, setViewingReport] = useState<ChallengeReport | null>(null);
+    // Updated: allow selecting both session and user in report form
     const [reportSessionId, setReportSessionId] = useState("");
     const [reportUserId, setReportUserId] = useState("");
     const [reportEvangelized, setReportEvangelized] = useState("");
@@ -160,6 +170,12 @@ const Admin = () => {
     };
 
     // ---------- Sessions ----------
+    // Clicking name/description should open modal with details
+    const openSessionDetailsModal = (session: Session) => {
+        setViewingSession(session);
+        setViewSessionDialogOpen(true);
+    };
+
     const toggleViewSession = (session: Session) => {
         setExpandedSessionId(expandedSessionId === session.id ? null : (session.id || null));
     };
@@ -261,10 +277,16 @@ const Admin = () => {
         setSessionDescription("");
         setSessionStartDate("");
         setSessionEndDate("");
-        setSessionStatus(SessionStatus.UPCOMING);
+        setSessionStatus(null);
     };
 
     // ---------- Challenges ----------
+    // Clicking name/description should open modal with details
+    const openChallengeDetailsModal = (challenge: Challenge) => {
+        setViewingChallenge(challenge);
+        setViewChallengeDialogOpen(true);
+    };
+
     const toggleViewChallenge = (challenge: Challenge) => {
         setExpandedChallengeId(expandedChallengeId === challenge.id ? null : (challenge.id || null));
     };
@@ -363,7 +385,6 @@ const Admin = () => {
     };
 
     // ---------- Users ----------
-// inside Admin component
     const handleSaveUser = async () => {
         // If editingUser is null -> creating new user
         if (!editingUser) {
@@ -437,9 +458,36 @@ const Admin = () => {
         setUserDialogOpen(true);
     };
 
-    const handleViewUser = (u: User) => {
+    let isUserEnabled = true;
+    let isUserBlocked = false;
+    // Clicking name/description should open modal with details
+    const openUserDetailsModal = (u: User) => {
         setViewingUser(u);
+        isUserEnabled = !!user.accountEnabled;
+        isUserBlocked = !!user.accountBlocked;
         setViewUserDialogOpen(true);
+    };
+
+
+
+    const toggleViewUser = (user: User) => {
+        setExpandedUserId(expandedUserId === user.id ? null : (user.id || null));
+    };
+
+    // New: expand/collapse user details in place via UserDetails component
+    const handleToggleUserDetails = (u: User) => {
+        // If already viewing this user, collapse it
+        if (viewingUser && viewingUser.id === u.id) {
+            setViewingUser(null);
+            return;
+        }
+        // otherwise set viewing user (will render UserDetails)
+        setViewingUser(u);
+    };
+
+    const handleViewUser = (u: User) => {
+        // Eye toggles inline details
+        handleToggleUserDetails(u);
     };
 
     const handleDeleteUser = async (id?: string) => {
@@ -536,13 +584,14 @@ const Admin = () => {
     };
 
     // ---------- Reports ----------
+    // Modified to allow selecting session and user in add/update form.
     const handleSaveReport = async () => {
         if (!Validators.isPositiveInteger(reportEvangelized) || !Validators.isPositiveInteger(reportConverts) || !Validators.isPositiveInteger(reportFollowedUp)) {
             toast({ title: "Validation Error", description: "Numeric report fields must be non-negative integers", variant: "destructive" });
             return;
         }
         if (!Validators.required(reportUserId) || !Validators.required(reportSessionId)) {
-            toast({ title: "Validation Error", description: "User and subscription/session selection required", variant: "destructive" });
+            toast({ title: "Validation Error", description: "User and session selection required", variant: "destructive" });
             return;
         }
         try {
@@ -557,6 +606,7 @@ const Admin = () => {
                 await reportApi.updateForUser(editingReport.id!, body);
                 toast({ title: "Report Updated" });
             } else {
+                // createForUser expects (userId, sessionId, data)
                 await reportApi.createForUser(reportUserId, reportSessionId, body);
                 toast({ title: "Report Created" });
             }
@@ -571,6 +621,7 @@ const Admin = () => {
     const handleEditReport = (r: ChallengeReport) => {
         setEditingReport(r);
         setReportSessionId(r.subscriptionId);
+        setReportUserId(r.subscription?.userId || "");
         setReportEvangelized(r.numberEvangelizedTo.toString());
         setReportConverts(r.numberOfNewConverts.toString());
         setReportFollowedUp(r.numberFollowedUp.toString());
@@ -597,6 +648,7 @@ const Admin = () => {
 
     const resetReportForm = () => {
         setEditingReport(null);
+        setViewingReport(null);
         setReportSessionId("");
         setReportUserId("");
         setReportEvangelized("");
@@ -712,7 +764,7 @@ const Admin = () => {
                                             {editingSession && (
                                                 <div className="space-y-2">
                                                     <Label>Status</Label>
-                                                    <Select value={sessionStatus.toString() || SessionStatus.UPCOMING.toString()} onValueChange={setSessionStatus}>
+                                                    <Select value={sessionStatus.toString() || SessionStatus.INACTIVE.toString()} onValueChange={setSessionStatus}>
                                                         <SelectTrigger>
                                                             <SelectValue />
                                                         </SelectTrigger>
@@ -744,16 +796,26 @@ const Admin = () => {
                                         <div className="flex items-start justify-between">
                                             <div className="flex-1">
                                                 <div className="flex items-center gap-3">
-                                                    <h3 className="font-semibold text-lg">{session.name}</h3>
+                                                    <h3
+                                                        className="font-semibold text-lg cursor-pointer"
+                                                        onClick={() => openSessionDetailsModal(session)}
+                                                    >
+                                                        {session.name}
+                                                    </h3>
                                                     <Badge variant={session.status === SessionStatus.ONGOING ? "default" : "secondary"}>
                                                         {session.status?.toString()}
                                                     </Badge>
                                                 </div>
-                                                <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{session.description}</p>
+                                                <p
+                                                    className="text-sm text-muted-foreground mt-1 line-clamp-2 cursor-pointer"
+                                                    onClick={() => openSessionDetailsModal(session)}
+                                                >
+                                                    {session.description}
+                                                </p>
                                                 <div className="flex items-center gap-4 mt-2">
-                          <span className="text-xs text-muted-foreground">
-                            📅 {new Date(session.startDate).toLocaleDateString()} - {new Date(session.endDate).toLocaleDateString()}
-                          </span>
+                                                  <span className="text-xs text-muted-foreground">
+                                                    📅 {new Date(session.startDate).toLocaleDateString()} - {new Date(session.endDate).toLocaleDateString()}
+                                                  </span>
                                                     {session.challenges && (
                                                         <span className="text-xs text-muted-foreground">🎯 {session.challenges.length} challenges</span>
                                                     )}
@@ -793,6 +855,32 @@ const Admin = () => {
                                 </Card>
                             ))}
                         </div>
+
+                        {/* Session Details Modal */}
+                        <Dialog open={viewSessionDialogOpen} onOpenChange={setViewSessionDialogOpen}>
+                            <DialogContent>
+                                <DialogHeader>
+                                    <DialogTitle>Session Details</DialogTitle>
+                                </DialogHeader>
+                                <div className="py-2">
+                                    {viewingSession ? (
+                                        <SessionDetails
+                                            session={viewingSession}
+                                            allSessions={sessions}
+                                            onAddChallenge={handleAddChallengeToSession}
+                                            onChangeStatus={handleChangeSessionStatus}
+                                            onRemoveChallenge={(sessId, chId) => handleRemoveChallengeFromSession(sessId, chId)}
+                                            onToggleViewChallenge={(ch) => toggleViewChallenge(ch)}
+                                        />
+                                    ) : (
+                                        <div>No session selected</div>
+                                    )}
+                                </div>
+                                <DialogFooter>
+                                    <Button onClick={() => setViewSessionDialogOpen(false)}>Close</Button>
+                                </DialogFooter>
+                            </DialogContent>
+                        </Dialog>
                     </TabsContent>
 
                     {/* Challenges */}
@@ -872,8 +960,18 @@ const Admin = () => {
                                         <CardContent className="py-4">
                                             <div className="flex items-center justify-between">
                                                 <div className="flex-1">
-                                                    <h3 className="font-semibold">{challenge.name}</h3>
-                                                    <p className="text-sm text-muted-foreground">{challenge.description}</p>
+                                                    <h3
+                                                        className="font-semibold cursor-pointer"
+                                                        onClick={() => openChallengeDetailsModal(challenge)}
+                                                    >
+                                                        {challenge.name}
+                                                    </h3>
+                                                    <p
+                                                        className="text-sm text-muted-foreground"
+                                                        onClick={() => openChallengeDetailsModal(challenge)}
+                                                    >
+                                                        {challenge.description}
+                                                    </p>
                                                     <div className="flex items-center gap-4 mt-2">
                                                         <Badge variant="outline">{challenge.type?.toString()}</Badge>
                                                         <span className="text-xs text-muted-foreground">Target: {challenge.target}</span>
@@ -911,6 +1009,32 @@ const Admin = () => {
                                 );
                             })}
                         </div>
+
+                        {/* Challenge Details Modal */}
+                        <Dialog open={viewChallengeDialogOpen} onOpenChange={setViewChallengeDialogOpen}>
+                            <DialogContent>
+                                <DialogHeader>
+                                    <DialogTitle>Challenge Details</DialogTitle>
+                                </DialogHeader>
+                                <div className="py-2">
+
+                                    {viewingChallenge && (
+                                    <div className="py-2">
+                                        <div className="text-sm"><strong>Name:</strong> {viewingChallenge?.name} </div>
+                                        <div className="text-sm"><strong>Description:</strong> {viewingChallenge?.description}</div>
+                                        <div className="text-sm"><strong>Type:</strong> {viewingChallenge?.type?.toString()}</div>
+                                        <div className="text-sm"><strong>Target:</strong> {viewingChallenge?.target}</div>
+                                        <div className="text-sm"><strong>Number of Sessions:</strong> {viewingChallenge?.sessions?.length}</div>
+                                        <div className="text-sm"><strong>Created On:</strong> {viewingChallenge?.createdOn} </div>
+                                        <div className="text-sm"><strong>Updated On:</strong> {viewingChallenge?.updatedOn} </div>
+                                    </div>
+                                    )}
+                                </div>
+                                <DialogFooter>
+                                    <Button onClick={() => setViewChallengeDialogOpen(false)}>Close</Button>
+                                </DialogFooter>
+                            </DialogContent>
+                        </Dialog>
                     </TabsContent>
 
                     {/* Users */}
@@ -926,34 +1050,74 @@ const Admin = () => {
 
                         <div className="space-y-4">
                             {users.map((u) => (
-                                <Card key={u.id} className="shadow-gentle">
-                                    <CardContent className="py-4">
-                                        <div className="flex items-center justify-between">
-                                            <div>
-                                                <h3 className="font-semibold">{u.firstName} {u.lastName}</h3>
-                                                <p className="text-sm text-muted-foreground">{u.email}</p>
+                                <div key={u.id}>
+                                    <Card className="shadow-gentle">
+                                        <CardContent className="py-4">
+                                            <div className="flex items-center justify-between">
+                                                <div onClick={() => openUserDetailsModal(u)} className="cursor-pointer">
+                                                    <h3 className="font-semibold">{u.firstName} {u.lastName}</h3>
+                                                    <p className="text-sm text-muted-foreground">{u.email}</p>
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    <Button variant="ghost" size="sm" onClick={() => toggleViewUser(u)}>
+                                                        <Eye className="w-4 h-4" />
+                                                    </Button>
+                                                    <Button variant="ghost" size="sm" onClick={() => handleEditUser(u)}>
+                                                        <Edit className="w-4 h-4" />
+                                                    </Button>
+                                                    <ConfirmRemoveDialog
+                                                        trigger={<Button variant="ghost" size="sm"><Trash2 className="w-4 h-4 text-destructive" /></Button>}
+                                                        title={`Delete "${u.firstName} ${u.lastName}"`}
+                                                        description={`This will delete the user. Continue?`}
+                                                        confirmLabel="Delete"
+                                                        onConfirm={() => handleDeleteUser(u.id)}
+                                                    />
+                                                    <Button size="sm" onClick={() => handleSubscribeUser(u)}>Subscribe</Button>
+                                                </div>
                                             </div>
-                                            <div className="flex items-center gap-2">
-                                                <Button variant="ghost" size="sm" onClick={() => handleViewUser(u)}>
-                                                    <Eye className="w-4 h-4" />
-                                                </Button>
-                                                <Button variant="ghost" size="sm" onClick={() => handleEditUser(u)}>
-                                                    <Edit className="w-4 h-4" />
-                                                </Button>
-                                                <ConfirmRemoveDialog
-                                                    trigger={<Button variant="ghost" size="sm"><Trash2 className="w-4 h-4 text-destructive" /></Button>}
-                                                    title={`Delete "${u.firstName} ${u.lastName}"`}
-                                                    description={`This will delete the user. Continue?`}
-                                                    confirmLabel="Delete"
-                                                    onConfirm={() => handleDeleteUser(u.id)}
+                                        </CardContent>
+
+                                        {/* Inline expanded user details (collapsible) */}
+                                        {/*{viewingUser && viewingUser.id === u.id && (*/}
+                                            {expandedUserId === u.id && (
+                                            <div className="border-t px-4 py-3">
+                                                <UserDetails
+                                                    user={u}
+                                                    onRoleChanged={async (newRole) => {
+                                                        try {
+                                                            await userApi.assignNewRole(u.email!, newRole);
+                                                            toast({ title: "Role updated" });
+                                                            fetchAllData();
+                                                        } catch (err: any) {
+                                                            toast({ title: "Error", description: isNonNullArray(err.invalidParams) ? err.invalidParams[0].reason : err.detail, variant: "destructive" });
+                                                        }
+                                                    }}
+                                                    onToggleBlock={async () => {
+                                                        try {
+                                                            await userApi.toggleBlock(u.id!);
+                                                            toast({ title: "User block state toggled" });
+                                                            fetchAllData();
+                                                        } catch (err: any) {
+                                                            toast({ title: "Error", description: isNonNullArray(err.invalidParams) ? err.invalidParams[0].reason : err.detail, variant: "destructive" });
+                                                        }
+                                                    }}
+                                                    onEnableUser={async () => {
+                                                        try {
+                                                            await userApi.enableUser(u.id!);
+                                                            toast({ title: "User enabled" });
+                                                            fetchAllData();
+                                                        } catch (err: any) {
+                                                            toast({ title: "Error", description: isNonNullArray(err.invalidParams) ? err.invalidParams[0].reason : err.detail, variant: "destructive" });
+                                                        }
+                                                    }}
                                                 />
-                                                <Button size="sm" onClick={() => handleSubscribeUser(u)}>Subscribe</Button>
                                             </div>
-                                        </div>
-                                    </CardContent>
-                                </Card>
+                                        )}
+                                    </Card>
+                                </div>
                             ))}
                         </div>
+
 
                         <Dialog open={viewUserDialogOpen} onOpenChange={setViewUserDialogOpen}>
                             <DialogContent>
@@ -961,9 +1125,13 @@ const Admin = () => {
                                 <div className="py-2">
                                     <div className="text-sm"><strong>Name:</strong> {viewingUser?.firstName} {viewingUser?.lastName}</div>
                                     <div className="text-sm"><strong>Email:</strong> {viewingUser?.email}</div>
-                                    <div className="text-sm"><strong>Role:</strong> {viewingUser?.role.toString()}</div>
+                                    <div className="text-sm"><strong>Role:</strong> {viewingUser?.role?.toString()}</div>
                                     <div className="text-sm"><strong>Phone:</strong> {viewingUser?.phoneNumber}</div>
                                     <div className="text-sm"><strong>Location:</strong> {viewingUser?.city}, {viewingUser?.region}, {viewingUser?.country}</div>
+                                    <div className="text-sm"><strong>Enabled:</strong> {viewingUser?.accountEnabled  ? "Yes" : "No"} </div>
+                                    <div className="text-sm"><strong>Blocked:</strong> {viewingUser?.accountBlocked ? "Yes" : "No"} </div>
+                                    <div className="text-sm"><strong>Created On:</strong> {viewingUser?.createdOn} </div>
+                                    <div className="text-sm"><strong>Updated On:</strong> {viewingUser?.updatedOn} </div>
                                 </div>
                                 <DialogFooter><Button onClick={() => setViewUserDialogOpen(false)}>Close</Button></DialogFooter>
                             </DialogContent>
@@ -1217,16 +1385,24 @@ const Admin = () => {
                 </DialogContent>
             </Dialog>
 
-            {/* Report dialog */}
+            {/* Report dialog - now includes selects for session and user */}
             <Dialog open={reportDialogOpen} onOpenChange={setReportDialogOpen}>
                 <DialogContent>
                     <DialogHeader><DialogTitle>{editingReport ? "Edit Report" : "Create Report"}</DialogTitle></DialogHeader>
                     <div className="space-y-4 py-4">
                         <div className="space-y-2">
-                            <Label>Subscription</Label>
+                            <Label>Session</Label>
                             <Select value={reportSessionId} onValueChange={setReportSessionId}>
-                                <SelectTrigger><SelectValue placeholder="Select subscription/session" /></SelectTrigger>
-                                <SelectContent>{subscriptions.map(s => <SelectItem key={s.id} value={s.id}>{s.name || s.id}</SelectItem>)}</SelectContent>
+                                <SelectTrigger><SelectValue placeholder="Select session" /></SelectTrigger>
+                                <SelectContent>{sessions.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent>
+                            </Select>
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label>User</Label>
+                            <Select value={reportUserId} onValueChange={setReportUserId}>
+                                <SelectTrigger><SelectValue placeholder="Select user" /></SelectTrigger>
+                                <SelectContent>{users.map(u => <SelectItem key={u.id} value={u.id}>{u.firstName} {u.lastName}</SelectItem>)}</SelectContent>
                             </Select>
                         </div>
 

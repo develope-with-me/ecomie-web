@@ -124,6 +124,9 @@ export interface User {
   city: string;
   language: string;
   profilePictureFileName: string;
+  accountEnabled: boolean | null | undefined;
+  accountBlocked: boolean | null | undefined;
+  accountSoftDeleted: boolean | null | undefined;
   createdOn: string | null | undefined;
   updatedOn: string | null | undefined;
   createdBy: string | null | undefined;
@@ -328,6 +331,18 @@ export const userApi = {
 
   getUserProfile: async (id: string): Promise<User> => {
     return apiRequest<User>(`/secure/admin/users/${id}`);
+  },
+
+  toggleBlock: async (id: string): Promise<GenericResponse> => {
+      return apiRequest<GenericResponse>(`/secure/admin/block/users/${id}`, {
+          method: 'PUT'
+      });
+  },
+
+  enableUser: async (id: string): Promise<GenericResponse> => {
+      return apiRequest<GenericResponse>(`/secure/admin/enable/users/${id}`, {
+          method: 'PUT'
+      });
   },
 
   getUserPix: async (id: string): Promise<string> => {
@@ -588,7 +603,6 @@ export const subscriptionApi = {
         return apiRequest<GenericResponse>(`/secure/admin/subscriptions/${id}`, { method: 'DELETE' });
     },
 
-
     checkExists: async (challengeId: string): Promise<boolean> => {
     try {
       const subs = await apiRequest<Subscription[]>(`/subscriptions/me?challengeId=${challengeId}`);
@@ -597,6 +611,12 @@ export const subscriptionApi = {
       return false;
     }
   },
+
+    toggleBlock: async (id: string): Promise<GenericResponse> => {
+        return apiRequest<GenericResponse>(`/secure/admin/subscriptions/${id}/block`, {
+            method: 'PUT'
+        });
+    },
     //
     //
     // getBySessionId: async (sessionId: string): Promise<Challenge[]> => {

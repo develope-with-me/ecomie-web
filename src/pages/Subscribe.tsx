@@ -9,6 +9,7 @@ import { ArrowLeft, Target, Heart } from 'lucide-react';
 import { challengeApi, subscriptionApi, Challenge } from '@/lib/api';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
+import {isNonNullArray} from "@/lib/utils";
 
 const Subscribe = () => {
   const { challengeId } = useParams<{ challengeId: string }>();
@@ -61,23 +62,23 @@ const Subscribe = () => {
     
     try {
       // Check if already subscribed
-      const exists = await subscriptionApi.checkExists(challenge.id);
-      if (exists) {
-        toast({
-          title: "Already Subscribed",
-          description: "You're already subscribed to this challenge.",
-          variant: "destructive",
-        });
-        navigate('/dashboard');
-        return;
-      }
+      // const exists = await subscriptionApi.checkExists(challenge.id);
+      // if (exists) {
+      //   toast({
+      //     title: "Already Subscribed",
+      //     description: "You're already subscribed to this challenge.",
+      //     variant: "destructive",
+      //   });
+      //   navigate('/dashboard');
+      //   return;
+      // }
 
       await subscriptionApi.create({
         challengeId: challenge.id,
         target: parseInt(personalTarget) || challenge.target,
-        name: name || `My ${challenge.name} commitment`,
-        description: description || undefined,
-        type: 'personal',
+        // name: name || `My ${challenge.name} commitment`,
+        // description: description || undefined,
+        // type: 'personal',
       });
 
       toast({
@@ -90,7 +91,8 @@ const Subscribe = () => {
       console.error('Error subscribing:', error);
       toast({
         title: "Subscription Failed",
-        description: error.message || "Failed to subscribe to the challenge.",
+        description: isNonNullArray(error.invalidParams)  ? error.invalidParams[0].reason : error.detail,
+        // description: error.message || "Failed to subscribe to the challenge.",
         variant: "destructive",
       });
     } finally {

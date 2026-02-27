@@ -23,7 +23,7 @@ export default function SessionDetails({
                                            onRemoveChallenge,
                                            onToggleViewChallenge,
                                        }: Props) {
-    const [status, setStatus] = useState<SessionStatus>(session.status || SessionStatus.UPCOMING);
+    const [status, setStatus] = useState<SessionStatus>(session.status || SessionStatus.INACTIVE);
 
     const handleStatusChange = (val: string) => {
         const s = val as SessionStatus;

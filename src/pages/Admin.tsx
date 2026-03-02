@@ -57,6 +57,8 @@ const Admin = () => {
     const { toast } = useToast();
 
     const [users, setUsers] = useState<User[]>([]);
+    const [ongoingSessionUsers, setOngoingSessionUsers] = useState<User[]>([]);
+    const [ongoingSessionSubscriptions, setOngoingSessionSubscriptions] = useState<Subscription[]>([]);
     const [sessions, setSessions] = useState<Session[]>([]);
     const [challenges, setChallenges] = useState<Challenge[]>([]);
     const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
@@ -122,7 +124,7 @@ const Admin = () => {
     const [editingReport, setEditingReport] = useState<ChallengeReport | null>(null);
     const [viewingReport, setViewingReport] = useState<ChallengeReport | null>(null);
     // Updated: allow selecting both session and user in report form
-    const [reportSessionId, setReportSessionId] = useState("");
+    const [reportSubscriptionId, setReportSubscriptionId] = useState("");
     const [reportUserId, setReportUserId] = useState("");
     const [reportEvangelized, setReportEvangelized] = useState("");
     const [reportConverts, setReportConverts] = useState("");
@@ -149,18 +151,23 @@ const Admin = () => {
 
     const fetchAllData = async () => {
         try {
-            const [usersRes, sessionsRes, challengesRes, subsRes, reportsRes] = await Promise.all([
+            const [usersRes, sessionsRes, challengesRes, subsRes, reportsRes, ongoingSessionUsersRes, ongoingSessionSubscriptionRes] = await Promise.all([
                 userApi.getAllUsers(),
                 sessionApi.getAll(),
                 challengeApi.getAll(),
                 subscriptionApi.getAll(),
                 reportApi.getAll(),
+                userApi.getOngoingSessionUsers(),
+                subscriptionApi.getAll(true),
+
             ]);
             setUsers(usersRes);
             setSessions(sessionsRes);
             setChallenges(challengesRes);
             setSubscriptions(subsRes);
             setReports(reportsRes);
+            setOngoingSessionUsers(ongoingSessionUsersRes);
+            setOngoingSessionSubscriptions(ongoingSessionSubscriptionRes);
         } catch (err) {
             console.error(err);
             toast({ title: "Error", description: "Failed to load data", variant: "destructive" });
@@ -554,8 +561,8 @@ const Admin = () => {
 
     const handleEditSubscription = (s: Subscription) => {
         setEditingSubscription(s);
-        setSubscriptionUserId(s.userId);
-        setSubscriptionChallengeId(s.challengeId);
+        setSubscriptionUserId(s?.user?.id);
+        setSubscriptionChallengeId(s?.challenge?.id);
         setSubscriptionTarget(s.target.toString());
         setSubscriptionDialogOpen(true);
     };
@@ -590,7 +597,7 @@ const Admin = () => {
             toast({ title: "Validation Error", description: "Numeric report fields must be non-negative integers", variant: "destructive" });
             return;
         }
-        if (!Validators.required(reportUserId) || !Validators.required(reportSessionId)) {
+        if (!Validators.required(reportUserId) || !Validators.required(reportSubscriptionId)) {
             toast({ title: "Validation Error", description: "User and session selection required", variant: "destructive" });
             return;
         }
@@ -607,7 +614,7 @@ const Admin = () => {
                 toast({ title: "Report Updated" });
             } else {
                 // createForUser expects (userId, sessionId, data)
-                await reportApi.createForUser(reportUserId, reportSessionId, body);
+                await reportApi.createForUser(reportUserId, reportSubscriptionId, body);
                 toast({ title: "Report Created" });
             }
             setReportDialogOpen(false);
@@ -620,8 +627,8 @@ const Admin = () => {
 
     const handleEditReport = (r: ChallengeReport) => {
         setEditingReport(r);
-        setReportSessionId(r.subscriptionId);
-        setReportUserId(r.subscription?.userId || "");
+        setReportSubscriptionId(r.subscription?.id);
+        setReportUserId(r.subscription?.user?.id || "");
         setReportEvangelized(r.numberEvangelizedTo.toString());
         setReportConverts(r.numberOfNewConverts.toString());
         setReportFollowedUp(r.numberFollowedUp.toString());
@@ -649,7 +656,7 @@ const Admin = () => {
     const resetReportForm = () => {
         setEditingReport(null);
         setViewingReport(null);
-        setReportSessionId("");
+        setReportSubscriptionId("");
         setReportUserId("");
         setReportEvangelized("");
         setReportConverts("");
@@ -863,17 +870,17 @@ const Admin = () => {
                                     <DialogTitle>Session Details</DialogTitle>
                                 </DialogHeader>
                                 <div className="py-2">
-                                    {viewingSession ? (
-                                        <SessionDetails
-                                            session={viewingSession}
-                                            allSessions={sessions}
-                                            onAddChallenge={handleAddChallengeToSession}
-                                            onChangeStatus={handleChangeSessionStatus}
-                                            onRemoveChallenge={(sessId, chId) => handleRemoveChallengeFromSession(sessId, chId)}
-                                            onToggleViewChallenge={(ch) => toggleViewChallenge(ch)}
-                                        />
-                                    ) : (
-                                        <div>No session selected</div>
+                                    {viewingSession && (
+                                            <div className="py-2">
+                                                <div className="text-sm"><strong>Name:</strong> {viewingSession?.name} </div>
+                                                <div className="text-sm"><strong>Description:</strong> {viewingSession?.description}</div>
+                                                <div className="text-sm"><strong>Status:</strong> {viewingSession?.status?.toString()}</div>
+                                                <div className="text-sm"><strong>Number of Challenges:</strong> {viewingSession?.challenges?.length}</div>
+                                                <div className="text-sm"><strong>Start Date:</strong> {viewingSession?.startDate}</div>
+                                                <div className="text-sm"><strong>End Date:</strong> {viewingSession?.endDate}</div>
+                                                <div className="text-sm"><strong>Created On:</strong> {viewingSession?.createdOn} </div>
+                                                <div className="text-sm"><strong>Updated On:</strong> {viewingSession?.updatedOn} </div>
+                                            </div>
                                     )}
                                 </div>
                                 <DialogFooter>
@@ -1151,8 +1158,8 @@ const Admin = () => {
 
                         <div className="space-y-4">
                             {subscriptions.map((s) => {
-                                const c = challenges.find((c) => c.id === s.challengeId);
-                                const u = users.find((u) => u.id === s.userId);
+                                const c = challenges.find((c) => c.id === s.challenge?.id);
+                                const u = users.find((u) => u.id === s.user?.id);
                                 return (
                                     <Card key={s.id} className="shadow-gentle">
                                         <CardContent className="py-4">
@@ -1183,8 +1190,8 @@ const Admin = () => {
                             <DialogContent>
                                 <DialogHeader><DialogTitle>Subscription Details</DialogTitle></DialogHeader>
                                 <div className="py-2">
-                                    <div className="text-sm"><strong>User:</strong> {viewingSubscription ? users.find(u => u.id === viewingSubscription.userId)?.firstName : ""}</div>
-                                    <div className="text-sm"><strong>Challenge:</strong> {viewingSubscription ? challenges.find(c => c.id === viewingSubscription.challengeId)?.name : ""}</div>
+                                    <div className="text-sm"><strong>User:</strong> {viewingSubscription ? users.find(u => u.id === viewingSubscription.user?.id)?.firstName : ""}</div>
+                                    <div className="text-sm"><strong>Challenge:</strong> {viewingSubscription ? challenges.find(c => c.id === viewingSubscription.challenge?.id)?.name : ""}</div>
                                     <div className="text-sm"><strong>Target:</strong> {viewingSubscription?.target}</div>
                                 </div>
                                 <DialogFooter><Button onClick={() => setViewSubscriptionDialogOpen(false)}>Close</Button></DialogFooter>
@@ -1252,7 +1259,7 @@ const Admin = () => {
 
             {/* Reused dialogs: user, challenge, subscription, report */}
             {/* User dialog */}
-            <Dialog open={userDialogOpen} onOpenChange={setUserDialogOpen}>
+            <Dialog open={userDialogOpen} onOpenChange={setUserDialogOpen}  >
                 <DialogContent>
                     <DialogHeader>
                         <DialogTitle>{editingUser ? "Edit User" : "Create User"}</DialogTitle>
@@ -1390,19 +1397,20 @@ const Admin = () => {
                 <DialogContent>
                     <DialogHeader><DialogTitle>{editingReport ? "Edit Report" : "Create Report"}</DialogTitle></DialogHeader>
                     <div className="space-y-4 py-4">
-                        <div className="space-y-2">
-                            <Label>Session</Label>
-                            <Select value={reportSessionId} onValueChange={setReportSessionId}>
-                                <SelectTrigger><SelectValue placeholder="Select session" /></SelectTrigger>
-                                <SelectContent>{sessions.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent>
-                            </Select>
-                        </div>
 
                         <div className="space-y-2">
                             <Label>User</Label>
                             <Select value={reportUserId} onValueChange={setReportUserId}>
                                 <SelectTrigger><SelectValue placeholder="Select user" /></SelectTrigger>
-                                <SelectContent>{users.map(u => <SelectItem key={u.id} value={u.id}>{u.firstName} {u.lastName}</SelectItem>)}</SelectContent>
+                                <SelectContent>{ongoingSessionUsers.map(u => <SelectItem key={u.id} value={u.id}>{u.firstName} {u.lastName}</SelectItem>)}</SelectContent>
+                            </Select>
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label>Challenge</Label>
+                            <Select value={reportSubscriptionId} onValueChange={setReportSubscriptionId}>
+                                <SelectTrigger><SelectValue placeholder="Select Challenge" /></SelectTrigger>
+                                <SelectContent>{ongoingSessionSubscriptions.filter(s => s.user?.id === reportUserId).map(s => <SelectItem key={s.id} value={s.id}>{s.challenge?.name}</SelectItem>)}</SelectContent>
                             </Select>
                         </div>
 

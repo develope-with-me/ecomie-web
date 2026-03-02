@@ -214,13 +214,10 @@ export interface Challenge {
 
 export interface Subscription {
   id: string | null | undefined;
-  userId: string;
-  challengeId: string;
-  target: number;
-  name: string | null;
-  description: string | null;
-  type: string | null;
+  target: number | null | undefined;
+  user?: User | null;
   challenge?: Challenge | null;
+  session?: Session | null;
   createdOn: string | null | undefined;
   updatedOn: string | null | undefined;
   createdBy: string | null | undefined;
@@ -349,8 +346,16 @@ export const userApi = {
     return apiRequest<string>(`/secure/admin/user-pix/${id}`);
   },
 
-  getSessionUsers: async (sessionId: string): Promise<User> => {
-    return apiRequest<User>(`/secure/admin/sessions/${sessionId}/users`);
+  getSessionUsers: async (sessionId: string, blocked: boolean, challengeId?: string): Promise<User[]> => {
+      if (challengeId) {
+          return apiRequest<User[]>(`/secure/admin/sessions/${sessionId}/users?blocked=${blocked}&challengeId=${challengeId}`);
+      }
+      return apiRequest<User[]>(`/secure/admin/sessions/${sessionId}/users?blocked=${blocked}`);
+  },
+
+
+  getOngoingSessionUsers: async (): Promise<User[]> => {
+    return apiRequest<User[]>(`/secure/admin/current-sessions/users`);
   },
 
     requestRoleChange: async (role: string): Promise<GenericResponse> => {
@@ -572,12 +577,18 @@ export const subscriptionApi = {
         });
     },
 
-    getAll: async (): Promise<Subscription[]> => {
-    return apiRequest<Subscription[]>('/secure/ecomiest/subscriptions');
+    getAll: async (isOngoing?: boolean): Promise<Subscription[]> => {
+        if(!isOngoing) {
+            isOngoing = false;
+        }
+    return apiRequest<Subscription[]>(`/secure/ecomiest/subscriptions?isOngoing=${isOngoing}`);
   },
 
-  getMine: async (): Promise<Subscription[]> => {
-    return apiRequest<Subscription[]>('/secure/ecomiest/subscriptions');
+  getMine: async (isOngoing?: boolean): Promise<Subscription[]> => {
+      if(!isOngoing) {
+          isOngoing = false;
+      }
+    return apiRequest<Subscription[]>(`/secure/ecomiest/subscriptions?isOngoing=${isOngoing}`);
   },
 
   getById: async (id: string): Promise<Subscription> => {
@@ -626,15 +637,15 @@ export const subscriptionApi = {
 
 // ============== Challenge Report API ==============
 export const reportApi = {
-    create: async (sessionId: string, data: ReportRequestBody): Promise<GenericResponse> => {
-        return apiRequest<GenericResponse>(`/secure/ecomiest/reports/session/${sessionId}`, {
+    create: async (subscriptionId: string, data: ReportRequestBody): Promise<GenericResponse> => {
+        return apiRequest<GenericResponse>(`/secure/ecomiest/reports/subscriptions/${subscriptionId}`, {
             method: 'POST',
             body: JSON.stringify(data),
         });
     },
 
-    createForUser: async (userId: string, sessionId: string, data: ReportRequestBody): Promise<GenericResponse> => {
-        return apiRequest<GenericResponse>(`/secure/admin/reports/user/${userId}/session/${sessionId}`, {
+    createForUser: async (userId: string, subscriptionId: string, data: ReportRequestBody): Promise<GenericResponse> => {
+        return apiRequest<GenericResponse>(`/secure/admin/reports/user/${userId}/subscriptions/${subscriptionId}`, {
             method: 'POST',
             body: JSON.stringify(data),
         });
@@ -665,7 +676,8 @@ export const reportApi = {
           return apiRequest<ChallengeReport[]>(`/secure/ecomiest/reports?challengeId=${challengeId}`);
       }
 
-      return apiRequest<ChallengeReport[]>('/secure/ecomiest/reports');  },
+      return apiRequest<ChallengeReport[]>('/secure/ecomiest/reports');
+  },
 
   getById: async (id: string): Promise<ChallengeReport> => {
     return apiRequest<ChallengeReport>(`/secure/ecomiest/reports/${id}`);

@@ -46,7 +46,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const signUp = async (email: string, password: string, firstName: string, lastName: string) => {
     try {
-      const response = await authApi.signUp(email, password, firstName, lastName);
+        const payload = {
+            firstName: firstName,
+            lastName: lastName,
+            email: email,
+            password: password,
+        };
+      const response = await authApi.signUp(payload);
       setUser(response.user);
       setIsAdmin(response.user.role === 'ADMIN' || response.user.role === 'SUPER_ADMIN');
       return { error: null };

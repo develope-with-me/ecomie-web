@@ -12,7 +12,7 @@ interface Props {
 
 export default function ChallengeDetails({ challenge, sessions, onAddToSession, onChangeType }: Props) {
     const [selectedSession, setSelectedSession] = useState<string>(challenge?.sessions?.[0]?.id || "");
-    const [type, setType] = useState<string>(challenge.type.toString || ChallengeType.NORMAL.toString);
+    const [type, setType] = useState<string>(challenge.type?.toString() || ChallengeType.NORMAL);
 
     const handleAdd = () => {
         onAddToSession(challenge.id, selectedSession);

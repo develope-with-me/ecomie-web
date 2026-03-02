@@ -51,16 +51,24 @@ const UserDetails: React.FC<Props> = ({ user, onRoleChanged, onToggleBlock, onEn
 
     return (
         <div className="grid grid-cols-1 gap-3">
-            <div className="grid grid-cols-2 gap-4">
-                <div>
-                    <Label>Name</Label>
-                    <div>{user.firstName} {user.lastName}</div>
-                </div>
-                <div>
-                    <Label>Email</Label>
-                    <div>{user.email}</div>
-                </div>
-            </div>
+            {/*<div className="grid grid-cols-2 gap-4">*/}
+                {/*<Button onClick={handleChangeRole} disabled={processing} size="sm">Change Role</Button>*/}
+                {/*<Button onClick={handleToggleBlock} disabled={processing} variant={isBlocked ? "secondary" : "destructive"} size="sm">*/}
+                {/*    {isBlocked ? "Unblock" : "Block"}*/}
+                {/*</Button>*/}
+                {/*{!isEnabled && (*/}
+                {/*    <Button onClick={handleEnable} disabled={processing} size="sm">Enable</Button>*/}
+                {/*)}*/}
+
+                {/*<div>*/}
+                {/*    <Label>Name</Label>*/}
+                {/*    <div>{user.firstName} {user.lastName}</div>*/}
+                {/*</div>*/}
+                {/*<div>*/}
+                {/*    <Label>Email</Label>*/}
+                {/*    <div>{user.email}</div>*/}
+                {/*</div>*/}
+            {/*</div>*/}
 
             <div className="grid grid-cols-3 gap-4 items-end">
                 <div>
@@ -76,32 +84,65 @@ const UserDetails: React.FC<Props> = ({ user, onRoleChanged, onToggleBlock, onEn
                         </SelectContent>
                     </Select>
                 </div>
-
-                <div>
-                    <Label>Phone</Label>
-                    <div>{user.phoneNumber || "-"}</div>
-                </div>
-
-                <div>
-                    <Label>Location</Label>
-                    <div>{user.city || "-"}, {user.region || "-"}, {user.country || "-"}</div>
-                </div>
-            </div>
-
-            <div className="flex gap-2">
                 <Button onClick={handleChangeRole} disabled={processing} size="sm">Change Role</Button>
+
                 <Button onClick={handleToggleBlock} disabled={processing} variant={isBlocked ? "secondary" : "destructive"} size="sm">
                     {isBlocked ? "Unblock" : "Block"}
                 </Button>
                 {!isEnabled && (
                     <Button onClick={handleEnable} disabled={processing} size="sm">Enable</Button>
                 )}
-            </div>
 
-            <div className="text-sm text-muted-foreground">
-                <div>Account enabled: {isEnabled ? "Yes" : "No"}</div>
-                <div>Account blocked: {isBlocked ? "Yes" : "No"}</div>
+                {/*<Button onClick={handleToggleBlock} disabled={processing} variant={isBlocked ? "secondary" : "destructive"} size="sm">*/}
+                {/*    {isBlocked ? "Unblock" : "Block"}*/}
+                {/*</Button>*/}
+                {/*{!isEnabled && (*/}
+                {/*    <Button onClick={handleEnable} disabled={processing} size="sm">Enable</Button>*/}
+                {/*)}*/}
+
+
+                {/*<div>*/}
+                {/*    <Label>Phone</Label>*/}
+                {/*    <div>{user.phoneNumber || "-"}</div>*/}
+                {/*</div>*/}
+
+                {/*<div>*/}
+                {/*    <Label>Location</Label>*/}
+                {/*    <div>{user.city || "-"}, {user.region || "-"}, {user.country || "-"}</div>*/}
+                {/*</div>*/}
             </div>
+            {/*<div className="grid grid-cols-2 gap-4">*/}
+            {/*    <Button onClick={handleToggleBlock} disabled={processing} variant={isBlocked ? "secondary" : "destructive"} size="sm">*/}
+            {/*        {isBlocked ? "Unblock" : "Block"}*/}
+            {/*    </Button>*/}
+            {/*    {!isEnabled && (*/}
+            {/*        <Button onClick={handleEnable} disabled={processing} size="sm">Enable</Button>*/}
+            {/*    )}*/}
+
+                {/*<div>*/}
+                {/*    <Label>Name</Label>*/}
+                {/*    <div>{user.firstName} {user.lastName}</div>*/}
+                {/*</div>*/}
+                {/*<div>*/}
+                {/*    <Label>Email</Label>*/}
+                {/*    <div>{user.email}</div>*/}
+                {/*</div>*/}
+            {/*</div>*/}
+
+            {/*<div className="flex gap-2">*/}
+            {/*    <Button onClick={handleChangeRole} disabled={processing} size="sm">Change Role</Button>*/}
+            {/*    <Button onClick={handleToggleBlock} disabled={processing} variant={isBlocked ? "secondary" : "destructive"} size="sm">*/}
+            {/*        {isBlocked ? "Unblock" : "Block"}*/}
+            {/*    </Button>*/}
+            {/*    {!isEnabled && (*/}
+            {/*        <Button onClick={handleEnable} disabled={processing} size="sm">Enable</Button>*/}
+            {/*    )}*/}
+            {/*</div>*/}
+
+            {/*<div className="text-sm text-muted-foreground">*/}
+            {/*    <div>Account enabled: {isEnabled ? "Yes" : "No"}</div>*/}
+            {/*    <div>Account blocked: {isBlocked ? "Yes" : "No"}</div>*/}
+            {/*</div>*/}
         </div>
     );
 };

@@ -232,7 +232,6 @@ export interface ChallengeReport {
   numberFollowedUp: number;
   difficulties: string | null;
   remark: string | null;
-  reportDate: string;
   subscription?: Subscription | null;
   createdOn: string | null | undefined;
   updatedOn: string | null | undefined;
@@ -519,6 +518,11 @@ export const sessionApi = {
 
   delete: async (id: string): Promise<GenericResponse> => {
     return apiRequest<GenericResponse>(`/secure/admin/sessions/${id}`, { method: 'DELETE' });
+  },
+
+
+  getOngoingSession: async (): Promise<Session> => {
+    return apiRequest<Session>('/sessions/current');
   },
 };
 

@@ -73,7 +73,7 @@ const Dashboard = () => {
       ]);
 
       const enrichedSubs: EnrichedSubscription[] = subsData.map(sub => {
-        const challenge = challengesData.find(c => c.id === sub.challengeId);
+        const challenge = challengesData.find(c => c.id === sub?.challenge?.id);
         const session = challenge?.sessions[0]
           ? sessionsData.find(s => s.id === challenge.sessions[0].id)
           : undefined;
@@ -275,7 +275,7 @@ const Dashboard = () => {
                         <CardTitle className="flex items-center justify-between">
                           <span>{sub.challenge?.name || 'Challenge'}</span>
                           <Badge variant={sub.challenge?.sessions[0]?.status === SessionStatus.ONGOING ? 'default' : 'secondary'}>
-                            {sub.challenge?.sessions?.status || 'Unknown'}
+                            {sub.challenge?.sessions?.status?.toString() || 'Unknown'}
                           </Badge>
                         </CardTitle>
                       </CardHeader>
@@ -332,7 +332,7 @@ const Dashboard = () => {
                           <div className="space-y-2">
                             <div className="flex items-center gap-2">
                               <h3 className="font-semibold">{report.subscription?.challenge?.name}</h3>
-                              <Badge variant="outline">{report.reportDate}</Badge>
+                              <Badge variant="outline">{report?.createdOn}</Badge>
                             </div>
                             <div className="grid grid-cols-3 gap-4 text-sm">
                               <div>

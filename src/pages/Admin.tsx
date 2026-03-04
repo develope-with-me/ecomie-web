@@ -44,7 +44,7 @@ import {
     Eye,
     X,
 } from "lucide-react";
-import { isNonNullArray } from "@/lib/utils";
+import { isNonNullArray, formatDate } from "@/lib/utils";
 import SessionDetails from "@/components/SessionDetails";
 import ChallengeDetails from "@/components/ChallengeDetails";
 import ConfirmRemoveDialog from "@/components/ConfirmRemoveDialog";
@@ -59,6 +59,7 @@ const Admin = () => {
     const [users, setUsers] = useState<User[]>([]);
     const [ongoingSessionUsers, setOngoingSessionUsers] = useState<User[]>([]);
     const [ongoingSessionSubscriptions, setOngoingSessionSubscriptions] = useState<Subscription[]>([]);
+    const [ongoingSession, setOngoingSession] = useState<Session | null>(null);
     const [sessions, setSessions] = useState<Session[]>([]);
     const [challenges, setChallenges] = useState<Challenge[]>([]);
     const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
@@ -117,6 +118,11 @@ const Admin = () => {
     const [subscriptionUserId, setSubscriptionUserId] = useState("");
     const [subscriptionChallengeId, setSubscriptionChallengeId] = useState("");
     const [subscriptionTarget, setSubscriptionTarget] = useState("");
+    const [userName, setUserName] = useState("");
+    const [concernedUser, setConcernedUser] = useState<User | null>(null);
+    const [concernedSession, setConcernedSession] = useState<Session | null>(null);
+    const [concernedSubscription, setConcernedSubscription] = useState<Subscription | null>(null);
+    const [concernedChallenge, setConcernedChallenge] = useState<Challenge | null>(null);
 
     // Report
     const [reportDialogOpen, setReportDialogOpen] = useState(false);
@@ -151,12 +157,13 @@ const Admin = () => {
 
     const fetchAllData = async () => {
         try {
-            const [usersRes, sessionsRes, challengesRes, subsRes, reportsRes, ongoingSessionUsersRes, ongoingSessionSubscriptionRes] = await Promise.all([
+            const [usersRes, sessionsRes, challengesRes, subsRes, reportsRes, ongoingSessionRes, ongoingSessionUsersRes, ongoingSessionSubscriptionRes] = await Promise.all([
                 userApi.getAllUsers(),
                 sessionApi.getAll(),
                 challengeApi.getAll(),
                 subscriptionApi.getAll(),
                 reportApi.getAll(),
+                sessionApi.getOngoingSession(),
                 userApi.getOngoingSessionUsers(),
                 subscriptionApi.getAll(true),
 
@@ -166,6 +173,7 @@ const Admin = () => {
             setChallenges(challengesRes);
             setSubscriptions(subsRes);
             setReports(reportsRes);
+            setOngoingSession(ongoingSessionRes);
             setOngoingSessionUsers(ongoingSessionUsersRes);
             setOngoingSessionSubscriptions(ongoingSessionSubscriptionRes);
         } catch (err) {
@@ -568,6 +576,16 @@ const Admin = () => {
     };
 
     const handleViewSubscription = (s: Subscription) => {
+        const ses = sessions.find(se => se.id === s.session?.id);
+        setConcernedSession(ses);
+        const chl = challenges.find(c => c.id === s.challenge?.id);
+        setConcernedChallenge(chl)
+        const usr = users.find(u => u.id === s.user?.id);
+        const userName = usr?.firstName && usr?.lastName ? `${usr?.firstName} ${usr?.lastName}`
+            : usr?.firstName ? usr?.firstName
+                : usr?.lastName ? usr?.lastName : "UNKNOWN USER";
+        setConcernedUser(usr);
+        setUserName(userName);
         setViewingSubscription(s);
         setViewSubscriptionDialogOpen(true);
     };
@@ -638,6 +656,18 @@ const Admin = () => {
     };
 
     const handleViewReport = (r: ChallengeReport) => {
+        const ses = sessions.find(s => s.id === r.subscription?.session?.id);
+        setConcernedSession(ses);
+        const sub = subscriptions.find(s => s.id === r.subscription?.id);
+        setConcernedSubscription(sub);
+        const chl = challenges.find(c => c.id === r.subscription?.challenge?.id);
+        setConcernedChallenge(chl);
+        const usr = users.find(u => u.id === r.subscription?.user?.id);
+        const userName = usr?.firstName && usr?.lastName ? `${usr?.firstName} ${usr?.lastName}`
+            : usr?.firstName ? usr?.firstName
+                : usr?.lastName ? usr?.lastName : "UNKNOWN USER";
+        setUserName(userName);
+        setConcernedUser(user);
         setViewingReport(r);
         setViewReportDialogOpen(true);
     };
@@ -821,7 +851,7 @@ const Admin = () => {
                                                 </p>
                                                 <div className="flex items-center gap-4 mt-2">
                                                   <span className="text-xs text-muted-foreground">
-                                                    📅 {new Date(session.startDate).toLocaleDateString()} - {new Date(session.endDate).toLocaleDateString()}
+                                                    📅 { formatDate(new Date(session.startDate).toLocaleDateString()) } - { formatDate(new Date(session.endDate).toLocaleDateString()) }
                                                   </span>
                                                     {session.challenges && (
                                                         <span className="text-xs text-muted-foreground">🎯 {session.challenges.length} challenges</span>
@@ -876,10 +906,10 @@ const Admin = () => {
                                                 <div className="text-sm"><strong>Description:</strong> {viewingSession?.description}</div>
                                                 <div className="text-sm"><strong>Status:</strong> {viewingSession?.status?.toString()}</div>
                                                 <div className="text-sm"><strong>Number of Challenges:</strong> {viewingSession?.challenges?.length}</div>
-                                                <div className="text-sm"><strong>Start Date:</strong> {viewingSession?.startDate}</div>
-                                                <div className="text-sm"><strong>End Date:</strong> {viewingSession?.endDate}</div>
-                                                <div className="text-sm"><strong>Created On:</strong> {viewingSession?.createdOn} </div>
-                                                <div className="text-sm"><strong>Updated On:</strong> {viewingSession?.updatedOn} </div>
+                                                <div className="text-sm"><strong>Start Date:</strong> {formatDate(viewingSession?.startDate)}</div>
+                                                <div className="text-sm"><strong>End Date:</strong> {formatDate(viewingSession?.endDate)}</div>
+                                                <div className="text-sm"><strong>Created On:</strong> {formatDate(viewingSession?.createdOn)} </div>
+                                                <div className="text-sm"><strong>Updated On:</strong> {formatDate(viewingSession?.updatedOn)} </div>
                                             </div>
                                     )}
                                 </div>
@@ -1032,8 +1062,8 @@ const Admin = () => {
                                         <div className="text-sm"><strong>Type:</strong> {viewingChallenge?.type?.toString()}</div>
                                         <div className="text-sm"><strong>Target:</strong> {viewingChallenge?.target}</div>
                                         <div className="text-sm"><strong>Number of Sessions:</strong> {viewingChallenge?.sessions?.length}</div>
-                                        <div className="text-sm"><strong>Created On:</strong> {viewingChallenge?.createdOn} </div>
-                                        <div className="text-sm"><strong>Updated On:</strong> {viewingChallenge?.updatedOn} </div>
+                                        <div className="text-sm"><strong>Created On:</strong> {formatDate(viewingChallenge?.createdOn)} </div>
+                                        <div className="text-sm"><strong>Updated On:</strong> {formatDate(viewingChallenge?.updatedOn)} </div>
                                     </div>
                                     )}
                                 </div>
@@ -1137,8 +1167,8 @@ const Admin = () => {
                                     <div className="text-sm"><strong>Location:</strong> {viewingUser?.city}, {viewingUser?.region}, {viewingUser?.country}</div>
                                     <div className="text-sm"><strong>Enabled:</strong> {viewingUser?.accountEnabled  ? "Yes" : "No"} </div>
                                     <div className="text-sm"><strong>Blocked:</strong> {viewingUser?.accountBlocked ? "Yes" : "No"} </div>
-                                    <div className="text-sm"><strong>Created On:</strong> {viewingUser?.createdOn} </div>
-                                    <div className="text-sm"><strong>Updated On:</strong> {viewingUser?.updatedOn} </div>
+                                    <div className="text-sm"><strong>Created On:</strong> {formatDate(viewingUser?.createdOn)} </div>
+                                    <div className="text-sm"><strong>Updated On:</strong> {formatDate(viewingUser?.updatedOn)} </div>
                                 </div>
                                 <DialogFooter><Button onClick={() => setViewUserDialogOpen(false)}>Close</Button></DialogFooter>
                             </DialogContent>
@@ -1157,26 +1187,43 @@ const Admin = () => {
                         </div>
 
                         <div className="space-y-4">
-                            {subscriptions.map((s) => {
-                                const c = challenges.find((c) => c.id === s.challenge?.id);
-                                const u = users.find((u) => u.id === s.user?.id);
+                            {subscriptions.map((sub) => {
+                                const ses = sessions.find((s) => s.id === sub.session?.id);
+                                const chl = challenges.find((c) => c.id === sub.challenge?.id);
+                                const usr = users.find((u) => u?.id === sub.user?.id);
+                                const userName = usr?.firstName && usr?.lastName ? `${usr?.firstName} ${usr?.lastName}`
+                                    : usr?.firstName ? usr?.firstName
+                                        : usr?.lastName ? usr?.lastName : "UNKNOWN USER";
                                 return (
-                                    <Card key={s.id} className="shadow-gentle">
+                                    <Card key={sub.id} className="shadow-gentle">
                                         <CardContent className="py-4">
                                             <div className="flex items-center justify-between">
-                                                <div>
-                                                    <h3 className="font-semibold">{u?.firstName || "Unknown"} → {c?.name || "Unknown"}</h3>
-                                                    <p className="text-sm text-muted-foreground">Target: {s.target}</p>
+
+                                                <div className="flex-1">
+                                                    <h3 className="font-semibold cursor-pointer">
+                                                        {userName} → Pledge: {sub?.target}
+                                                    </h3>
+                                                    <p className="flex items-center gap-4 mt-2">
+                                                        Session: {ses.name}
+                                                    </p>
+                                                    <div className="flex items-center gap-4 mt-2">
+                                                        <span className="text-xs text-muted-foreground">Challenge: {chl.name}</span>
+                                                        {sub.challenge && <span className="text-xs text-muted-foreground">target: {sub.target}</span>}
+                                                    </div>
+                                                    <div className="flex items-center gap-4 mt-2">
+                                                        <Badge variant="outline">ON</Badge>
+                                                        <span className="text-xs text-muted-foreground"> {formatDate(sub.createdOn)}</span>
+                                                    </div>
                                                 </div>
                                                 <div className="flex gap-2">
-                                                    <Button variant="ghost" size="sm" onClick={() => handleViewSubscription(s)}><Eye className="w-4 h-4" /></Button>
-                                                    <Button variant="ghost" size="sm" onClick={() => handleEditSubscription(s)}><Edit className="w-4 h-4" /></Button>
+                                                    <Button variant="ghost" size="sm" onClick={() => handleViewSubscription(sub)}><Eye className="w-4 h-4" /></Button>
+                                                    <Button variant="ghost" size="sm" onClick={() => handleEditSubscription(sub)}><Edit className="w-4 h-4" /></Button>
                                                     <ConfirmRemoveDialog
                                                         trigger={<Button variant="ghost" size="sm"><Trash2 className="w-4 h-4 text-destructive" /></Button>}
                                                         title={`Delete subscription`}
-                                                        description={`Delete subscription for ${u?.firstName || "Unknown"}?`}
+                                                        description={`Delete subscription for ${usr?.firstName || "Unknown"}?`}
                                                         confirmLabel="Delete"
-                                                        onConfirm={() => handleDeleteSubscription(s.id)}
+                                                        onConfirm={() => handleDeleteSubscription(sub.id)}
                                                     />
                                                 </div>
                                             </div>
@@ -1190,9 +1237,13 @@ const Admin = () => {
                             <DialogContent>
                                 <DialogHeader><DialogTitle>Subscription Details</DialogTitle></DialogHeader>
                                 <div className="py-2">
-                                    <div className="text-sm"><strong>User:</strong> {viewingSubscription ? users.find(u => u.id === viewingSubscription.user?.id)?.firstName : ""}</div>
+                                    <div className="text-sm"><strong>User:</strong> {userName}</div>
+                                    <div className="text-sm"><strong>Session:</strong> {viewingSubscription ? sessions.find(s => s.id === viewingSubscription.session?.id)?.name : ""}</div>
                                     <div className="text-sm"><strong>Challenge:</strong> {viewingSubscription ? challenges.find(c => c.id === viewingSubscription.challenge?.id)?.name : ""}</div>
-                                    <div className="text-sm"><strong>Target:</strong> {viewingSubscription?.target}</div>
+                                    <div className="text-sm"><strong>Commitment:</strong> {viewingSubscription?.target}</div>
+                                    <div className="text-sm"><strong>Target:</strong> { viewingSubscription?.challenge?.target}</div>
+                                    <div className="text-sm"><strong>Subscribed On:</strong> {formatDate(viewingSubscription?.createdOn)}</div>
+                                    <div className="text-sm"><strong>Updated On:</strong> {formatDate(viewingSubscription?.updatedOn)}</div>
                                 </div>
                                 <DialogFooter><Button onClick={() => setViewSubscriptionDialogOpen(false)}>Close</Button></DialogFooter>
                             </DialogContent>
@@ -1211,44 +1262,89 @@ const Admin = () => {
                         </div>
 
                         <div className="space-y-4">
-                            {reports.map((r) => (
-                                <Card key={r.id} className="shadow-gentle">
-                                    <CardContent className="py-4">
-                                        <div className="flex items-center justify-between">
-                                            <div>
-                                                <div className="grid grid-cols-3 gap-4 text-sm">
-                                                    <div><span className="text-muted-foreground">Evangelized:</span> {r.numberEvangelizedTo}</div>
-                                                    <div><span className="text-muted-foreground">Converts:</span> {r.numberOfNewConverts}</div>
-                                                    <div><span className="text-muted-foreground">Followed up:</span> {r.numberFollowedUp}</div>
+                            {reports.map((r) => {
+                                const ses = sessions.find((s) => s?.id === r.subscription?.session?.id);
+                                const chl = challenges.find((c) => c?.id === r.subscription?.challenge?.id);
+                                const sub = subscriptions.find((s) => s?.id === r.subscription?.id);
+                                const usr = users.find((u) => u?.id === r.subscription?.user?.id);
+                                const userName = usr?.firstName && usr?.lastName ? `${usr?.firstName} ${usr?.lastName}`
+                                    : usr?.firstName ? usr?.firstName
+                                        : usr?.lastName ? usr?.lastName : "UNKNOWN USER";
+                                return (
+
+                                    <Card key={r.id} className="shadow-gentle">
+                                        <CardContent className="flex justify-between py-4">
+                                            <div className="flex-grow grid grid-cols-9 gap-2">
+                                                <div className="text-sm">
+                                                    <span className="text-muted-foreground">User:</span> {userName}
                                                 </div>
-                                                <p className="text-xs text-muted-foreground mt-2">Date: {r.reportDate}</p>
+                                                <div className="text-sm">
+                                                    <span className="text-muted-foreground">Session:</span> {ses?.name}
+                                                </div>
+                                                <div className="text-sm">
+                                                    <span className="text-muted-foreground">Challenge:</span> {chl?.name}
+                                                </div>
+                                                <div className="text-sm">
+                                                    <span className="text-muted-foreground">Pledge:</span> {sub?.target}
+                                                </div>
+                                                <div className="text-sm">
+                                                    <span className="text-muted-foreground">Target:</span> {chl?.target}
+                                                </div>
+                                                <div className="text-sm">
+                                                    <span className="text-muted-foreground">Evangelized:</span> {r.numberEvangelizedTo}
+                                                </div>
+                                                <div className="text-sm">
+                                                    <span className="text-muted-foreground">Converts:</span> {r.numberOfNewConverts}
+                                                </div>
+                                                <div className="text-sm">
+                                                    <span className="text-muted-foreground">Followed up:</span> {r.numberFollowedUp}
+                                                </div>
+                                                <div className="text-sm">
+                                                    <span className="text-muted-foreground">Reported On:</span> {formatDate(r.createdOn)}
+                                                </div>
                                             </div>
-                                            <div className="flex gap-2">
-                                                <Button variant="ghost" size="sm" onClick={() => handleViewReport(r)}><Eye className="w-4 h-4" /></Button>
-                                                <Button variant="ghost" size="sm" onClick={() => handleEditReport(r)}><Edit className="w-4 h-4" /></Button>
+
+                                            <div className="flex items-center gap-2">
+                                                <Button variant="ghost" size="sm" onClick={() => handleViewReport(r)}>
+                                                    <Eye className="w-4 h-4" />
+                                                </Button>
+                                                <Button variant="ghost" size="sm" onClick={() => handleEditReport(r)}>
+                                                    <Edit className="w-4 h-4" />
+                                                </Button>
                                                 <ConfirmRemoveDialog
-                                                    trigger={<Button variant="ghost" size="sm"><Trash2 className="w-4 h-4 text-destructive" /></Button>}
+                                                    trigger={
+                                                        <Button variant="ghost" size="sm">
+                                                            <Trash2 className="w-4 h-4 text-destructive" />
+                                                        </Button>
+                                                    }
                                                     title={`Delete report`}
                                                     description={`Delete this report?`}
                                                     confirmLabel="Delete"
                                                     onConfirm={() => handleDeleteReport(r.id)}
                                                 />
                                             </div>
-                                        </div>
-                                    </CardContent>
-                                </Card>
-                            ))}
+                                        </CardContent>
+                                    </Card>
+                                );
+                            })}
                         </div>
 
                         <Dialog open={viewReportDialogOpen} onOpenChange={setViewReportDialogOpen}>
                             <DialogContent>
                                 <DialogHeader><DialogTitle>Report Details</DialogTitle></DialogHeader>
                                 <div className="py-2">
+                                    <div className="text-sm"><strong>User:</strong> {userName}</div>
+                                    <div className="text-sm"><strong>Session:</strong> {concernedSession ? concernedSession?.name : ""}</div>
+                                    <div className="text-sm"><strong>Challenge:</strong> {concernedChallenge ? concernedChallenge?.name : ""}</div>
+                                    <div className="text-sm"><strong>Pledged:</strong> {concernedSubscription?.target}</div>
+                                    <div className="text-sm"><strong>Target:</strong> {concernedChallenge?.target}</div>
                                     <div className="text-sm"><strong>Evangelized:</strong> {viewingReport?.numberEvangelizedTo}</div>
                                     <div className="text-sm"><strong>Converts:</strong> {viewingReport?.numberOfNewConverts}</div>
                                     <div className="text-sm"><strong>Followed up:</strong> {viewingReport?.numberFollowedUp}</div>
                                     <div className="text-sm"><strong>Difficulties:</strong> {viewingReport?.difficulties}</div>
                                     <div className="text-sm"><strong>Remark:</strong> {viewingReport?.remark}</div>
+                                    <div className="text-sm"><strong>Created On:</strong> {formatDate(viewingReport?.createdOn)} </div>
+                                    <div className="text-sm"><strong>Updated On:</strong> {formatDate(viewingReport?.updatedOn)} </div>
                                 </div>
                                 <DialogFooter><Button onClick={() => setViewReportDialogOpen(false)}>Close</Button></DialogFooter>
                             </DialogContent>
@@ -1383,7 +1479,7 @@ const Admin = () => {
                             <Label>Challenge</Label>
                             <Select value={subscriptionChallengeId} onValueChange={setSubscriptionChallengeId}>
                                 <SelectTrigger><SelectValue placeholder="Select a challenge" /></SelectTrigger>
-                                <SelectContent>{challenges.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
+                                <SelectContent>{ ongoingSession?.challenges.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
                             </Select>
                         </div>
                         <div className="space-y-2"><Label>Target</Label><Input type="number" value={subscriptionTarget} onChange={(e) => setSubscriptionTarget(e.target.value)} /></div>

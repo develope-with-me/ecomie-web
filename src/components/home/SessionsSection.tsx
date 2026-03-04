@@ -26,6 +26,7 @@ const challengeColors: Record<string, string> = {
 
 const SessionsSection = () => {
   const [sessions, setSessions] = useState<SessionWithChallenges[]>([]);
+  const [ongoingSession, setOngoingSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -36,8 +37,9 @@ const SessionsSection = () => {
 
   const fetchSessions = async () => {
     try {
-      const [sessionsData, challengesData] = await Promise.all([
+      const [sessionsData, ongoingSessionData, challengesData] = await Promise.all([
         sessionApi.getAll(),
+        sessionApi.getOngoingSession(),
         challengeApi.getAll(),
       ]);
 
@@ -46,6 +48,7 @@ const SessionsSection = () => {
         challenges: challengesData.filter(c => c.sessionId === session.id)
       }));
 
+      setOngoingSession(ongoingSessionData);
       setSessions(sessionsWithChallenges);
     } catch (error) {
       console.error('Error fetching sessions:', error);
@@ -100,7 +103,7 @@ const SessionsSection = () => {
               <div className="space-y-3 mb-6">
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">Type:</span>
-                  <Badge variant="secondary">{challenge.type}</Badge>
+                  <Badge variant="secondary">{challenge.type.toString()}</Badge>
                 </div>
               </div>
               
@@ -176,32 +179,32 @@ const SessionsSection = () => {
             </TabsList>
 
             <TabsContent value="current">
-              {activeSessions.length === 0 ? (
+              {!ongoingSession ? (
                 <div className="text-center py-12">
                   <Calendar className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
                   <p className="text-muted-foreground">No active sessions at the moment.</p>
                 </div>
               ) : (
-                activeSessions.map(session => (
-                  <div key={session.id} className="mb-12">
+                // activeSessions.map(session => (
+                  <div key={ongoingSession.id} className="mb-12">
                     <div className="text-center mb-8">
                       <Badge variant="default" className="mb-2 bg-peaceful-green">Active</Badge>
-                      <h3 className="text-2xl font-bold text-foreground">{session.name}</h3>
-                      <p className="text-muted-foreground">{session.description}</p>
+                      <h3 className="text-2xl font-bold text-foreground">{ongoingSession.name}</h3>
+                      <p className="text-muted-foreground">{ongoingSession.description}</p>
                       <div className="flex items-center justify-center gap-4 mt-2 text-sm text-muted-foreground">
                         <span className="flex items-center gap-1">
                           <Calendar className="w-4 h-4" />
-                          {formatDate(session.startDate)} - {formatDate(session.endDate)}
+                          {formatDate(ongoingSession.startDate)} - {formatDate(ongoingSession.endDate)}
                         </span>
                       </div>
                     </div>
-                    {session.challenges.length > 0 ? (
-                      renderChallengeCards(session.challenges, true)
+                    {ongoingSession.challenges.length > 0 ? (
+                      renderChallengeCards(ongoingSession.challenges, true)
                     ) : (
                       <p className="text-center text-muted-foreground">No challenges for this session yet.</p>
                     )}
                   </div>
-                ))
+                // ))
               )}
             </TabsContent>
 

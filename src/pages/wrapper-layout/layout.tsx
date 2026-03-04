@@ -1,5 +1,5 @@
 import React from "react";
-import DashboardComponent from "../../component/dashboard/SideBar";
+import DashboardComponent from "@/components/dashboard/SideBar";
 type WrapperProps = {
   children: React.ReactNode;
 };

@@ -3,7 +3,7 @@ import React, {useEffect} from "react";
 import {ProfileDto} from "../../model/profileDto";
 
 
-const baseUrl = process.env.REACT_APP_BASE_URL
+const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
 // const api = axios.create({
 //     baseURL: 'http://34.224.81.76:80',

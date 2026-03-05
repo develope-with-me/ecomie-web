@@ -88,28 +88,50 @@ const Auth = () => {
         }
 
         const { error } = await signUp(email, password, firstName, lastName);
-        if (error) {
-          if (error.title === "Unique Constraint") {
+        console.log(error)
+
+        if (!error) {
             toast({
-              title: "Account Exists",
-              description: "This email is already registered. Please login instead.",
-              variant: "destructive",
+                title: "Welcome to ECOMIE!",
+                description: "Your account has been created successfully. Please check your email to verify email",
             });
-          } else {
+            navigate('/dashboard');
+        } else if(error.title === "Unique Constraint") {
             toast({
-              title: "Sign Up Failed",
+                title: "Account Exists",
+                description: "This email is already registered. Please login instead.",
+                variant: "destructive",
+            });
+        } else {
+            toast({
+                title: "Sign Up Failed",
                 description: isNonNullArray(error.invalidParams)  ? error.invalidParams[0].reason : error.detail,
                 // description: error.message,
-              variant: "destructive",
+                variant: "destructive",
             });
-          }
-        } else {
-          toast({
-            title: "Welcome to ECOMIE!",
-            description: "Your account has been created successfully.",
-          });
-          navigate('/dashboard');
         }
+        // if (error) {
+        //   if (error.title === "Unique Constraint") {
+        //     toast({
+        //       title: "Account Exists",
+        //       description: "This email is already registered. Please login instead.",
+        //       variant: "destructive",
+        //     });
+        //   } else {
+        //     toast({
+        //       title: "Sign Up Failed",
+        //         description: isNonNullArray(error.invalidParams)  ? error.invalidParams[0].reason : error.detail,
+        //         // description: error.message,
+        //       variant: "destructive",
+        //     });
+        //   }
+        // } else {
+        //   toast({
+        //     title: "Welcome to ECOMIE!",
+        //     description: "Your account has been created successfully.",
+        //   });
+        //   navigate('/dashboard');
+        // }
       }
     } finally {
       setIsSubmitting(false);

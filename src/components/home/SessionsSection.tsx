@@ -45,7 +45,7 @@ const SessionsSection = () => {
 
       const sessionsWithChallenges = sessionsData.map(session => ({
         ...session,
-        challenges: challengesData.filter(c => c.sessionId === session.id)
+        challenges: challengesData.filter(c => c.sessions.some(s => s.id === session.id))
       }));
 
       setOngoingSession(ongoingSessionData);

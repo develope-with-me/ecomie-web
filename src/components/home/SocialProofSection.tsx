@@ -1,8 +1,10 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Star, Quote } from 'lucide-react';
 
 const SocialProofSection = () => {
+    const [imgError, setImgError] = useState(false);
+
     const testimonials = [
         {
             name: "Pastor Michael Johnson",
@@ -79,11 +81,14 @@ const SocialProofSection = () => {
                                 <Quote className="w-8 h-8 text-accent mb-4" />
                                 <p className="text-muted-foreground mb-6 leading-relaxed">"{testimonial.content}"</p>
                                 <div className="flex items-center">
+                                    {!imgError && (
                                     <img
                                         src={testimonial.image}
                                         alt={testimonial.name}
                                         className="w-12 h-12 rounded-full mr-4 object-cover"
+                                        onError={() => setImgError(true)}
                                     />
+                                    )}
                                     <div>
                                         <div className="font-semibold text-foreground">{testimonial.name}</div>
                                         <div className="text-sm text-muted-foreground">{testimonial.role}</div>

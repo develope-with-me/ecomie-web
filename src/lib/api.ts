@@ -1,9 +1,9 @@
 // Spring Boot API Configuration
 // const API_BASE_URL = 'http://localhost:8081/api/v1';
-// const API_BASE_URL =    'http://13.247.159.172:8080/api/v1';
+const API_BASE_URL =    'http://13.247.159.172:8080/api/v1';
 import {string} from "zod";
 
-const API_BASE_URL =    'http://localhost:8081/api/v1';
+// const API_BASE_URL =    'http://localhost:8081/api/v1';
 
 // Token management
 const getAuthToken = (): string | null => {

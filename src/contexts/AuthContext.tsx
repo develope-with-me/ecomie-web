@@ -30,7 +30,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const initializeAuth = async () => {
       try {
         const currentUser = await authApi.getCurrentUser();
-        if (currentUser) {
+        if (currentUser && !!currentUser.accountEnabled) {
           setUser(currentUser);
           setIsAdmin(currentUser.role === 'ADMIN' || currentUser.role === 'SUPER_ADMIN');
         }
@@ -53,8 +53,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             password: password,
         };
       const response = await authApi.signUp(payload);
-      setUser(response.user);
-      setIsAdmin(response.user.role === 'ADMIN' || response.user.role === 'SUPER_ADMIN');
       return { error: null };
     } catch (error) {
       return { error: error as EcomieError };

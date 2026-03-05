@@ -30,7 +30,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const initializeAuth = async () => {
       try {
         const currentUser = await authApi.getCurrentUser();
-        if (currentUser && !!currentUser.accountEnabled) {
+        if (currentUser) {
           setUser(currentUser);
           setIsAdmin(currentUser.role === 'ADMIN' || currentUser.role === 'SUPER_ADMIN');
         }

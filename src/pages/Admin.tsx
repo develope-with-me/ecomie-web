@@ -157,17 +157,68 @@ const Admin = () => {
 
     const fetchAllData = async () => {
         try {
-            const [usersRes, sessionsRes, challengesRes, subsRes, reportsRes, ongoingSessionRes, ongoingSessionUsersRes, ongoingSessionSubscriptionRes] = await Promise.all([
-                userApi.getAllUsers(),
-                sessionApi.getAll(),
-                challengeApi.getAll(),
-                subscriptionApi.getAll(),
-                reportApi.getAll(),
-                sessionApi.getOngoingSession(),
-                userApi.getOngoingSessionUsers(),
-                subscriptionApi.getAll(true),
+            const fetchUsers = userApi.getAllUsers().catch((err) => {
+                console.error("Failed to fetch users:", err);
+                return []; // or another fallback value like []
+            });
 
+            const fetchSessions = sessionApi.getAll().catch((err) => {
+                console.error("Failed to fetch sessions:", err);
+                return []; // or another fallback value like []
+            });
+
+            const fetchChallenges = challengeApi.getAll().catch((err) => {
+                console.error("Failed to fetch challenges:", err);
+                return []; // or another fallback value like []
+            });
+
+            const fetchSubscriptions = subscriptionApi.getAll().catch((err) => {
+                console.error("Failed to fetch subscriptions:", err);
+                return []; // or another fallback value like []
+            });
+
+            const fetchReports = reportApi.getAll().catch((err) => {
+                console.error("Failed to fetch reports:", err);
+                return []; // or another fallback value like []
+            });
+
+            const fetchOngoingSession = sessionApi.getOngoingSession().catch((err) => {
+                console.error("Failed to fetch ongoing session:", err);
+                return null; // or another fallback value like []
+            });
+
+            const fetchOngoingSessionUsers = userApi.getOngoingSessionUsers().catch((err) => {
+                console.error("Failed to fetch ongoing session users:", err);
+                return []; // or another fallback value like []
+            });
+
+            const fetchOngoingSessionSubscriptions = subscriptionApi.getAll(true).catch((err) => {
+                console.error("Failed to fetch ongoing session subscriptions:", err);
+                return []; // or another fallback value like []
+            });
+
+            // Use Promise.all to run all fetch operations concurrently
+            const [
+                usersRes,
+                sessionsRes,
+                challengesRes,
+                subsRes,
+                reportsRes,
+                ongoingSessionRes,
+                ongoingSessionUsersRes,
+                ongoingSessionSubscriptionRes
+            ] = await Promise.all([
+                fetchUsers,
+                fetchSessions,
+                fetchChallenges,
+                fetchSubscriptions,
+                fetchReports,
+                fetchOngoingSession,
+                fetchOngoingSessionUsers,
+                fetchOngoingSessionSubscriptions
             ]);
+
+            // Set states with the potentially null values
             setUsers(usersRes);
             setSessions(sessionsRes);
             setChallenges(challengesRes);

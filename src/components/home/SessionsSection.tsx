@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Heart, Star, Crown, Calendar, Target } from 'lucide-react';
-import { sessionApi, challengeApi, Session, Challenge } from '@/lib/api';
+import {sessionApi, challengeApi, Session, Challenge, SessionStatus} from '@/lib/api';
 import { useAuth } from '@/contexts/AuthContext';
 
 interface SessionWithChallenges extends Session {
@@ -25,7 +25,8 @@ const challengeColors: Record<string, string> = {
 };
 
 const SessionsSection = () => {
-  const [sessions, setSessions] = useState<SessionWithChallenges[]>([]);
+  // const [sessions, setSessions] = useState<SessionWithChallenges[]>([]);
+  const [sessions, setSessions] = useState<Session[]>([]);
   const [ongoingSession, setOngoingSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
@@ -43,13 +44,15 @@ const SessionsSection = () => {
         challengeApi.getAll(),
       ]);
 
-      const sessionsWithChallenges = sessionsData.map(session => ({
-        ...session,
-        challenges: challengesData.filter(c => c.sessions.some(s => s.id === session.id))
-      }));
+      // const sessionsWithChallenges = sessionsData.map(session => ({
+      //   ...session,
+      //   // challenges: challengesData.filter(c => c.sessions.some(s => s.id === session.id))
+      //   challenges: challengesData.filter(ch => session.challenges.some(c => c.id === ch.id))
+      // }));
 
-      setOngoingSession(ongoingSessionData);
-      setSessions(sessionsWithChallenges);
+        // setSessions(sessionsWithChallenges);
+        setOngoingSession(ongoingSessionData);
+        setSessions(sessionsData);
     } catch (error) {
       console.error('Error fetching sessions:', error);
     } finally {
@@ -65,8 +68,8 @@ const SessionsSection = () => {
     }
   };
 
-  const activeSessions = sessions.filter(s => s.status === 'active');
-  const passedSessions = sessions.filter(s => s.status === 'completed');
+  // const activeSessions = sessions.filter(s => s.status === 'active');
+  const pastSessions = sessions.filter(s => s.status === SessionStatus.ENDED);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -144,6 +147,7 @@ const SessionsSection = () => {
   }
 
   // If no sessions exist, show placeholder content
+  // const hasNoSessions = true;
   const hasNoSessions = sessions.length === 0;
 
   return (
@@ -155,7 +159,7 @@ const SessionsSection = () => {
             Evangelism <span className="text-primary">Sessions</span>
           </h2>
           <p className="text-xl text-muted-foreground leading-relaxed">
-            Join our structured evangelism sessions and commit to making a difference. 
+            Join our structured evangelism sessions and commit to making a difference.
             Choose a challenge that matches your calling and availability.
           </p>
         </div>
@@ -166,7 +170,7 @@ const SessionsSection = () => {
               <Calendar className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
               <h3 className="text-xl font-semibold text-foreground mb-2">No Sessions Yet</h3>
               <p className="text-muted-foreground">
-                Sessions will appear here once created by administrators. 
+                Sessions will appear here once created by administrators.
                 Check back soon for upcoming evangelism opportunities!
               </p>
             </div>
@@ -198,7 +202,7 @@ const SessionsSection = () => {
                         </span>
                       </div>
                     </div>
-                    {ongoingSession.challenges.length > 0 ? (
+                    {ongoingSession.challenges?.length > 0 ? (
                       renderChallengeCards(ongoingSession.challenges, true)
                     ) : (
                       <p className="text-center text-muted-foreground">No challenges for this session yet.</p>
@@ -207,36 +211,36 @@ const SessionsSection = () => {
                 // ))
               )}
             </TabsContent>
-
-            <TabsContent value="passed">
-              {passedSessions.length === 0 ? (
-                <div className="text-center py-12">
-                  <Calendar className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-                  <p className="text-muted-foreground">No past sessions available.</p>
-                </div>
-              ) : (
-                passedSessions.map(session => (
-                  <div key={session.id} className="mb-12">
-                    <div className="text-center mb-8">
-                      <Badge variant="secondary" className="mb-2">Completed</Badge>
-                      <h3 className="text-2xl font-bold text-foreground">{session.name}</h3>
-                      <p className="text-muted-foreground">{session.description}</p>
-                      <div className="flex items-center justify-center gap-4 mt-2 text-sm text-muted-foreground">
-                        <span className="flex items-center gap-1">
-                          <Calendar className="w-4 h-4" />
-                          {formatDate(session.startDate)} - {formatDate(session.endDate)}
-                        </span>
-                      </div>
-                    </div>
-                    {session.challenges.length > 0 ? (
-                      renderChallengeCards(session.challenges, false)
-                    ) : (
-                      <p className="text-center text-muted-foreground">No challenges were in this session.</p>
-                    )}
-                  </div>
-                ))
-              )}
-            </TabsContent>
+            
+            {/*<TabsContent value="passed">*/}
+            {/*  {pastSessions.length === 0 ? (*/}
+            {/*    <div className="text-center py-12">*/}
+            {/*      <Calendar className="w-12 h-12 mx-auto text-muted-foreground mb-4" />*/}
+            {/*      <p className="text-muted-foreground">No past sessions available.</p>*/}
+            {/*    </div>*/}
+            {/*  ) : (*/}
+            {/*    pastSessions.map(session => (*/}
+            {/*      <div key={session.id} className="mb-12">*/}
+            {/*        <div className="text-center mb-8">*/}
+            {/*          <Badge variant="secondary" className="mb-2">Completed</Badge>*/}
+            {/*          <h3 className="text-2xl font-bold text-foreground">{session.name}</h3>*/}
+            {/*          <p className="text-muted-foreground">{session.description}</p>*/}
+            {/*          <div className="flex items-center justify-center gap-4 mt-2 text-sm text-muted-foreground">*/}
+            {/*            <span className="flex items-center gap-1">*/}
+            {/*              <Calendar className="w-4 h-4" />*/}
+            {/*              {formatDate(session.startDate)} - {formatDate(session.endDate)}*/}
+            {/*            </span>*/}
+            {/*          </div>*/}
+            {/*        </div>*/}
+            {/*        {session.challenges.length > 0 ? (*/}
+            {/*          renderChallengeCards(session.challenges, false)*/}
+            {/*        ) : (*/}
+            {/*          <p className="text-center text-muted-foreground">No challenges were in this session.</p>*/}
+            {/*        )}*/}
+            {/*      </div>*/}
+            {/*    ))*/}
+            {/*  )}*/}
+            {/*</TabsContent>*/}
           </Tabs>
         )}
 

@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { ArrowLeft, Target, Heart } from 'lucide-react';
-import { challengeApi, subscriptionApi, Challenge } from '@/lib/api';
+import {challengeApi, subscriptionApi, Challenge, UserRole, userApi} from '@/lib/api';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import {isNonNullArray} from "@/lib/utils";
@@ -73,13 +73,14 @@ const Subscribe = () => {
       //   return;
       // }
 
-      await subscriptionApi.create({
-        challengeId: challenge.id,
-        target: parseInt(personalTarget) || challenge.target,
-        // name: name || `My ${challenge.name} commitment`,
-        // description: description || undefined,
-        // type: 'personal',
-      });
+        const data = {
+            challengeId: challenge.id,
+            target: parseInt(personalTarget) || challenge.target,
+            // name: name || `My ${challenge.name} commitment`,
+            // description: description || undefined,
+            // type: 'personal',
+        };
+        await subscriptionApi.create(data);
 
       toast({
         title: "Subscribed Successfully!",
@@ -112,7 +113,28 @@ const Subscribe = () => {
     return null;
   }
 
-  return (
+    const becomeAnEcomiest = async()=> {
+
+        try {
+            const genericResponse = await userApi.requestRoleChange("ECOMIEST");
+
+            toast({
+                title: "Email Sent!",
+                // description: `You've joined the ${challenge.name} challenge. May God bless your efforts!`,
+                description: genericResponse.description
+            });
+        } catch (error: any) {
+            console.error('Error subscribing:', error);
+            toast({
+                title: "Subscription Failed",
+                description: isNonNullArray(error.invalidParams)  ? error.invalidParams[0].reason : error.detail,
+                // description: error.message || "Failed to subscribe to the challenge.",
+                variant: "destructive",
+            });
+        }
+    }
+
+    return (
     <div className="min-h-screen bg-gradient-heavenly py-12 px-4">
       <div className="max-w-2xl mx-auto">
         <Button
@@ -132,14 +154,24 @@ const Subscribe = () => {
               </div>
             </div>
             <h1 className="text-2xl font-bold text-foreground">
-              Subscribe to {challenge.name} Challenge
+                { (user?.role !== UserRole.ECOMIEST) ? "ECOMIEST ONLY!!" : `Subscribe to  ${challenge.name} + Challenge` }
             </h1>
+              {(user?.role === UserRole.ECOMIEST) && (
             <p className="text-muted-foreground">
               {challenge.description || "Commit to making a difference in your community"}
             </p>
+              )}
           </CardHeader>
 
           <CardContent>
+              {(user?.role !== UserRole.ECOMIEST) ?
+              <div className="bg-muted/50 rounded-lg p-4 mb-6">
+                  <div className="flex items-center gap-2 text-sm">
+                      <span className="text-foreground">Contact administrator or click on the link to <a href={""} className="font-bold" onClick={becomeAnEcomiest}>become an ECOMIEST</a></span>
+                  </div>
+              </div>
+               :
+            <div>
             <div className="bg-muted/50 rounded-lg p-4 mb-6">
               <div className="flex items-center gap-2 text-sm">
                 <Target className="w-4 h-4 text-primary" />
@@ -149,19 +181,7 @@ const Subscribe = () => {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="name">Commitment Name (Optional)</Label>
-                <Input
-                  id="name"
-                  type="text"
-                  placeholder={`My ${challenge.name} commitment`}
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                />
-                <p className="text-xs text-muted-foreground">
-                  Give your commitment a personal name
-                </p>
-              </div>
+
 
               <div className="space-y-2">
                 <Label htmlFor="target">Your Personal Target</Label>
@@ -179,16 +199,32 @@ const Subscribe = () => {
                 </p>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="description">Personal Notes (Optional)</Label>
-                <Textarea
-                  id="description"
-                  placeholder="Any personal notes or prayer requests for this commitment..."
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  rows={4}
-                />
-              </div>
+              {/*  TODO: For future use - 'Commitment Name' is supposed to come before 'Your Personal Target' */}
+
+              {/*  <div className="space-y-2">*/}
+              {/*    <Label htmlFor="name">Commitment Name (Optional)</Label>*/}
+              {/*    <Input*/}
+              {/*      id="name"*/}
+              {/*      type="text"*/}
+              {/*      placeholder={`My ${challenge.name} commitment`}*/}
+              {/*      value={name}*/}
+              {/*      onChange={(e) => setName(e.target.value)}*/}
+              {/*    />*/}
+              {/*    <p className="text-xs text-muted-foreground">*/}
+              {/*      Give your commitment a personal name*/}
+              {/*    </p>*/}
+              {/*  </div>*/}
+
+              {/*<div className="space-y-2">*/}
+              {/*  <Label htmlFor="description">Personal Notes (Optional)</Label>*/}
+              {/*  <Textarea*/}
+              {/*    id="description"*/}
+              {/*    placeholder="Any personal notes or prayer requests for this commitment..."*/}
+              {/*    value={description}*/}
+              {/*    onChange={(e) => setDescription(e.target.value)}*/}
+              {/*    rows={4}*/}
+              {/*  />*/}
+              {/*</div>*/}
 
               <Button 
                 type="submit" 
@@ -200,6 +236,8 @@ const Subscribe = () => {
                 {submitting ? 'Subscribing...' : 'Confirm Subscription'}
               </Button>
             </form>
+            </div>
+              }
           </CardContent>
         </Card>
       </div>

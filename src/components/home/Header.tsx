@@ -2,13 +2,13 @@ import React from 'react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Menu, X, ChevronDown, Heart, User, LogOut } from 'lucide-react';
+import {Menu, X, ChevronDown, Heart, User, LogOut, Shield} from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import ecomieLogo from "@/images/ecomie-logo.png";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { user, signOut } = useAuth();
+  const { user, isAdmin, signOut } = useAuth();
   const navigate = useNavigate();
 
   const handleSignOut = async () => {
@@ -50,6 +50,14 @@ const Header = () => {
                   <User className="w-4 h-4 mr-2" />
                   Dashboard
                 </Button>
+
+                  {isAdmin && (
+              <Button variant="ghost" size="sm" onClick={() => navigate('/admin')} className="text-primary-foreground hover:bg-primary-foreground/10">
+                <Shield className="w-4 h-4 mr-2" />
+                Admin
+              </Button>
+            )}
+
                 <Button variant="heavenly" onClick={handleSignOut}>
                   <LogOut className="w-4 h-4 mr-2" />
                   Sign Out
@@ -99,6 +107,13 @@ const Header = () => {
                   >
                     Dashboard
                   </Button>
+                    {isAdmin && (
+              <Button variant="ghost" size="sm" onClick={() => navigate('/admin')} className="text-primary-foreground hover:bg-primary-foreground/10">
+                <Shield className="w-4 h-4 mr-2" />
+                Admin
+              </Button>
+            )}
+
                   <Button
                     variant="outline"
                     className="w-full border-primary-foreground/20 text-primary-foreground"

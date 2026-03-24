@@ -1,5 +1,6 @@
-import { clsx, type ClassValue } from "clsx"
-import { twMerge } from "tailwind-merge"
+import {type ClassValue, clsx} from "clsx"
+import {twMerge} from "tailwind-merge"
+import {User} from "@/lib/api";
 
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs))
@@ -17,3 +18,9 @@ export function formatDate(dateString: string) {
         year: 'numeric'
     });
 };
+
+export function computeUserName(user: User) {
+    return user?.firstName && user?.lastName ? `${user?.firstName} ${user?.lastName}`
+        : user?.firstName ? user?.firstName
+            : user?.lastName ? user?.lastName : "UNKNOWN USER";
+}

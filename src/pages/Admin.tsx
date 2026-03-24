@@ -44,7 +44,7 @@ import {
     Eye,
     X,
 } from "lucide-react";
-import { isNonNullArray, formatDate } from "@/lib/utils";
+import { isNonNullArray, formatDate, computeUserName } from "@/lib/utils";
 import SessionDetails from "@/components/SessionDetails";
 import ChallengeDetails from "@/components/ChallengeDetails";
 import ConfirmRemoveDialog from "@/components/ConfirmRemoveDialog";
@@ -510,6 +510,8 @@ const Admin = () => {
             toast({ title: "Error", description: Array.isArray(err.invalidParams) ? err.invalidParams[0].reason : err.detail, variant: "destructive" });
         }
     };
+
+
 
     const handleEditUser = (userProfile: User) => {
         setEditingUser(userProfile);
@@ -1211,7 +1213,7 @@ const Admin = () => {
                             <DialogContent>
                                 <DialogHeader><DialogTitle>User Details</DialogTitle></DialogHeader>
                                 <div className="py-2">
-                                    <div className="text-sm"><strong>Name:</strong> {viewingUser?.firstName} {viewingUser?.lastName}</div>
+                                    <div className="text-sm"><strong>Name:</strong> {computeUserName(viewingUser)} </div>
                                     <div className="text-sm"><strong>Email:</strong> {viewingUser?.email}</div>
                                     <div className="text-sm"><strong>Role:</strong> {viewingUser?.role?.toString()}</div>
                                     <div className="text-sm"><strong>Phone:</strong> {viewingUser?.phoneNumber}</div>
@@ -1252,8 +1254,11 @@ const Admin = () => {
 
                                                 <div className="flex-1">
                                                     <h3 className="font-semibold cursor-pointer">
-                                                        {userName} → Pledge: {sub?.target}
+                                                        {computeUserName(usr)} → Pledge: {sub?.target}
                                                     </h3>
+                                                    <p className="flex items-center gap-4 mt-2 text-xs">
+                                                        { (usr && usr?.email) ? usr.email : computeUserName(usr)}
+                                                    </p>
                                                     <p className="flex items-center gap-4 mt-2">
                                                         Session: {ses.name}
                                                     </p>
@@ -1288,9 +1293,10 @@ const Admin = () => {
                             <DialogContent>
                                 <DialogHeader><DialogTitle>Subscription Details</DialogTitle></DialogHeader>
                                 <div className="py-2">
-                                    <div className="text-sm"><strong>User:</strong> {userName}</div>
-                                    <div className="text-sm"><strong>Session:</strong> {viewingSubscription ? sessions.find(s => s.id === viewingSubscription.session?.id)?.name : ""}</div>
-                                    <div className="text-sm"><strong>Challenge:</strong> {viewingSubscription ? challenges.find(c => c.id === viewingSubscription.challenge?.id)?.name : ""}</div>
+                                    <div className="text-sm"><strong>User:</strong> {computeUserName(viewingSubscription ? viewingSubscription?.user : null)}</div>
+                                    <div className="text-sm"><strong>Email:</strong> { (viewingSubscription?.user && viewingSubscription?.user?.email) ? viewingSubscription?.user.email : computeUserName(viewingSubscription?.user)}</div>
+                                    <div className="text-sm"><strong>Session:</strong> {viewingSubscription ? viewingSubscription.session?.name : ""}</div>
+                                    <div className="text-sm"><strong>Challenge:</strong> {viewingSubscription ? viewingSubscription.challenge?.name : ""}</div>
                                     <div className="text-sm"><strong>Commitment:</strong> {viewingSubscription?.target}</div>
                                     <div className="text-sm"><strong>Target:</strong> { viewingSubscription?.challenge?.target}</div>
                                     <div className="text-sm"><strong>Subscribed On:</strong> {formatDate(viewingSubscription?.createdOn)}</div>
@@ -1325,9 +1331,12 @@ const Admin = () => {
 
                                     <Card key={r.id} className="shadow-gentle">
                                         <CardContent className="flex justify-between py-4">
-                                            <div className="flex-grow grid grid-cols-9 gap-2">
+                                            <div className="flex-grow grid grid-cols-10 gap-2">
                                                 <div className="text-sm">
-                                                    <span className="text-muted-foreground">User:</span> {userName}
+                                                    <span className="text-muted-foreground">User:</span> {computeUserName(usr)}
+                                                </div>
+                                                <div className="text-xs">
+                                                    <span className="text-muted-foreground">Email:</span> { (usr && usr?.email) ? usr.email : computeUserName(usr)}
                                                 </div>
                                                 <div className="text-sm">
                                                     <span className="text-muted-foreground">Session:</span> {ses?.name}
@@ -1355,7 +1364,7 @@ const Admin = () => {
                                                 </div>
                                             </div>
 
-                                            <div className="flex items-center gap-2">
+                                            <div className="flex items-center gap-0.1">
                                                 <Button variant="ghost" size="sm" onClick={() => handleViewReport(r)}>
                                                     <Eye className="w-4 h-4" />
                                                 </Button>
@@ -1384,7 +1393,8 @@ const Admin = () => {
                             <DialogContent>
                                 <DialogHeader><DialogTitle>Report Details</DialogTitle></DialogHeader>
                                 <div className="py-2">
-                                    <div className="text-sm"><strong>User:</strong> {userName}</div>
+                                    <div className="text-sm"><strong>User:</strong> {computeUserName(concernedUser)}</div>
+                                    <div className="text-sm"><strong>Email:</strong> { (concernedUser && concernedUser?.email) ? concernedUser?.email : computeUserName(concernedUser)}</div>
                                     <div className="text-sm"><strong>Session:</strong> {concernedSession ? concernedSession?.name : ""}</div>
                                     <div className="text-sm"><strong>Challenge:</strong> {concernedChallenge ? concernedChallenge?.name : ""}</div>
                                     <div className="text-sm"><strong>Pledged:</strong> {concernedSubscription?.target}</div>
@@ -1523,7 +1533,7 @@ const Admin = () => {
                             <Label>User</Label>
                             <Select value={subscriptionUserId} onValueChange={setSubscriptionUserId}>
                                 <SelectTrigger><SelectValue placeholder="Select a user" /></SelectTrigger>
-                                <SelectContent>{users.map(u => <SelectItem key={u.id} value={u.id}>{u.firstName} {u.lastName}</SelectItem>)}</SelectContent>
+                                <SelectContent>{users.map(u => <SelectItem key={u.id} value={u.id}> {computeUserName(u)}</SelectItem>)}</SelectContent>
                             </Select>
                         </div>
                         <div className="space-y-2">

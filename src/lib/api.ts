@@ -1,7 +1,7 @@
 // Spring Boot API Configuration
 // const API_BASE_URL = 'http://localhost:8081/api/v1';
 // const API_BASE_URL =    'http://13.247.159.172:8080/api/v1';
-import {string} from "zod";
+import {boolean, string} from "zod";
 
 const API_BASE_URL =    'http://localhost:8081/api/v1';
 
@@ -115,6 +115,10 @@ export interface EcomieError extends Error {
     detail: string | null;
     instance: string | null;
     invalidParams: ProblemError[] | null;
+}
+
+export interface ImageFile {
+    file: string | null | undefined;
 }
 
 export interface User {
@@ -360,7 +364,20 @@ export const userApi = {
   },
 
   getUserPix: async (id: string): Promise<string> => {
-    return apiRequest<string>(`/secure/admin/user-pix/${id}`);
+      const token = getAuthToken();
+      const response = await fetch(`${API_BASE_URL}/secure/admin/user-pix/${id}`, {
+          headers: {
+              ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+          },
+      });
+      if (!response.ok) {
+          return null;
+      }
+      const blob = await response.blob();
+      if (blob.size === 0) {
+          return null;
+      }
+      return URL.createObjectURL(blob);
   },
 
   getSessionUsers: async (sessionId: string, blocked: boolean, challengeId?: string): Promise<User[]> => {

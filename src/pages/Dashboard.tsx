@@ -25,13 +25,13 @@ import {
     ReportRequestBody,
 } from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
-import { 
-    User, LogOut, Heart, Calendar, FileText, Target, 
-    Plus, Edit, Trash2, Home, Shield, Eye, ChevronLeft, 
+import {
+    User, LogOut, Heart, Calendar, FileText, Target,
+    Plus, Edit, Trash2, Home, Shield, Eye, ChevronLeft,
     ChevronRight, ZoomIn, ZoomOut, Minimize2, Maximize2,
-    Star, Crown,
+    Star, Crown, LayoutDashboard,
 } from 'lucide-react';
-import { formatDate, computeUserName } from '@/lib/utils';
+import {formatDate, computeUserName, isNonNullArray} from '@/lib/utils';
 import ecomieLogo from "@/images/ecomie-logo.png";
 
 const challengeIcons: Record<string, React.ElementType> = {
@@ -60,6 +60,8 @@ const Dashboard = () => {
     const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
     const [reports, setReports] = useState<ChallengeReport[]>([]);
     const [loading, setLoading] = useState(true);
+    const [profilePicture, setProfilePicture] = useState<string | null>(null);
+    const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
 
     const [expandedSessionId, setExpandedSessionId] = useState<string | null>(null);
 
@@ -71,6 +73,8 @@ const Dashboard = () => {
     const [profileRegion, setProfileRegion] = useState('');
     const [profileCity, setProfileCity] = useState('');
     const [profileLanguage, setProfileLanguage] = useState('');
+    const [profileAvatar, setProfileAvatar] = useState<File | null>(null);
+    const [profileAvatarPreview, setProfileAvatarPreview] = useState<string | null>(null);
 
     const [viewReportDialogOpen, setViewReportDialogOpen] = useState(false);
     const [viewingReport, setViewingReport] = useState<ChallengeReport | null>(null);
@@ -84,9 +88,15 @@ const Dashboard = () => {
     const [reportDifficulties, setReportDifficulties] = useState('');
     const [reportRemark, setReportRemark] = useState('');
 
+    const [subscribeDialogOpen, setSubscribeDialogOpen] = useState(false);
+    const [selectedChallenge, setSelectedChallenge] = useState<Challenge | null>(null);
+    const [personalTarget, setPersonalTarget] = useState('');
+    const [submitting, setSubmitting] = useState(false);
+
     const [currentDate, setCurrentDate] = useState(new Date());
     const [calendarView, setCalendarView] = useState<CalendarView>('month');
     const [calendarExpanded, setCalendarExpanded] = useState(true);
+    const [sessionExpanded, setSessionExpanded] = useState(true);
 
     useEffect(() => {
         if (!authLoading && !user) {
@@ -95,6 +105,17 @@ const Dashboard = () => {
             fetchData();
         }
     }, [user, authLoading, navigate]);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            const target = event.target as HTMLElement;
+            if (!target.closest('.profile-dropdown')) {
+                setProfileDropdownOpen(false);
+            }
+        };
+        document.addEventListener('click', handleClickOutside);
+        return () => document.removeEventListener('click', handleClickOutside);
+    }, []);
 
     const fetchData = async () => {
         try {
@@ -108,17 +129,19 @@ const Dashboard = () => {
             setProfileCity(profileData.city || '');
             setProfileLanguage(profileData.language || '');
 
-            const [ongoingSessionData, subscriptionsData, reportsData] = await Promise.all([
+            const [ongoingSessionData, subscriptionsData, reportsData, profilePix] = await Promise.all([
                 sessionApi.getOngoingSession().catch(() => null),
-                subscriptionApi.getMine(),
-                isEcomiest ? reportApi.getMine() : Promise.resolve([]),
+                subscriptionApi.getMine().catch(() => null),
+                isEcomiest ? reportApi.getMine().catch(() => null) : Promise.resolve([]),
+                userApi.getMyPix().catch(() => null),
             ]);
 
             setOngoingSession(ongoingSessionData);
-            setSubscriptions(subscriptionsData);
-            setReports(reportsData);
-        } catch (error) {
-            console.error('Error fetching data:', error);
+            setSubscriptions(subscriptionsData ? subscriptionsData : []);
+            setReports(reportsData ? reportsData : []);
+            setProfilePicture(profilePix);
+        } catch (err) {
+            console.error('Error fetching data:', err);
         } finally {
             setLoading(false);
         }
@@ -134,6 +157,7 @@ const Dashboard = () => {
                 region: profileRegion,
                 city: profileCity,
                 language: profileLanguage,
+                avatar: profileAvatar,
             });
             setProfile(prev => prev ? { 
                 ...prev, 
@@ -146,19 +170,36 @@ const Dashboard = () => {
                 language: profileLanguage,
             } : null);
             setEditingProfile(false);
+            setProfileAvatar(null);
+            setProfileAvatarPreview(null);
             toast({ title: "Profile Updated", description: "Your profile has been updated successfully." });
-        } catch (error: any) {
-            toast({ title: "Error", description: error.detail || error.message, variant: "destructive" });
+        } catch (err: any) {
+            toast({ title: "Error", description: isNonNullArray(err.invalidParams) ? err.invalidParams[0].reason : err.detail, variant: "destructive" });
         }
     };
 
-    const handleSubscribe = async (challengeId: string) => {
+    const handleOpenSubscribeDialog = (challenge: Challenge) => {
+        setSelectedChallenge(challenge);
+        setPersonalTarget(challenge.target.toString());
+        setSubscribeDialogOpen(true);
+    };
+
+    const handleSubscribe = async () => {
+        if (!selectedChallenge) return;
+        setSubmitting(true);
         try {
-            await subscriptionApi.create({ target: 0, challengeId });
+            await subscriptionApi.create({ 
+                target: parseInt(personalTarget) || selectedChallenge.target, 
+                challengeId: selectedChallenge.id 
+            });
             toast({ title: "Subscribed", description: "You have successfully subscribed to the challenge." });
+            setSubscribeDialogOpen(false);
+            setSelectedChallenge(null);
             fetchData();
-        } catch (error: any) {
-            toast({ title: "Error", description: error.detail || error.message, variant: "destructive" });
+        } catch (err: any) {
+            toast({ title: "Error", description: isNonNullArray(err.invalidParams) ? err.invalidParams[0].reason : err.detail, variant: "destructive" });
+        } finally {
+            setSubmitting(false);
         }
     };
 
@@ -192,8 +233,8 @@ const Dashboard = () => {
             toast({ title: "Report Updated" });
             setEditReportDialogOpen(false);
             fetchData();
-        } catch (error: any) {
-            toast({ title: "Error", description: error.detail || error.message, variant: "destructive" });
+        } catch (err: any) {
+            toast({ title: "Error", description: isNonNullArray(err.invalidParams) ? err.invalidParams[0].reason : err.detail, variant: "destructive" });
         }
     };
 
@@ -215,8 +256,8 @@ const Dashboard = () => {
             setAddReportDialogOpen(false);
             resetReportForm();
             fetchData();
-        } catch (error: any) {
-            toast({ title: "Error", description: error.detail || error.message, variant: "destructive" });
+        } catch (err: any) {
+            toast({ title: "Error", description: isNonNullArray(err.invalidParams) ? err.invalidParams[0].reason : err.detail, variant: "destructive" });
         }
     };
 
@@ -235,8 +276,8 @@ const Dashboard = () => {
             await reportApi.delete(reportId);
             setReports(prev => prev.filter(r => r.id !== reportId));
             toast({ title: "Report Deleted" });
-        } catch (error: any) {
-            toast({ title: "Error", description: error.detail || error.message, variant: "destructive" });
+        } catch (err: any) {
+            toast({ title: "Error", description: isNonNullArray(err.invalidParams) ? err.invalidParams[0].reason : err.detail, variant: "destructive" });
         }
     };
 
@@ -251,7 +292,8 @@ const Dashboard = () => {
 
     const isSubscribedToChallenge = (challengeId: string | undefined) => {
         if (!challengeId) return false;
-        return subscriptions.some(sub => sub.challenge?.id === challengeId);
+        // if(subscriptions == null) return false;
+        return subscriptions.some(sub => sub.user?.id === user.id && sub.challenge?.id === challengeId);
     };
 
     const zoomIn = () => {
@@ -434,7 +476,7 @@ const Dashboard = () => {
                                         Already Subscribed
                                     </Button>
                                 ) : (
-                                    <Button variant="cta" className="w-full" onClick={() => handleSubscribe(challenge.id!)}>
+                                    <Button variant="cta" className="w-full" onClick={() => handleOpenSubscribeDialog(challenge)}>
                                         Subscribe
                                     </Button>
                                 )
@@ -466,27 +508,75 @@ const Dashboard = () => {
                     </div>
 
                     <div className="flex items-center gap-4">
-                        <Button variant="ghost" size="sm" onClick={() => navigate('/')} className="text-primary-foreground hover:bg-primary-foreground/10">
-                            <Home className="w-4 h-4 mr-2" />
-                            Home
-                        </Button>
-                        {isAdmin && (
-                            <Button variant="ghost" size="sm" onClick={() => navigate('/admin')} className="text-primary-foreground hover:bg-primary-foreground/10">
-                                <Shield className="w-4 h-4 mr-2" />
-                                Admin
-                            </Button>
-                        )}
-                        <Button variant="heavenly" size="sm" onClick={handleSignOut}>
-                            <LogOut className="w-4 h-4 mr-2" />
-                            Sign Out
-                        </Button>
+                        <div className="relative profile-dropdown">
+                            <button 
+                                onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
+                                className="flex items-center gap-2 text-primary-foreground hover:bg-primary-foreground/10 px-3 py-2 rounded-md transition-colors"
+                            >
+                                {profilePicture ? (
+                                    <img 
+                                        src={profilePicture} 
+                                        alt="Profile" 
+                                        className="w-8 h-8 rounded-full object-cover"
+                                    />
+                                ) : (
+                                    <div className="w-8 h-8 rounded-full bg-gradient-heavenly flex items-center justify-center">
+                                        <User className="w-4 h-4 text-primary" />
+                                    </div>
+                                )}
+                                <span className="font-medium">{profileFirstName || 'User'}</span>
+                            </button>
+                            {profileDropdownOpen && (
+                                <div className="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg border z-50">
+                                    <div className="px-4 py-3 border-b">
+                                        <p className="text-sm font-medium text-foreground">
+                                            {profileFirstName} {profileLastName}
+                                        </p>
+                                        <p className="text-xs text-muted-foreground">{profile?.email}</p>
+                                    </div>
+                                    <button 
+                                        onClick={() => { setProfileDropdownOpen(false); navigate('/'); }}
+                                        className="w-full flex items-center gap-2 px-4 py-2 text-sm text-foreground hover:bg-muted transition-colors"
+                                    >
+                                        <Home className="w-4 h-4" />
+                                        Home
+                                    </button>
+                                    <button 
+                                        onClick={() => { setProfileDropdownOpen(false); navigate('/dashboard'); }}
+                                        className="w-full flex items-center gap-2 px-4 py-2 text-sm text-foreground hover:bg-muted transition-colors"
+                                    >
+                                        <LayoutDashboard className="w-4 h-4" />
+                                        Dashboard
+                                    </button>
+                                    {isAdmin && (
+                                        <button 
+                                            onClick={() => { setProfileDropdownOpen(false); navigate('/admin'); }}
+                                            className="w-full flex items-center gap-2 px-4 py-2 text-sm text-foreground hover:bg-muted transition-colors"
+                                        >
+                                            <Shield className="w-4 h-4" />
+                                            Admin Panel
+                                        </button>
+                                    )}
+                                    <button 
+                                        onClick={() => {
+                                            setProfileDropdownOpen(false);
+                                            handleSignOut();
+                                        }}
+                                        className="w-full flex items-center gap-2 px-4 py-2 text-sm text-destructive hover:bg-muted transition-colors"
+                                    >
+                                        <LogOut className="w-4 h-4" />
+                                        Logout
+                                    </button>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
             </header>
 
             <main className="container mx-auto px-4 py-8">
                 <h1 className="text-3xl font-bold text-foreground mb-8">
-                    Welcome, {profile?.firstName || 'Evangelist'}!
+                    Welcome, {profile?.firstName || profile?.lastName || 'Evangelist'}!
                 </h1>
 
                 <Tabs defaultValue="sessions" className="w-full">
@@ -509,42 +599,53 @@ const Dashboard = () => {
 
                     {/* Sessions Tab */}
                     <TabsContent value="sessions">
-                        <div className="space-y-8">
+                        <div className="space-y-6">
                             {ongoingSession && (
-                                <div>
-                                    <h2 className="text-xl font-semibold text-foreground mb-4">Current Session</h2>
-                                    <Card className="shadow-gentle mb-6">
-                                        <CardHeader>
-                                            <CardTitle className="flex items-center gap-3">
-                                                <Badge variant="default" className="bg-peaceful-green">{ongoingSession.status?.toString()}</Badge>
-                                                <span>{ongoingSession.name}</span>
-                                            </CardTitle>
-                                            <p className="text-muted-foreground">{ongoingSession.description}</p>
-                                            <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
-                                                <span className="flex items-center gap-1">
-                                                    <Calendar className="w-4 h-4" />
-                                                    {formatDate(ongoingSession.startDate)} - {formatDate(ongoingSession.endDate)}
-                                                </span>
-                                            </div>
-                                        </CardHeader>
-                                    </Card>
-                                    {ongoingSession.challenges && ongoingSession.challenges.length > 0 ? (
-                                        renderChallengeCards(ongoingSession.challenges)
-                                    ) : (
-                                        <p className="text-muted-foreground">No challenges for this session yet.</p>
+                                <Card className="shadow-gentle">
+                                    <CardHeader>
+                                        <div className="flex items-center justify-between">
+                                            <CardTitle>Current Session</CardTitle>
+                                            <Button variant="ghost" size="sm" onClick={() => setSessionExpanded(!sessionExpanded)}>
+                                                {sessionExpanded ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+                                            </Button>
+                                        </div>
+                                    </CardHeader>
+                                    {sessionExpanded && (
+                                        <CardContent>
+                                            <Card className="shadow-gentle mb-4">
+                                                <CardHeader className="pb-2">
+                                                    <CardTitle className="flex items-center gap-3 text-lg">
+                                                        <Badge variant="default" className="bg-peaceful-green">{ongoingSession.status?.toString()}</Badge>
+                                                        <span>{ongoingSession.name}</span>
+                                                    </CardTitle>
+                                                    <p className="text-sm text-muted-foreground">{ongoingSession.description}</p>
+                                                    <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
+                                                        <span className="flex items-center gap-1">
+                                                            <Calendar className="w-4 h-4" />
+                                                            {formatDate(ongoingSession.startDate)} - {formatDate(ongoingSession.endDate)}
+                                                        </span>
+                                                    </div>
+                                                </CardHeader>
+                                            </Card>
+                                            {ongoingSession.challenges && ongoingSession.challenges.length > 0 ? (
+                                                renderChallengeCards(ongoingSession.challenges)
+                                            ) : (
+                                                <p className="text-muted-foreground">No challenges for this session yet.</p>
+                                            )}
+                                        </CardContent>
                                     )}
-                                </div>
+                                </Card>
                             )}
 
-                            {subscriptions.length > 0 && (
+                            {subscriptions.length > 0 && isEcomiest && (
                                 <div>
                                     <h2 className="text-xl font-semibold text-foreground mb-4">My Past Subscriptions</h2>
                                     <div className="space-y-2">
                                         <div className="grid grid-cols-5 gap-4 p-3 bg-muted rounded-t-lg font-medium text-sm">
                                             <div>Session</div>
-                                            <div>Target</div>
                                             <div>Challenge</div>
                                             <div>Challenge Target</div>
+                                            <div>Pledge</div>
                                             <div>Subscribed On</div>
                                         </div>
                                         {subscriptions.map(sub => (
@@ -554,9 +655,9 @@ const Dashboard = () => {
                                                     onClick={() => toggleSessionExpansion(sub.id!)}
                                                 >
                                                     <div className="font-medium truncate">{sub.session?.name || '-'}</div>
-                                                    <div>{sub.target || '-'}</div>
                                                     <div className="truncate">{sub.challenge?.name || '-'}</div>
                                                     <div>{sub.challenge?.target || '-'}</div>
+                                                    <div>{sub.target || '-'}</div>
                                                     <div className="text-muted-foreground text-sm">{formatDate(sub.createdOn)}</div>
                                                 </div>
                                                 {expandedSessionId === sub.id && sub.session && (
@@ -700,10 +801,13 @@ const Dashboard = () => {
                                         <div className="grid grid-cols-12 gap-4 p-3 bg-muted rounded-t-lg font-medium text-sm">
                                             <div className="col-span-2">Session</div>
                                             <div className="col-span-2">Challenge</div>
-                                            <div className="col-span-2">Pledge</div>
-                                            <div className="col-span-2">Target</div>
+                                            <div className="col-span-1">Target</div>
+                                            <div className="col-span-1">Pledge</div>
+                                            <div className="col-span-1">Evangelized</div>
+                                            <div className="col-span-1">Converts</div>
+                                            <div className="col-span-1">Follow Ups</div>
                                             <div className="col-span-2">Reported On</div>
-                                            <div className="col-span-2 text-right">Actions</div>
+                                            <div className="col-span-1 text-right">Actions</div>
                                         </div>
                                         {reports.map(report => (
                                             <Card key={report.id} className="shadow-gentle">
@@ -711,10 +815,13 @@ const Dashboard = () => {
                                                     <div className="grid grid-cols-12 gap-4 items-center">
                                                         <div className="col-span-2 truncate">{report.subscription?.session?.name || '-'}</div>
                                                         <div className="col-span-2 truncate">{report.subscription?.challenge?.name || '-'}</div>
-                                                        <div className="col-span-2">{report.subscription?.target || '-'}</div>
-                                                        <div className="col-span-2">{report.subscription?.challenge?.target || '-'}</div>
+                                                        <div className="col-span-1">{report.subscription?.challenge?.target || '-'}</div>
+                                                        <div className="col-span-1">{report.subscription?.target || '-'}</div>
+                                                        <div className="col-span-1">{report.numberEvangelizedTo || '-'}</div>
+                                                        <div className="col-span-1">{report.numberOfNewConverts || '-'}</div>
+                                                        <div className="col-span-1">{report.numberFollowedUp || '-'}</div>
                                                         <div className="col-span-2 text-sm text-muted-foreground">{formatDate(report.createdOn)}</div>
-                                                        <div className="col-span-2 flex justify-end gap-2">
+                                                        <div className="col-span-1 flex justify-end gap-2">
                                                             <Button variant="ghost" size="sm" onClick={() => handleViewReport(report)}>
                                                                 <Eye className="w-4 h-4" />
                                                             </Button>
@@ -767,6 +874,30 @@ const Dashboard = () => {
                                             <Input id="email" value={profile?.email || ''} disabled />
                                         </div>
                                         <div className="space-y-2">
+                                            <Label htmlFor="avatar">Profile Picture</Label>
+                                            <Input 
+                                                id="avatar" 
+                                                type="file" 
+                                                accept="image/*"
+                                                onChange={(e) => {
+                                                    const file = e.target.files?.[0];
+                                                    if (file) {
+                                                        setProfileAvatar(file);
+                                                        setProfileAvatarPreview(URL.createObjectURL(file));
+                                                    }
+                                                }} 
+                                            />
+                                            {profileAvatarPreview && (
+                                                <div className="mt-2">
+                                                    <img 
+                                                        src={profileAvatarPreview} 
+                                                        alt="Avatar preview" 
+                                                        className="w-20 h-20 rounded-full object-cover"
+                                                    />
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className="space-y-2">
                                             <Label htmlFor="phoneNumber">Phone Number</Label>
                                             <Input id="phoneNumber" value={profilePhoneNumber} onChange={(e) => setProfilePhoneNumber(e.target.value)} />
                                         </div>
@@ -790,7 +921,11 @@ const Dashboard = () => {
                                         </div>
                                         <div className="flex gap-2">
                                             <Button onClick={handleUpdateProfile}>Save Changes</Button>
-                                            <Button variant="outline" onClick={() => setEditingProfile(false)}>Cancel</Button>
+                                            <Button variant="outline" onClick={() => {
+                                                setEditingProfile(false);
+                                                setProfileAvatar(null);
+                                                setProfileAvatarPreview(null);
+                                            }}>Cancel</Button>
                                         </div>
                                     </div>
                                 ) : (
@@ -903,6 +1038,50 @@ const Dashboard = () => {
                             <Button onClick={handleSaveReport} className="w-full">Update Report</Button>
                         </DialogFooter>
                     </div>
+                </DialogContent>
+            </Dialog>
+
+            {/* Subscribe Modal */}
+            <Dialog open={subscribeDialogOpen} onOpenChange={setSubscribeDialogOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Subscribe to {selectedChallenge?.name} Challenge</DialogTitle>
+                    </DialogHeader>
+                    {selectedChallenge && (
+                        <div className="space-y-4 py-4">
+                            <div className="bg-muted/50 rounded-lg p-4">
+                                <div className="flex items-center gap-2 text-sm">
+                                    <Target className="w-4 h-4 text-primary" />
+                                    <span className="text-muted-foreground">Challenge Target:</span>
+                                    <span className="font-semibold text-foreground">{selectedChallenge.target} souls</span>
+                                </div>
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="personalTarget">Your Personal Target</Label>
+                                <Input
+                                    id="personalTarget"
+                                    type="number"
+                                    min="1"
+                                    placeholder={selectedChallenge.target.toString()}
+                                    value={personalTarget}
+                                    onChange={(e) => setPersonalTarget(e.target.value)}
+                                    required
+                                />
+                                <p className="text-xs text-muted-foreground">
+                                    Set your own goal (minimum suggested: {selectedChallenge.target})
+                                </p>
+                            </div>
+                            <DialogFooter>
+                                <Button 
+                                    onClick={handleSubscribe} 
+                                    className="w-full" 
+                                    disabled={submitting}
+                                >
+                                    {submitting ? 'Subscribing...' : 'Confirm Subscription'}
+                                </Button>
+                            </DialogFooter>
+                        </div>
+                    )}
                 </DialogContent>
             </Dialog>
         </div>

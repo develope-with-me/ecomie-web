@@ -18,15 +18,20 @@ const removeAuthToken = (): void => {
   localStorage.removeItem('auth_token');
 };
 
-const getAuthHeaders = (contentType: string): HeadersInit => {
+const getAuthHeaders = (contentType: string | undefined | null): HeadersInit => {
   const token = getAuthToken();
-  if (contentType) {
+  if (contentType && contentType !== 'multipart/form-data') {
+      return {
+          'Content-Type': contentType,
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+      };
+  }
+  if (contentType === 'multipart/form-data') {
       return {
           ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
       };
   }
   return {
-    // 'Content-Type':  !contentType ? 'application/json' : contentType,
     'Content-Type':  'application/json',
     ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
   };
@@ -321,8 +326,21 @@ export const userApi = {
     return apiRequest<User>('/secure/user/me');
   },
 
-  getMyPix: async (): Promise<string> => {
-    return apiRequest<string>('/secure/user/my-pix');
+  getMyPix: async (): Promise<string | null> => {
+    const token = getAuthToken();
+    const response = await fetch(`${API_BASE_URL}/secure/user/my-pix`, {
+      headers: {
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+      },
+    });
+    if (!response.ok) {
+      return null;
+    }
+    const blob = await response.blob();
+    if (blob.size === 0) {
+      return null;
+    }
+    return URL.createObjectURL(blob);
   },
 
   getUserProfile: async (id: string): Promise<User> => {
@@ -387,53 +405,32 @@ export const userApi = {
         // Build FormData and append only provided fields
         const form = new FormData();
 
-        // if (data.firstName !== undefined && data.firstName !== null) {
-        //     form.append('firstName', String(data.firstName));
-        // }
-        // if (data.lastName !== undefined && data.lastName !== null) {
-        //     form.append('lastName', String(data.lastName));
-        // }
-        // if (data.phoneNumber !== undefined && data.phoneNumber !== null) {
-        //     form.append('phoneNumber', String(data.phoneNumber));
-        // }
-        // if (data.country !== undefined && data.country !== null) {
-        //     form.append('country', String(data.country));
-        // }
-        // if (data.region !== undefined && data.region !== null) {
-        //     form.append('region', String(data.region));
-        // }
-        // if (data.city !== undefined && data.city !== null) {
-        //     form.append('city', String(data.city));
-        // }
-
         const { avatar, ...newData } = data;
-
-        form.append('json', JSON.stringify(newData));
-        // If caller provided an avatar File, append it. Accept null to explicitly clear avatar if backend supports it.
-        if (data.avatar instanceof File) {
-            form.append('file', data.avatar, data.avatar.name);
-        }
-        else if (data.avatar === null) {
-            // Some backends expect an explicit empty value to clear files; use an empty string field named avatar-clear (adjust if your API differs)
-            form.append('file', '');
+        const jsonBlob = new Blob([JSON.stringify(newData)], { type: 'application/json' });
+        form.append('json', jsonBlob, 'data.json');
+        if (avatar instanceof File) {
+            form.append('file', avatar, avatar.name);
         }
 
-        // Do not set Content-Type header; let the browser add the correct multipart boundary.
         return apiRequest<GenericResponse>(`/secure/admin/update/users/${id}`, {
             method: 'PUT',
             body: form,
-            // If your apiRequest helper automatically sets JSON headers for all requests,
-            // you may need to pass an option to prevent that behavior or call fetch directly:
-            // return fetch(`/secure/admin/update/users/${id}`, { method: 'PUT', body: form, credentials: 'include' }).then(res => res.json());
         }, 'multipart/form-data');
     },
 
-    updateMyProfile: async (data: Partial<User>): Promise<GenericResponse> => {
-    return apiRequest<GenericResponse>('/secure/user/update', {
-      method: 'PUT',
-      body: JSON.stringify(data),
-    });
-  },
+    updateMyProfile: async (data: Partial<User> & { avatar?: File | null }): Promise<GenericResponse> => {
+        const form = new FormData();
+        const { avatar, ...newData } = data;
+        const jsonBlob = new Blob([JSON.stringify(newData)], { type: 'application/json' });
+        form.append('json', jsonBlob, 'data.json');
+        if (avatar instanceof File) {
+            form.append('file', avatar, avatar.name);
+        }
+        return apiRequest<GenericResponse>('/secure/user/update', {
+            method: 'PUT',
+            body: form,
+        }, 'multipart/form-data');
+    },
 
   getAllUsers: async (): Promise<User[]> => {
     return apiRequest<User[]>('/secure/admin/users');

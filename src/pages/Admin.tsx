@@ -42,7 +42,7 @@ import {
     BookOpen,
     Shield,
     Eye,
-    X,
+    X, LayoutDashboard,
 } from "lucide-react";
 import { isNonNullArray, formatDate, computeUserName } from "@/lib/utils";
 import SessionDetails from "@/components/SessionDetails";
@@ -65,6 +65,8 @@ const Admin = () => {
     const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
     const [reports, setReports] = useState<ChallengeReport[]>([]);
     const [loading, setLoading] = useState(true);
+    const [profilePicture, setProfilePicture] = useState<string | null>(null);
+    const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
 
     // New: modal controls for viewing session and challenge
     const [viewSessionDialogOpen, setViewSessionDialogOpen] = useState(false);
@@ -109,6 +111,8 @@ const Admin = () => {
     const [userCountry, setUserCountry] = useState("");
     const [userRegion, setUserRegion] = useState("");
     const [userCity, setUserCity] = useState("");
+    const [userAvatar, setUserAvatar] = useState<File | null>(null);
+    const [userAvatarPreview, setUserAvatarPreview] = useState<string | null>(null);
 
     // Subscription
     const [subscriptionDialogOpen, setSubscriptionDialogOpen] = useState(false);
@@ -155,6 +159,17 @@ const Admin = () => {
         }
     }, [user, isAdmin, authLoading, navigate]);
 
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            const target = event.target as HTMLElement;
+            if (!target.closest('.profile-dropdown')) {
+                setProfileDropdownOpen(false);
+            }
+        };
+        document.addEventListener('click', handleClickOutside);
+        return () => document.removeEventListener('click', handleClickOutside);
+    }, []);
+
     const fetchAllData = async () => {
         try {
             const fetchUsers = userApi.getAllUsers().catch((err) => {
@@ -197,6 +212,11 @@ const Admin = () => {
                 return []; // or another fallback value like []
             });
 
+            const fetchProfilePix = userApi.getMyPix().catch((err) => {
+                console.error("Failed to fetch profile picture:", err);
+                return null;
+            });
+
             // Use Promise.all to run all fetch operations concurrently
             const [
                 usersRes,
@@ -206,7 +226,8 @@ const Admin = () => {
                 reportsRes,
                 ongoingSessionRes,
                 ongoingSessionUsersRes,
-                ongoingSessionSubscriptionRes
+                ongoingSessionSubscriptionRes,
+                profilePixRes
             ] = await Promise.all([
                 fetchUsers,
                 fetchSessions,
@@ -215,7 +236,8 @@ const Admin = () => {
                 fetchReports,
                 fetchOngoingSession,
                 fetchOngoingSessionUsers,
-                fetchOngoingSessionSubscriptions
+                fetchOngoingSessionSubscriptions,
+                fetchProfilePix
             ]);
 
             // Set states with the potentially null values
@@ -227,6 +249,7 @@ const Admin = () => {
             setOngoingSession(ongoingSessionRes);
             setOngoingSessionUsers(ongoingSessionUsersRes);
             setOngoingSessionSubscriptions(ongoingSessionSubscriptionRes);
+            setProfilePicture(profilePixRes);
         } catch (err) {
             console.error(err);
             toast({ title: "Error", description: "Failed to load data", variant: "destructive" });
@@ -498,6 +521,7 @@ const Admin = () => {
                 country: userCountry,
                 region: userRegion,
                 city: userCity,
+                avatar: userAvatar,
             });
             if (editingUser.role !== userRole) {
                 await userApi.assignNewRole(userEmail, userRole);
@@ -580,6 +604,8 @@ const Admin = () => {
         setUserRegion("");
         setUserCity("");
         setUserPassword("");
+        setUserAvatar(null);
+        setUserAvatarPreview(null);
     };
 
     const handleSubscribeUser = (userProfile: User) => {
@@ -773,18 +799,66 @@ const Admin = () => {
                     </div>
 
                     <div className="flex items-center gap-4">
-                        <Button variant="ghost" size="sm" onClick={() => navigate("/")} className="text-primary-foreground hover:bg-primary-foreground/10">
-                            <Home className="w-4 h-4 mr-2" />
-                            Home
-                        </Button>
-                        <Button variant="ghost" size="sm" onClick={() => navigate("/dashboard")} className="text-primary-foreground hover:bg-primary-foreground/10">
-                            <Heart className="w-4 h-4 mr-2" />
-                            Dashboard
-                        </Button>
-                        <Button variant="heavenly" size="sm" onClick={handleSignOut}>
-                            <LogOut className="w-4 h-4 mr-2" />
-                            Sign Out
-                        </Button>
+                        <div className="relative profile-dropdown">
+                            <button 
+                                onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
+                                className="flex items-center gap-2 text-primary-foreground hover:bg-primary-foreground/10 px-3 py-2 rounded-md transition-colors"
+                            >
+                                {profilePicture ? (
+                                    <img 
+                                        src={profilePicture} 
+                                        alt="Profile" 
+                                        className="w-8 h-8 rounded-full object-cover"
+                                    />
+                                ) : (
+                                    <div className="w-8 h-8 rounded-full bg-gradient-divine flex items-center justify-center">
+                                        <Users className="w-4 h-4 text-primary-foreground" />
+                                    </div>
+                                )}
+                                <span className="font-medium">{user?.firstName || 'Admin'}</span>
+                            </button>
+                            {profileDropdownOpen && (
+                                <div className="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg border z-50">
+                                    <div className="px-4 py-3 border-b">
+                                        <p className="text-sm font-medium text-foreground">
+                                            {user?.firstName} {user?.lastName}
+                                        </p>
+                                        <p className="text-xs text-muted-foreground">{user?.email}</p>
+                                    </div>
+                                    <button 
+                                        onClick={() => { setProfileDropdownOpen(false); navigate('/'); }}
+                                        className="w-full flex items-center gap-2 px-4 py-2 text-sm text-foreground hover:bg-muted transition-colors"
+                                    >
+                                        <Home className="w-4 h-4" />
+                                        Home
+                                    </button>
+                                    <button 
+                                        onClick={() => { setProfileDropdownOpen(false); navigate('/dashboard'); }}
+                                        className="w-full flex items-center gap-2 px-4 py-2 text-sm text-foreground hover:bg-muted transition-colors"
+                                    >
+                                        <LayoutDashboard className="w-4 h-4" />
+                                        Dashboard
+                                    </button>
+                                    <button 
+                                        onClick={() => { setProfileDropdownOpen(false); navigate('/admin'); }}
+                                        className="w-full flex items-center gap-2 px-4 py-2 text-sm text-foreground hover:bg-muted transition-colors"
+                                    >
+                                        <Shield className="w-4 h-4" />
+                                        Admin Panel
+                                    </button>
+                                    <button 
+                                        onClick={() => {
+                                            setProfileDropdownOpen(false);
+                                            handleSignOut();
+                                        }}
+                                        className="w-full flex items-center gap-2 px-4 py-2 text-sm text-destructive hover:bg-muted transition-colors"
+                                    >
+                                        <LogOut className="w-4 h-4" />
+                                        Logout
+                                    </button>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
             </header>
@@ -1319,6 +1393,25 @@ const Admin = () => {
                         </div>
 
                         <div className="space-y-4">
+                            <Card key={"reportHeader"} className="shadow-gentle">
+                                <CardContent className="flex justify-between py-4">
+                                    <div className="flex-grow grid grid-cols-12 gap-2">
+                                    {/*<div className="grid grid-cols-5 gap-4 p-3 bg-muted rounded-t-lg font-medium text-sm">*/}
+                                            <div className="col-span-1 font-bold">User</div>
+                                            <div className="col-span-2 font-bold">Email</div>
+                                            <div className="col-span-1 font-bold">Session</div>
+                                            <div className="col-span-1 font-bold">Challenge</div>
+                                            <div className="col-span-1 font-bold">Pledge</div>
+                                            <div className="col-span-1 font-bold">Target</div>
+                                            <div className="col-span-1 font-bold">Evangelized</div>
+                                            <div className="col-span-1 font-bold">Converts</div>
+                                            <div className="col-span-1 font-bold">Followed up</div>
+                                            <div className="col-span-1 font-bold">Reported On</div>
+                                            {/*<div className="flex items-center gap-0.1"></div>*/}
+                                    </div>
+                                </CardContent>
+                            </Card>
+
                             {reports.map((r) => {
                                 const ses = sessions.find((s) => s?.id === r.subscription?.session?.id);
                                 const chl = challenges.find((c) => c?.id === r.subscription?.challenge?.id);
@@ -1331,36 +1424,36 @@ const Admin = () => {
 
                                     <Card key={r.id} className="shadow-gentle">
                                         <CardContent className="flex justify-between py-4">
-                                            <div className="flex-grow grid grid-cols-10 gap-2">
-                                                <div className="text-sm">
-                                                    <span className="text-muted-foreground">User:</span> {computeUserName(usr)}
+                                            <div className="flex-grow grid grid-cols-12 gap-2">
+                                                <div className="text-sm col-span-1">
+                                                    {computeUserName(usr)}
                                                 </div>
-                                                <div className="text-xs">
-                                                    <span className="text-muted-foreground">Email:</span> { (usr && usr?.email) ? usr.email : computeUserName(usr)}
+                                                <div className="text-sm col-span-2">
+                                                    { (usr && usr?.email) ? usr.email : computeUserName(usr)}
                                                 </div>
-                                                <div className="text-sm">
-                                                    <span className="text-muted-foreground">Session:</span> {ses?.name}
+                                                <div className="text-sm col-span-1">
+                                                    {ses?.name}
                                                 </div>
-                                                <div className="text-sm">
-                                                    <span className="text-muted-foreground">Challenge:</span> {chl?.name}
+                                                <div className="text-sm col-span-1">
+                                                    {chl?.name}
                                                 </div>
-                                                <div className="text-sm">
-                                                    <span className="text-muted-foreground">Pledge:</span> {sub?.target}
+                                                <div className="text-sm col-span-1">
+                                                    {sub?.target}
                                                 </div>
-                                                <div className="text-sm">
-                                                    <span className="text-muted-foreground">Target:</span> {chl?.target}
+                                                <div className="text-sm col-span-1">
+                                                    {chl?.target}
                                                 </div>
-                                                <div className="text-sm">
-                                                    <span className="text-muted-foreground">Evangelized:</span> {r.numberEvangelizedTo}
+                                                <div className="text-sm col-span-1">
+                                                    {r.numberEvangelizedTo}
                                                 </div>
-                                                <div className="text-sm">
-                                                    <span className="text-muted-foreground">Converts:</span> {r.numberOfNewConverts}
+                                                <div className="text-sm col-span-1">
+                                                    {r.numberOfNewConverts}
                                                 </div>
-                                                <div className="text-sm">
-                                                    <span className="text-muted-foreground">Followed up:</span> {r.numberFollowedUp}
+                                                <div className="text-sm col-span-1">
+                                                    {r.numberFollowedUp}
                                                 </div>
-                                                <div className="text-sm">
-                                                    <span className="text-muted-foreground">Reported On:</span> {formatDate(r.createdOn)}
+                                                <div className="text-sm col-span-1">
+                                                    {formatDate(r.createdOn)}
                                                 </div>
                                             </div>
 
@@ -1446,26 +1539,51 @@ const Admin = () => {
                         )}
 
                         {editingUser && (
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <Label>Role</Label>
-                                    <Select value={userRole} onValueChange={setUserRole}>
-                                        <SelectTrigger><SelectValue /></SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value={UserRole.USER}>User</SelectItem>
-                                            <SelectItem value={UserRole.ADMIN}>Admin</SelectItem>
-                                            <SelectItem value={UserRole.SUPER_ADMIN}>Super Admin</SelectItem>
-                                            <SelectItem value={UserRole.ECOMIEST}>Ecomiest</SelectItem>
-                                            <SelectItem value={UserRole.COACH}>Coach</SelectItem>
-                                        </SelectContent>
-                                    </Select>
+                            <>
+                                <div className="space-y-2">
+                                    <Label>Profile Picture</Label>
+                                    <Input 
+                                        type="file" 
+                                        accept="image/*"
+                                        onChange={(e) => {
+                                            const file = e.target.files?.[0];
+                                            if (file) {
+                                                setUserAvatar(file);
+                                                setUserAvatarPreview(URL.createObjectURL(file));
+                                            }
+                                        }} 
+                                    />
+                                    {userAvatarPreview && (
+                                        <div className="mt-2">
+                                            <img 
+                                                src={userAvatarPreview} 
+                                                alt="Avatar preview" 
+                                                className="w-20 h-20 rounded-full object-cover"
+                                            />
+                                        </div>
+                                    )}
                                 </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <Label>Role</Label>
+                                        <Select value={userRole} onValueChange={setUserRole}>
+                                            <SelectTrigger><SelectValue /></SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value={UserRole.USER}>User</SelectItem>
+                                                <SelectItem value={UserRole.ADMIN}>Admin</SelectItem>
+                                                <SelectItem value={UserRole.SUPER_ADMIN}>Super Admin</SelectItem>
+                                                <SelectItem value={UserRole.ECOMIEST}>Ecomiest</SelectItem>
+                                                <SelectItem value={UserRole.COACH}>Coach</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
 
-                                <div>
-                                    <Label>Phone</Label>
-                                    <Input value={userPhoneNumber} onChange={(e) => setUserPhoneNumber(e.target.value)} />
+                                    <div>
+                                        <Label>Phone</Label>
+                                        <Input value={userPhoneNumber} onChange={(e) => setUserPhoneNumber(e.target.value)} />
+                                    </div>
                                 </div>
-                            </div>
+                            </>
                         )}
 
                         {editingUser && (

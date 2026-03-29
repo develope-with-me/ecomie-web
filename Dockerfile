@@ -17,7 +17,9 @@ COPY . .
 RUN npm run build
 
 # Production Stage
-FROM nginx:latest
+FROM nginx:alpine
+
+RUN apk add --no-cache curl
 
 # Copy the NGINX configuration file
 COPY nginx.conf /etc/nginx/conf.d/default.conf

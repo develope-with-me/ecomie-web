@@ -50,6 +50,7 @@ import ChallengeDetails from "@/components/ChallengeDetails";
 import ConfirmRemoveDialog from "@/components/ConfirmRemoveDialog";
 import Validators from "@/components/Validators";
 import UserDetails from "@/components/UserDetails";
+import ReportsCalendar from "@/components/ReportsCalendar";
 
 const Admin = () => {
     const { user, isAdmin, signOut, loading: authLoading } = useAuth();
@@ -1383,8 +1384,16 @@ const Admin = () => {
 
                     {/* Reports */}
                     <TabsContent value="reports">
-                        <div className="flex justify-between items-center mb-6">
-                            <h2 className="text-xl font-semibold">Reports ({reports.length})</h2>
+                        <ReportsCalendar 
+                            reports={reports}
+                            title="All Reports"
+                            onViewReport={handleViewReport}
+                            onEditReport={handleEditReport}
+                            defaultView="year"
+                        />
+                        
+                        <div className="flex justify-between items-center mt-6 mb-4">
+                            <h2 className="text-xl font-semibold">Reports List ({reports.length})</h2>
                             <div className="flex gap-2">
                                 <Button onClick={() => { resetReportForm(); setReportDialogOpen(true); }}>
                                     <Plus className="w-4 h-4 mr-2" /> Add Report

@@ -33,6 +33,7 @@ import {
 } from 'lucide-react';
 import {formatDate, computeUserName, isNonNullArray} from '@/lib/utils';
 import ecomieLogo from "@/images/ecomie-logo.png";
+import ReportsCalendar from '@/components/ReportsCalendar';
 
 const challengeIcons: Record<string, React.ElementType> = {
     'Faithful': Heart,
@@ -45,8 +46,6 @@ const challengeColors: Record<string, string> = {
     'Devoted': 'text-accent',
     'Shepherd': 'text-primary',
 };
-
-type CalendarView = 'day' | 'week' | 'month' | 'year';
 
 const Dashboard = () => {
     const { user, isAdmin, signOut, loading: authLoading } = useAuth();
@@ -93,9 +92,6 @@ const Dashboard = () => {
     const [personalTarget, setPersonalTarget] = useState('');
     const [submitting, setSubmitting] = useState(false);
 
-    const [currentDate, setCurrentDate] = useState(new Date());
-    const [calendarView, setCalendarView] = useState<CalendarView>('month');
-    const [calendarExpanded, setCalendarExpanded] = useState(true);
     const [sessionExpanded, setSessionExpanded] = useState(true);
 
     useEffect(() => {
@@ -294,153 +290,6 @@ const Dashboard = () => {
         if (!challengeId) return false;
         // if(subscriptions == null) return false;
         return subscriptions.some(sub => sub.user?.id === user.id && sub.challenge?.id === challengeId);
-    };
-
-    const zoomIn = () => {
-        const views: CalendarView[] = ['year', 'month', 'week', 'day'];
-        const currentIndex = views.indexOf(calendarView);
-        if (currentIndex < views.length - 1) {
-            setCalendarView(views[currentIndex + 1]);
-        }
-    };
-
-    const zoomOut = () => {
-        const views: CalendarView[] = ['year', 'month', 'week', 'day'];
-        const currentIndex = views.indexOf(calendarView);
-        if (currentIndex > 0) {
-            setCalendarView(views[currentIndex - 1]);
-        }
-    };
-
-    const navigateMonth = (direction: number) => {
-        const newDate = new Date(currentDate);
-        newDate.setMonth(newDate.getMonth() + direction);
-        setCurrentDate(newDate);
-    };
-
-    const getReportDates = () => {
-        const dates = new Set<string>();
-        reports.forEach(report => {
-            if (report.createdOn) {
-                dates.add(new Date(report.createdOn).toDateString());
-            }
-        });
-        return dates;
-    };
-
-    const renderCalendar = () => {
-        const reportDates = getReportDates();
-        const year = currentDate.getFullYear();
-        const month = currentDate.getMonth();
-
-        const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
-            'July', 'August', 'September', 'October', 'November', 'December'];
-        const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-
-        const firstDayOfMonth = new Date(year, month, 1).getDay();
-        const daysInMonth = new Date(year, month + 1, 0).getDate();
-        const daysInPrevMonth = new Date(year, month, 0).getDate();
-
-        const cells: React.ReactNode[] = [];
-
-        if (calendarView === 'year') {
-            for (let m = 0; m < 12; m++) {
-                const monthStart = new Date(year, m, 1);
-                const monthEnd = new Date(year, m + 1, 0);
-                const firstDay = monthStart.getDay();
-                const days = monthEnd.getDate();
-                const monthCells: React.ReactNode[] = [];
-
-                for (let d = 0; d < 7; d++) {
-                    const dayNum = d < firstDay ? daysInPrevMonth - firstDay + d + 1 : d - firstDay + 1;
-                    const isCurrentMonth = d >= firstDay && dayNum <= days;
-                    if (isCurrentMonth) {
-                        const dateStr = new Date(year, m, dayNum).toDateString();
-                        const hasReport = reportDates.has(dateStr);
-                        monthCells.push(
-                            <div key={d} className={`w-3 h-3 rounded-full ${hasReport ? 'bg-primary' : 'bg-muted'}`} />
-                        );
-                    } else {
-                        monthCells.push(<div key={d} className="w-3 h-3" />);
-                    }
-                }
-                cells.push(
-                    <div key={m} className="flex-1 min-w-[80px]">
-                        <div className="text-xs font-medium mb-1">{monthNames[m].slice(0, 3)}</div>
-                        <div className="grid grid-cols-7 gap-0.5">{monthCells}</div>
-                    </div>
-                );
-            }
-        } else if (calendarView === 'month') {
-            for (let d = 0; d < 7; d++) {
-                cells.push(<div key={d} className="text-center text-xs font-medium text-muted-foreground">{dayNames[d]}</div>);
-            }
-            for (let i = 0; i < firstDayOfMonth; i++) {
-                cells.push(<div key={`empty-${i}`} className="w-8 h-8" />);
-            }
-            for (let day = 1; day <= daysInMonth; day++) {
-                const dateStr = new Date(year, month, day).toDateString();
-                const hasReport = reportDates.has(dateStr);
-                const isToday = new Date().toDateString() === dateStr;
-                cells.push(
-                    <div key={day} className={`w-8 h-8 flex items-center justify-center rounded-full text-xs ${hasReport ? 'bg-primary text-primary-foreground font-bold' : isToday ? 'border border-primary' : ''}`}>
-                        {day}
-                    </div>
-                );
-            }
-        } else if (calendarView === 'week') {
-            const startOfWeek = new Date(currentDate);
-            startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
-            for (let d = 0; d < 7; d++) {
-                const date = new Date(startOfWeek);
-                date.setDate(date.getDate() + d);
-                const dateStr = date.toDateString();
-                const hasReport = reportDates.has(dateStr);
-                const isToday = new Date().toDateString() === dateStr;
-                cells.push(
-                    <div key={d} className={`flex-1 min-w-[100px] p-2 rounded ${hasReport ? 'bg-primary/10' : ''} ${isToday ? 'border border-primary' : ''}`}>
-                        <div className="text-xs font-medium text-muted-foreground">{dayNames[d]}</div>
-                        <div className="text-lg font-bold">{date.getDate()}</div>
-                        {hasReport && <div className="text-xs text-primary mt-1">Has Report</div>}
-                    </div>
-                );
-            }
-        } else if (calendarView === 'day') {
-            const dateStr = currentDate.toDateString();
-            const dayReports = reports.filter(r => r.createdOn && new Date(r.createdOn).toDateString() === dateStr);
-            return (
-                <div className="space-y-4">
-                    {dayReports.length === 0 ? (
-                        <p className="text-muted-foreground text-center py-4">No reports for this day.</p>
-                    ) : (
-                        dayReports.map(report => (
-                            <Card key={report.id} className="shadow-gentle">
-                                <CardContent className="py-4">
-                                    <div className="space-y-2">
-                                        <div className="flex items-center gap-2">
-                                            <span className="font-medium">{report.subscription?.challenge?.name || 'Challenge'}</span>
-                                            <Badge variant="outline">{report.subscription?.session?.name || 'Session'}</Badge>
-                                        </div>
-                                        <div className="grid grid-cols-3 gap-2 text-sm">
-                                            <div>Evangelized: {report.numberEvangelizedTo}</div>
-                                            <div>Converts: {report.numberOfNewConverts}</div>
-                                            <div>Followed up: {report.numberFollowedUp}</div>
-                                        </div>
-                                        {report.remark && <p className="text-sm text-muted-foreground">{report.remark}</p>}
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        ))
-                    )}
-                </div>
-            );
-        }
-
-        return (
-            <div className={`space-y-4 ${calendarView === 'year' ? 'grid grid-cols-3 gap-4' : ''}`}>
-                {cells}
-            </div>
-        );
     };
 
     const renderChallengeCards = (challenges: Challenge[], showSubscribeButton: boolean = true) => (
@@ -694,41 +543,13 @@ const Dashboard = () => {
                     {isEcomiest && (
                         <TabsContent value="reports">
                             <div className="space-y-6">
-                                <Card className="shadow-gentle">
-                                    <CardHeader>
-                                        <div className="flex items-center justify-between">
-                                            <CardTitle>Reports Calendar</CardTitle>
-                                            <div className="flex items-center gap-2">
-                                                <Button variant="ghost" size="sm" onClick={zoomOut} disabled={calendarView === 'year'}>
-                                                    <ZoomOut className="w-4 h-4" />
-                                                </Button>
-                                                <Button variant="ghost" size="sm" onClick={zoomIn} disabled={calendarView === 'day'}>
-                                                    <ZoomIn className="w-4 h-4" />
-                                                </Button>
-                                                <Button variant="ghost" size="sm" onClick={() => setCalendarExpanded(!calendarExpanded)}>
-                                                    {calendarExpanded ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
-                                                </Button>
-                                            </div>
-                                        </div>
-                                    </CardHeader>
-                                    {calendarExpanded && (
-                                        <CardContent>
-                                            <div className="flex items-center justify-between mb-4">
-                                                <Button variant="ghost" size="sm" onClick={() => navigateMonth(-1)}>
-                                                    <ChevronLeft className="w-4 h-4" />
-                                                </Button>
-                                                <h3 className="text-lg font-semibold">
-                                                    {calendarView === 'year' ? currentDate.getFullYear() : 
-                                                        `${currentDate.toLocaleString('default', { month: 'long' })} ${currentDate.getFullYear()}`}
-                                                </h3>
-                                                <Button variant="ghost" size="sm" onClick={() => navigateMonth(1)}>
-                                                    <ChevronRight className="w-4 h-4" />
-                                                </Button>
-                                            </div>
-                                            {renderCalendar()}
-                                        </CardContent>
-                                    )}
-                                </Card>
+                                <ReportsCalendar 
+                                    reports={reports}
+                                    title="Reports Calendar"
+                                    onViewReport={handleViewReport}
+                                    onEditReport={handleEditReport}
+                                    defaultView="year"
+                                />
 
                                 <div className="flex items-center justify-between">
                                     <h2 className="text-xl font-semibold text-foreground">My Reports</h2>

@@ -16,6 +16,7 @@ import {
     FileText,
 } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
+import { useTranslation } from 'react-i18next';
 
 type CalendarView = 'day' | 'week' | 'month' | 'year';
 
@@ -32,10 +33,11 @@ const ReportsCalendar: React.FC<ReportsCalendarProps> = ({
     reports,
     onViewReport,
     onEditReport,
-    title = 'Reports Calendar',
+    title,
     showZoomControls = true,
     defaultView = 'month',
 }) => {
+    const { t } = useTranslation();
     const [currentDate, setCurrentDate] = useState(new Date());
     const [calendarNavDate, setCalendarNavDate] = useState(new Date());
     const [calendarView, setCalendarView] = useState<CalendarView>(defaultView);
@@ -312,7 +314,7 @@ const ReportsCalendar: React.FC<ReportsCalendarProps> = ({
                         {dayReports.length === 0 ? (
                             <div className="text-center py-8">
                                 <FileText className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-                                <p className="text-muted-foreground">No reports for this day.</p>
+                                <p className="text-muted-foreground">{t("reportsCalendar.noReportsForDay")}</p>
                             </div>
                         ) : (
                             <div className="space-y-4">
@@ -429,21 +431,21 @@ const ReportsCalendar: React.FC<ReportsCalendarProps> = ({
             <Dialog open={viewReportDialogOpen} onOpenChange={setViewReportDialogOpen}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Report Details</DialogTitle>
+                        <DialogTitle>{t("reportsCalendar.reportDetails")}</DialogTitle>
                     </DialogHeader>
                     {viewingReport && (
                         <div className="space-y-3 py-4">
-                            <div className="text-sm"><strong>Session:</strong> {viewingReport.subscription?.session?.name || '-'}</div>
-                            <div className="text-sm"><strong>Challenge:</strong> {viewingReport.subscription?.challenge?.name || '-'}</div>
-                            <div className="text-sm"><strong>Pledge:</strong> {viewingReport.subscription?.target || '-'}</div>
-                            <div className="text-sm"><strong>Target:</strong> {viewingReport.subscription?.challenge?.target || '-'}</div>
-                            <div className="text-sm"><strong>Evangelized To:</strong> {viewingReport.numberEvangelizedTo}</div>
-                            <div className="text-sm"><strong>New Converts:</strong> {viewingReport.numberOfNewConverts}</div>
-                            <div className="text-sm"><strong>Followed Up:</strong> {viewingReport.numberFollowedUp}</div>
-                            <div className="text-sm"><strong>Difficulties:</strong> {viewingReport.difficulties || '-'}</div>
-                            <div className="text-sm"><strong>Remark:</strong> {viewingReport.remark || '-'}</div>
-                            <div className="text-sm"><strong>Created On:</strong> {formatDate(viewingReport.createdOn)}</div>
-                            <div className="text-sm"><strong>Updated On:</strong> {formatDate(viewingReport.updatedOn)}</div>
+                            <div className="text-sm"><strong>{t("reportsCalendar.session")}:</strong> {viewingReport.subscription?.session?.name || '-'}</div>
+                            <div className="text-sm"><strong>{t("reportsCalendar.challenge")}:</strong> {viewingReport.subscription?.challenge?.name || '-'}</div>
+                            <div className="text-sm"><strong>{t("reportsCalendar.pledge")}:</strong> {viewingReport.subscription?.target || '-'}</div>
+                            <div className="text-sm"><strong>{t("reportsCalendar.target")}:</strong> {viewingReport.subscription?.challenge?.target || '-'}</div>
+                            <div className="text-sm"><strong>{t("reportsCalendar.evangelizedTo")}:</strong> {viewingReport.numberEvangelizedTo}</div>
+                            <div className="text-sm"><strong>{t("reportsCalendar.newConverts")}:</strong> {viewingReport.numberOfNewConverts}</div>
+                            <div className="text-sm"><strong>{t("reportsCalendar.followedUp")}:</strong> {viewingReport.numberFollowedUp}</div>
+                            <div className="text-sm"><strong>{t("reportsCalendar.difficulties")}:</strong> {viewingReport.difficulties || '-'}</div>
+                            <div className="text-sm"><strong>{t("reportsCalendar.remark")}:</strong> {viewingReport.remark || '-'}</div>
+                            <div className="text-sm"><strong>{t("reportsCalendar.createdOn")}:</strong> {formatDate(viewingReport.createdOn)}</div>
+                            <div className="text-sm"><strong>{t("reportsCalendar.updatedOn")}:</strong> {formatDate(viewingReport.updatedOn)}</div>
                         </div>
                     )}
                     <DialogFooter>
@@ -451,10 +453,10 @@ const ReportsCalendar: React.FC<ReportsCalendarProps> = ({
                             {onEditReport && viewingReport && (
                                 <Button variant="outline" onClick={() => { setViewReportDialogOpen(false); onEditReport(viewingReport); }} className="flex-1">
                                     <Edit className="w-4 h-4 mr-2" />
-                                    Edit
+                                    {t("reportsCalendar.edit")}
                                 </Button>
                             )}
-                            <Button onClick={() => setViewReportDialogOpen(false)} className="flex-1">Close</Button>
+                            <Button onClick={() => setViewReportDialogOpen(false)} className="flex-1">{t("reportsCalendar.close")}</Button>
                         </div>
                     </DialogFooter>
                 </DialogContent>

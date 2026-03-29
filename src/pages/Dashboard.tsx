@@ -26,14 +26,15 @@ import {
 } from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
 import {
-    User, LogOut, Heart, Calendar, FileText, Target,
-    Plus, Edit, Trash2, Home, Shield, Eye, ChevronLeft,
+    User, Heart, Calendar, FileText, Target,
+    Plus, Edit, Trash2, Eye, ChevronLeft,
     ChevronRight, ZoomIn, ZoomOut, Minimize2, Maximize2,
-    Star, Crown, LayoutDashboard,
+    Star, Crown,
 } from 'lucide-react';
 import {formatDate, computeUserName, isNonNullArray} from '@/lib/utils';
-import ecomieLogo from "@/images/ecomie-logo.png";
 import ReportsCalendar from '@/components/ReportsCalendar';
+import Header from '@/components/home/Header';
+import { useTranslation } from 'react-i18next';
 
 const challengeIcons: Record<string, React.ElementType> = {
     'Faithful': Heart,
@@ -47,10 +48,11 @@ const challengeColors: Record<string, string> = {
     'Shepherd': 'text-primary',
 };
 
-const Dashboard = () => {
+    const Dashboard = () => {
     const { user, isAdmin, signOut, loading: authLoading } = useAuth();
     const navigate = useNavigate();
     const { toast } = useToast();
+    const { t } = useTranslation();
 
     const isEcomiest = user?.role === UserRole.ECOMIEST;
 
@@ -59,8 +61,6 @@ const Dashboard = () => {
     const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
     const [reports, setReports] = useState<ChallengeReport[]>([]);
     const [loading, setLoading] = useState(true);
-    const [profilePicture, setProfilePicture] = useState<string | null>(null);
-    const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
 
     const [expandedSessionId, setExpandedSessionId] = useState<string | null>(null);
 
@@ -102,17 +102,6 @@ const Dashboard = () => {
         }
     }, [user, authLoading, navigate]);
 
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            const target = event.target as HTMLElement;
-            if (!target.closest('.profile-dropdown')) {
-                setProfileDropdownOpen(false);
-            }
-        };
-        document.addEventListener('click', handleClickOutside);
-        return () => document.removeEventListener('click', handleClickOutside);
-    }, []);
-
     const fetchData = async () => {
         try {
             const profileData = await userApi.getMyUserProfile();
@@ -125,17 +114,15 @@ const Dashboard = () => {
             setProfileCity(profileData.city || '');
             setProfileLanguage(profileData.language || '');
 
-            const [ongoingSessionData, subscriptionsData, reportsData, profilePix] = await Promise.all([
+            const [ongoingSessionData, subscriptionsData, reportsData] = await Promise.all([
                 sessionApi.getOngoingSession().catch(() => null),
                 subscriptionApi.getMine().catch(() => null),
                 isEcomiest ? reportApi.getMine().catch(() => null) : Promise.resolve([]),
-                userApi.getMyPix().catch(() => null),
             ]);
 
             setOngoingSession(ongoingSessionData);
             setSubscriptions(subscriptionsData ? subscriptionsData : []);
             setReports(reportsData ? reportsData : []);
-            setProfilePicture(profilePix);
         } catch (err) {
             console.error('Error fetching data:', err);
         } finally {
@@ -168,7 +155,7 @@ const Dashboard = () => {
             setEditingProfile(false);
             setProfileAvatar(null);
             setProfileAvatarPreview(null);
-            toast({ title: "Profile Updated", description: "Your profile has been updated successfully." });
+            toast({ title: t("dashboard.profileUpdated"), description: t("dashboard.profileUpdatedSuccess") });
         } catch (err: any) {
             toast({ title: "Error", description: isNonNullArray(err.invalidParams) ? err.invalidParams[0].reason : err.detail, variant: "destructive" });
         }
@@ -188,7 +175,7 @@ const Dashboard = () => {
                 target: parseInt(personalTarget) || selectedChallenge.target, 
                 challengeId: selectedChallenge.id 
             });
-            toast({ title: "Subscribed", description: "You have successfully subscribed to the challenge." });
+            toast({ title: t("dashboard.subscribed"), description: t("dashboard.subscribedSuccess") });
             setSubscribeDialogOpen(false);
             setSelectedChallenge(null);
             fetchData();
@@ -226,7 +213,7 @@ const Dashboard = () => {
                 remark: reportRemark || undefined,
             };
             await reportApi.update(editingReport.id!, body);
-            toast({ title: "Report Updated" });
+            toast({ title: t("dashboard.reportUpdated") });
             setEditReportDialogOpen(false);
             fetchData();
         } catch (err: any) {
@@ -236,7 +223,7 @@ const Dashboard = () => {
 
     const handleAddReport = async () => {
         if (!newReportSubscriptionId) {
-            toast({ title: "Error", description: "Please select a subscription", variant: "destructive" });
+            toast({ title: t("common.error"), description: t("dashboard.selectSubscription"), variant: "destructive" });
             return;
         }
         try {
@@ -248,7 +235,7 @@ const Dashboard = () => {
                 remark: reportRemark || undefined,
             };
             await reportApi.create(newReportSubscriptionId, body);
-            toast({ title: "Report Created" });
+            toast({ title: t("dashboard.reportCreated") });
             setAddReportDialogOpen(false);
             resetReportForm();
             fetchData();
@@ -271,7 +258,7 @@ const Dashboard = () => {
         try {
             await reportApi.delete(reportId);
             setReports(prev => prev.filter(r => r.id !== reportId));
-            toast({ title: "Report Deleted" });
+            toast({ title: t("dashboard.reportDeleted") });
         } catch (err: any) {
             toast({ title: "Error", description: isNonNullArray(err.invalidParams) ? err.invalidParams[0].reason : err.detail, variant: "destructive" });
         }
@@ -309,24 +296,24 @@ const Dashboard = () => {
                             <p className="text-sm text-muted-foreground">{challenge.description}</p>
                             <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground mt-2">
                                 <Target className="w-4 h-4" />
-                                <span>Target: {challenge.target} souls</span>
+                                <span>{t("dashboard.target")}: {challenge.target} {t("dashboard.souls")}</span>
                             </div>
                         </CardHeader>
                         <CardContent className="pt-0">
                             <div className="space-y-3 mb-4">
                                 <div className="flex items-center justify-between text-sm">
-                                    <span className="text-muted-foreground">Type:</span>
+                                    <span className="text-muted-foreground">{t("dashboard.type")}:</span>
                                     <Badge variant="secondary">{challenge.type?.toString()}</Badge>
                                 </div>
                             </div>
                             {showSubscribeButton && ongoingSession?.status === SessionStatus.ONGOING && (
                                 subscribed ? (
                                     <Button variant="outline" className="w-full" disabled>
-                                        Already Subscribed
+                                        {t("dashboard.alreadySubscribed")}
                                     </Button>
                                 ) : (
                                     <Button variant="cta" className="w-full" onClick={() => handleOpenSubscribeDialog(challenge)}>
-                                        Subscribe
+                                         {t("dashboard.subscribe")}
                                     </Button>
                                 )
                             )}
@@ -340,109 +327,35 @@ const Dashboard = () => {
     if (authLoading || loading) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gradient-heavenly">
-                <div className="animate-pulse text-primary">Loading...</div>
+                <div className="animate-pulse text-primary">{t("common.loading")}</div>
             </div>
         );
     }
 
     return (
         <div className="min-h-screen bg-gradient-heavenly">
-            <header className="bg-primary shadow-gentle">
-                <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-gradient-heavenly rounded-full flex items-center justify-center shadow-gentle">
-                            <img src={ecomieLogo} className="w-full h-full" alt="ECOMIE Logo"/>
-                        </div>
-                        <span className="text-xl font-bold text-primary-foreground">ECOMIE</span>
-                    </div>
+            <Header hideNav />
 
-                    <div className="flex items-center gap-4">
-                        <div className="relative profile-dropdown">
-                            <button 
-                                onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
-                                className="flex items-center gap-2 text-primary-foreground hover:bg-primary-foreground/10 px-3 py-2 rounded-md transition-colors"
-                            >
-                                {profilePicture ? (
-                                    <img 
-                                        src={profilePicture} 
-                                        alt="Profile" 
-                                        className="w-8 h-8 rounded-full object-cover"
-                                    />
-                                ) : (
-                                    <div className="w-8 h-8 rounded-full bg-gradient-heavenly flex items-center justify-center">
-                                        <User className="w-4 h-4 text-primary" />
-                                    </div>
-                                )}
-                                <span className="font-medium">{profileFirstName || 'User'}</span>
-                            </button>
-                            {profileDropdownOpen && (
-                                <div className="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg border z-50">
-                                    <div className="px-4 py-3 border-b">
-                                        <p className="text-sm font-medium text-foreground">
-                                            {profileFirstName} {profileLastName}
-                                        </p>
-                                        <p className="text-xs text-muted-foreground">{profile?.email}</p>
-                                    </div>
-                                    <button 
-                                        onClick={() => { setProfileDropdownOpen(false); navigate('/'); }}
-                                        className="w-full flex items-center gap-2 px-4 py-2 text-sm text-foreground hover:bg-muted transition-colors"
-                                    >
-                                        <Home className="w-4 h-4" />
-                                        Home
-                                    </button>
-                                    <button 
-                                        onClick={() => { setProfileDropdownOpen(false); navigate('/dashboard'); }}
-                                        className="w-full flex items-center gap-2 px-4 py-2 text-sm text-foreground hover:bg-muted transition-colors"
-                                    >
-                                        <LayoutDashboard className="w-4 h-4" />
-                                        Dashboard
-                                    </button>
-                                    {isAdmin && (
-                                        <button 
-                                            onClick={() => { setProfileDropdownOpen(false); navigate('/admin'); }}
-                                            className="w-full flex items-center gap-2 px-4 py-2 text-sm text-foreground hover:bg-muted transition-colors"
-                                        >
-                                            <Shield className="w-4 h-4" />
-                                            Admin Panel
-                                        </button>
-                                    )}
-                                    <button 
-                                        onClick={() => {
-                                            setProfileDropdownOpen(false);
-                                            handleSignOut();
-                                        }}
-                                        className="w-full flex items-center gap-2 px-4 py-2 text-sm text-destructive hover:bg-muted transition-colors"
-                                    >
-                                        <LogOut className="w-4 h-4" />
-                                        Logout
-                                    </button>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                </div>
-            </header>
-
-            <main className="container mx-auto px-4 py-8">
+            <main className="container mx-auto px-4 pt-24 pb-8">
                 <h1 className="text-3xl font-bold text-foreground mb-8">
-                    Welcome, {profile?.firstName || profile?.lastName || 'Evangelist'}!
+                    {t("dashboard.welcome", { name: profile?.firstName || profile?.lastName || '' }) || t("dashboard.defaultWelcome")}
                 </h1>
 
                 <Tabs defaultValue="sessions" className="w-full">
                     <TabsList className="grid w-full max-w-2xl grid-cols-3 mb-8">
                         <TabsTrigger value="sessions" className="flex items-center gap-2">
                             <Calendar className="w-4 h-4" />
-                            Sessions
+                            {t("dashboard.sessions")}
                         </TabsTrigger>
                         {isEcomiest && (
                             <TabsTrigger value="reports" className="flex items-center gap-2">
                                 <FileText className="w-4 h-4" />
-                                Reports
+                                 {t("dashboard.reports")}
                             </TabsTrigger>
                         )}
                         <TabsTrigger value="profile" className="flex items-center gap-2">
                             <User className="w-4 h-4" />
-                            Profile
+                             {t("dashboard.profile")}
                         </TabsTrigger>
                     </TabsList>
 
@@ -453,7 +366,7 @@ const Dashboard = () => {
                                 <Card className="shadow-gentle">
                                     <CardHeader>
                                         <div className="flex items-center justify-between">
-                                            <CardTitle>Current Session</CardTitle>
+                                            <CardTitle>                                             {t("dashboard.currentSession")}</CardTitle>
                                             <Button variant="ghost" size="sm" onClick={() => setSessionExpanded(!sessionExpanded)}>
                                                 {sessionExpanded ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
                                             </Button>
@@ -479,7 +392,7 @@ const Dashboard = () => {
                                             {ongoingSession.challenges && ongoingSession.challenges.length > 0 ? (
                                                 renderChallengeCards(ongoingSession.challenges)
                                             ) : (
-                                                <p className="text-muted-foreground">No challenges for this session yet.</p>
+                                                 <p className="text-muted-foreground">{t("dashboard.noChallenges")}</p>
                                             )}
                                         </CardContent>
                                     )}
@@ -488,14 +401,14 @@ const Dashboard = () => {
 
                             {subscriptions.length > 0 && isEcomiest && (
                                 <div>
-                                    <h2 className="text-xl font-semibold text-foreground mb-4">My Past Subscriptions</h2>
+                                    <h2 className="text-xl font-semibold text-foreground mb-4">{t("dashboard.pastSubscriptions")}</h2>
                                     <div className="space-y-2">
                                         <div className="grid grid-cols-5 gap-4 p-3 bg-muted rounded-t-lg font-medium text-sm">
-                                            <div>Session</div>
-                                            <div>Challenge</div>
-                                            <div>Challenge Target</div>
-                                            <div>Pledge</div>
-                                            <div>Subscribed On</div>
+                                             <div>{t("dashboard.session")}</div>
+                                             <div>{t("dashboard.challenge")}</div>
+                                             <div>{t("dashboard.challengeTarget")}</div>
+                                             <div>{t("dashboard.pledge")}</div>
+                                             <div>{t("dashboard.subscribedOn")}</div>
                                         </div>
                                         {subscriptions.map(sub => (
                                             <div key={sub.id}>
@@ -545,34 +458,34 @@ const Dashboard = () => {
                             <div className="space-y-6">
                                 <ReportsCalendar 
                                     reports={reports}
-                                    title="Reports Calendar"
+                                    title={t("dashboard.reportsCalendar")}
                                     onViewReport={handleViewReport}
                                     onEditReport={handleEditReport}
                                     defaultView="year"
                                 />
 
                                 <div className="flex items-center justify-between">
-                                    <h2 className="text-xl font-semibold text-foreground">My Reports</h2>
+                                    <h2 className="text-xl font-semibold text-foreground">{t("dashboard.myReports")}</h2>
                                     <Dialog open={addReportDialogOpen} onOpenChange={setAddReportDialogOpen}>
                                         <DialogTrigger asChild>
                                             <Button>
                                                 <Plus className="w-4 h-4 mr-2" />
-                                                Add Report
+                                                {t("dashboard.addReport")}
                                             </Button>
                                         </DialogTrigger>
                                         <DialogContent>
                                             <DialogHeader>
-                                                <DialogTitle>Submit Report</DialogTitle>
+                                                <DialogTitle>{t("dashboard.submitReport")}</DialogTitle>
                                             </DialogHeader>
                                             <div className="space-y-4 py-4">
                                                 <div className="space-y-2">
-                                                    <Label>Subscription</Label>
+                                                     <Label>{t("dashboard.subscription")}</Label>
                                                     <select 
                                                         className="w-full p-2 border rounded-md"
                                                         value={newReportSubscriptionId}
                                                         onChange={(e) => setNewReportSubscriptionId(e.target.value)}
                                                     >
-                                                        <option value="">Select a subscription</option>
+                                                        <option value="">{t("dashboard.selectSubscription")}</option>
                                                         {subscriptions.map(sub => (
                                                             <option key={sub.id} value={sub.id}>
                                                                 {sub.challenge?.name} - {sub.session?.name}
@@ -582,28 +495,28 @@ const Dashboard = () => {
                                                 </div>
                                                 <div className="grid grid-cols-3 gap-4">
                                                     <div className="space-y-2">
-                                                        <Label>Evangelized To</Label>
+                                                        <Label>{t("dashboard.evangelizedTo")}</Label>
                                                         <Input type="number" value={reportEvangelized} onChange={(e) => setReportEvangelized(e.target.value)} />
                                                     </div>
                                                     <div className="space-y-2">
-                                                        <Label>New Converts</Label>
+                                                        <Label>{t("dashboard.newConverts")}</Label>
                                                         <Input type="number" value={reportConverts} onChange={(e) => setReportConverts(e.target.value)} />
                                                     </div>
                                                     <div className="space-y-2">
-                                                        <Label>Followed Up</Label>
+                                                        <Label>{t("dashboard.followedUp")}</Label>
                                                         <Input type="number" value={reportFollowedUp} onChange={(e) => setReportFollowedUp(e.target.value)} />
                                                     </div>
                                                 </div>
                                                 <div className="space-y-2">
-                                                    <Label>Difficulties</Label>
+                                                     <Label>{t("dashboard.difficulties")}</Label>
                                                     <Textarea value={reportDifficulties} onChange={(e) => setReportDifficulties(e.target.value)} />
                                                 </div>
                                                 <div className="space-y-2">
-                                                    <Label>Remark</Label>
+                                                     <Label>{t("dashboard.remark")}</Label>
                                                     <Textarea value={reportRemark} onChange={(e) => setReportRemark(e.target.value)} />
                                                 </div>
                                                 <DialogFooter>
-                                                    <Button onClick={handleAddReport} className="w-full">Submit Report</Button>
+                                                     <Button onClick={handleAddReport} className="w-full">{t("dashboard.submitReport")}</Button>
                                                 </DialogFooter>
                                             </div>
                                         </DialogContent>
@@ -614,21 +527,21 @@ const Dashboard = () => {
                                     <Card className="shadow-gentle">
                                         <CardContent className="py-12 text-center">
                                             <FileText className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-                                            <p className="text-muted-foreground">No reports submitted yet.</p>
+                                             <p className="text-muted-foreground">{t("dashboard.noReportsYet")}</p>
                                         </CardContent>
                                     </Card>
                                 ) : (
                                     <div className="space-y-2">
                                         <div className="grid grid-cols-12 gap-4 p-3 bg-muted rounded-t-lg font-medium text-sm">
-                                            <div className="col-span-2">Session</div>
-                                            <div className="col-span-2">Challenge</div>
-                                            <div className="col-span-1">Target</div>
-                                            <div className="col-span-1">Pledge</div>
-                                            <div className="col-span-1">Evangelized</div>
-                                            <div className="col-span-1">Converts</div>
-                                            <div className="col-span-1">Follow Ups</div>
-                                            <div className="col-span-2">Reported On</div>
-                                            <div className="col-span-1 text-right">Actions</div>
+                                             <div className="col-span-2">{t("dashboard.session")}</div>
+                                             <div className="col-span-2">{t("dashboard.challenge")}</div>
+                                             <div className="col-span-1">{t("dashboard.target")}</div>
+                                             <div className="col-span-1">{t("dashboard.pledge")}</div>
+                                             <div className="col-span-1">{t("dashboard.evangelized")}</div>
+                                             <div className="col-span-1">{t("dashboard.converts")}</div>
+                                             <div className="col-span-1">{t("dashboard.followedUp")}</div>
+                                             <div className="col-span-2">{t("dashboard.reportedOn")}</div>
+                                             <div className="col-span-1 text-right">{t("common.actions")}</div>
                                         </div>
                                         {reports.map(report => (
                                             <Card key={report.id} className="shadow-gentle">
@@ -668,11 +581,11 @@ const Dashboard = () => {
                         <Card className="max-w-2xl shadow-gentle">
                             <CardHeader>
                                 <CardTitle className="flex items-center justify-between">
-                                    <span>Profile Information</span>
+                                     <span>{t("dashboard.profileInfo")}</span>
                                     {!editingProfile && (
                                         <Button variant="outline" size="sm" onClick={() => setEditingProfile(true)}>
                                             <Edit className="w-4 h-4 mr-2" />
-                                            Edit
+                                             {t("dashboard.edit")}
                                         </Button>
                                     )}
                                 </CardTitle>
@@ -682,16 +595,16 @@ const Dashboard = () => {
                                     <div className="space-y-4">
                                         <div className="grid grid-cols-2 gap-4">
                                             <div className="space-y-2">
-                                                <Label htmlFor="firstName">First Name</Label>
+                                                 <Label htmlFor="firstName">{t("common.firstName")}</Label>
                                                 <Input id="firstName" value={profileFirstName} onChange={(e) => setProfileFirstName(e.target.value)} />
                                             </div>
                                             <div className="space-y-2">
-                                                <Label htmlFor="lastName">Last Name</Label>
+                                                 <Label htmlFor="lastName">{t("common.lastName")}</Label>
                                                 <Input id="lastName" value={profileLastName} onChange={(e) => setProfileLastName(e.target.value)} />
                                             </div>
                                         </div>
                                         <div className="space-y-2">
-                                            <Label htmlFor="email">Email</Label>
+                                                 <Label htmlFor="email">{t("common.email")}</Label>
                                             <Input id="email" value={profile?.email || ''} disabled />
                                         </div>
                                         <div className="space-y-2">
@@ -719,76 +632,76 @@ const Dashboard = () => {
                                             )}
                                         </div>
                                         <div className="space-y-2">
-                                            <Label htmlFor="phoneNumber">Phone Number</Label>
+                                             <Label htmlFor="phoneNumber">{t("common.phoneNumber")}</Label>
                                             <Input id="phoneNumber" value={profilePhoneNumber} onChange={(e) => setProfilePhoneNumber(e.target.value)} />
                                         </div>
                                         <div className="grid grid-cols-3 gap-4">
                                             <div className="space-y-2">
-                                                <Label htmlFor="country">Country</Label>
+                                                 <Label htmlFor="country">{t("common.country")}</Label>
                                                 <Input id="country" value={profileCountry} onChange={(e) => setProfileCountry(e.target.value)} />
                                             </div>
                                             <div className="space-y-2">
-                                                <Label htmlFor="region">Region</Label>
+                                                 <Label htmlFor="region">{t("common.region")}</Label>
                                                 <Input id="region" value={profileRegion} onChange={(e) => setProfileRegion(e.target.value)} />
                                             </div>
                                             <div className="space-y-2">
-                                                <Label htmlFor="city">City</Label>
+                                                 <Label htmlFor="city">{t("common.city")}</Label>
                                                 <Input id="city" value={profileCity} onChange={(e) => setProfileCity(e.target.value)} />
                                             </div>
                                         </div>
                                         <div className="space-y-2">
-                                            <Label htmlFor="language">Language</Label>
+                                             <Label htmlFor="language">{t("common.language")}</Label>
                                             <Input id="language" value={profileLanguage} onChange={(e) => setProfileLanguage(e.target.value)} />
                                         </div>
                                         <div className="flex gap-2">
-                                            <Button onClick={handleUpdateProfile}>Save Changes</Button>
-                                            <Button variant="outline" onClick={() => {
-                                                setEditingProfile(false);
-                                                setProfileAvatar(null);
-                                                setProfileAvatarPreview(null);
-                                            }}>Cancel</Button>
+                                             <Button onClick={handleUpdateProfile}>{t("dashboard.saveChanges")}</Button>
+                                             <Button variant="outline" onClick={() => {
+                                                 setEditingProfile(false);
+                                                 setProfileAvatar(null);
+                                                 setProfileAvatarPreview(null);
+                                             }}>{t("common.cancel")}</Button>
                                         </div>
                                     </div>
                                 ) : (
                                     <div className="space-y-4">
                                         <div className="grid grid-cols-2 gap-4">
                                             <div>
-                                                <Label className="text-muted-foreground">First Name</Label>
+                                                <Label className="text-muted-foreground">{t("common.firstName")}</Label>
                                                 <p className="text-foreground font-medium">{profile?.firstName || '-'}</p>
                                             </div>
                                             <div>
-                                                <Label className="text-muted-foreground">Last Name</Label>
+                                                <Label className="text-muted-foreground">{t("common.lastName")}</Label>
                                                 <p className="text-foreground font-medium">{profile?.lastName || '-'}</p>
                                             </div>
                                         </div>
                                         <div>
-                                            <Label className="text-muted-foreground">Email</Label>
+                                             <Label className="text-muted-foreground">{t("common.email")}</Label>
                                             <p className="text-foreground font-medium">{profile?.email || '-'}</p>
                                         </div>
                                         <div>
-                                            <Label className="text-muted-foreground">Phone Number</Label>
+                                             <Label className="text-muted-foreground">{t("common.phoneNumber")}</Label>
                                             <p className="text-foreground font-medium">{profile?.phoneNumber || '-'}</p>
                                         </div>
                                         <div className="grid grid-cols-3 gap-4">
                                             <div>
-                                                <Label className="text-muted-foreground">Country</Label>
+                                                <Label className="text-muted-foreground">{t("common.country")}</Label>
                                                 <p className="text-foreground font-medium">{profile?.country || '-'}</p>
                                             </div>
                                             <div>
-                                                <Label className="text-muted-foreground">Region</Label>
+                                                <Label className="text-muted-foreground">{t("common.region")}</Label>
                                                 <p className="text-foreground font-medium">{profile?.region || '-'}</p>
                                             </div>
                                             <div>
-                                                <Label className="text-muted-foreground">City</Label>
+                                                <Label className="text-muted-foreground">{t("common.city")}</Label>
                                                 <p className="text-foreground font-medium">{profile?.city || '-'}</p>
                                             </div>
                                         </div>
                                         <div>
-                                            <Label className="text-muted-foreground">Language</Label>
+                                             <Label className="text-muted-foreground">{t("common.language")}</Label>
                                             <p className="text-foreground font-medium">{profile?.language || '-'}</p>
                                         </div>
                                         <div>
-                                            <Label className="text-muted-foreground">Role</Label>
+                                             <Label className="text-muted-foreground">{t("common.role")}</Label>
                                             <p className="text-foreground font-medium">{profile?.role?.toString() || '-'}</p>
                                         </div>
                                     </div>
@@ -803,25 +716,25 @@ const Dashboard = () => {
             <Dialog open={viewReportDialogOpen} onOpenChange={setViewReportDialogOpen}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Report Details</DialogTitle>
+                        <DialogTitle>{t("reportsCalendar.reportDetails")}</DialogTitle>
                     </DialogHeader>
                     {viewingReport && (
                         <div className="space-y-3 py-4">
-                            <div className="text-sm"><strong>Session:</strong> {viewingReport.subscription?.session?.name || '-'}</div>
-                            <div className="text-sm"><strong>Challenge:</strong> {viewingReport.subscription?.challenge?.name || '-'}</div>
-                            <div className="text-sm"><strong>Pledge:</strong> {viewingReport.subscription?.target || '-'}</div>
-                            <div className="text-sm"><strong>Target:</strong> {viewingReport.subscription?.challenge?.target || '-'}</div>
-                            <div className="text-sm"><strong>Evangelized To:</strong> {viewingReport.numberEvangelizedTo}</div>
-                            <div className="text-sm"><strong>New Converts:</strong> {viewingReport.numberOfNewConverts}</div>
-                            <div className="text-sm"><strong>Followed Up:</strong> {viewingReport.numberFollowedUp}</div>
-                            <div className="text-sm"><strong>Difficulties:</strong> {viewingReport.difficulties || '-'}</div>
-                            <div className="text-sm"><strong>Remark:</strong> {viewingReport.remark || '-'}</div>
-                            <div className="text-sm"><strong>Created On:</strong> {formatDate(viewingReport.createdOn)}</div>
-                            <div className="text-sm"><strong>Updated On:</strong> {formatDate(viewingReport.updatedOn)}</div>
+                            <div className="text-sm"><strong>{t("reportsCalendar.session")}:</strong> {viewingReport.subscription?.session?.name || '-'}</div>
+                            <div className="text-sm"><strong>{t("reportsCalendar.challenge")}:</strong> {viewingReport.subscription?.challenge?.name || '-'}</div>
+                            <div className="text-sm"><strong>{t("reportsCalendar.pledge")}:</strong> {viewingReport.subscription?.target || '-'}</div>
+                            <div className="text-sm"><strong>{t("reportsCalendar.target")}:</strong> {viewingReport.subscription?.challenge?.target || '-'}</div>
+                            <div className="text-sm"><strong>{t("reportsCalendar.evangelizedTo")}:</strong> {viewingReport.numberEvangelizedTo}</div>
+                            <div className="text-sm"><strong>{t("reportsCalendar.newConverts")}:</strong> {viewingReport.numberOfNewConverts}</div>
+                            <div className="text-sm"><strong>{t("reportsCalendar.followedUp")}:</strong> {viewingReport.numberFollowedUp}</div>
+                            <div className="text-sm"><strong>{t("reportsCalendar.difficulties")}:</strong> {viewingReport.difficulties || '-'}</div>
+                            <div className="text-sm"><strong>{t("reportsCalendar.remark")}:</strong> {viewingReport.remark || '-'}</div>
+                            <div className="text-sm"><strong>{t("reportsCalendar.createdOn")}:</strong> {formatDate(viewingReport.createdOn)}</div>
+                            <div className="text-sm"><strong>{t("reportsCalendar.updatedOn")}:</strong> {formatDate(viewingReport.updatedOn)}</div>
                         </div>
                     )}
                     <DialogFooter>
-                        <Button onClick={() => setViewReportDialogOpen(false)}>Close</Button>
+                        <Button onClick={() => setViewReportDialogOpen(false)}>{t("reportsCalendar.close")}</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
@@ -830,33 +743,33 @@ const Dashboard = () => {
             <Dialog open={editReportDialogOpen} onOpenChange={setEditReportDialogOpen}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Edit Report</DialogTitle>
+                        <DialogTitle>{t("reportForm.editChallengeReport")}</DialogTitle>
                     </DialogHeader>
                     <div className="space-y-4 py-4">
                         <div className="grid grid-cols-3 gap-4">
                             <div className="space-y-2">
-                                <Label>Evangelized To</Label>
+                                <Label>{t("dashboard.evangelizedTo")}</Label>
                                 <Input type="number" value={reportEvangelized} onChange={(e) => setReportEvangelized(e.target.value)} />
                             </div>
                             <div className="space-y-2">
-                                <Label>New Converts</Label>
+                                <Label>{t("dashboard.newConverts")}</Label>
                                 <Input type="number" value={reportConverts} onChange={(e) => setReportConverts(e.target.value)} />
                             </div>
                             <div className="space-y-2">
-                                <Label>Followed Up</Label>
+                                <Label>{t("dashboard.followedUp")}</Label>
                                 <Input type="number" value={reportFollowedUp} onChange={(e) => setReportFollowedUp(e.target.value)} />
                             </div>
                         </div>
                         <div className="space-y-2">
-                            <Label>Difficulties</Label>
+                            <Label>{t("dashboard.difficulties")}</Label>
                             <Textarea value={reportDifficulties} onChange={(e) => setReportDifficulties(e.target.value)} />
                         </div>
                         <div className="space-y-2">
-                            <Label>Remark</Label>
+                            <Label>{t("dashboard.remark")}</Label>
                             <Textarea value={reportRemark} onChange={(e) => setReportRemark(e.target.value)} />
                         </div>
                         <DialogFooter>
-                            <Button onClick={handleSaveReport} className="w-full">Update Report</Button>
+                            <Button onClick={handleSaveReport} className="w-full">{t("dashboard.reportUpdated")}</Button>
                         </DialogFooter>
                     </div>
                 </DialogContent>
@@ -866,19 +779,19 @@ const Dashboard = () => {
             <Dialog open={subscribeDialogOpen} onOpenChange={setSubscribeDialogOpen}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Subscribe to {selectedChallenge?.name} Challenge</DialogTitle>
+                        <DialogTitle>{t("subscribe.subscribeToChallenge", { challenge: selectedChallenge?.name || '' })}</DialogTitle>
                     </DialogHeader>
                     {selectedChallenge && (
                         <div className="space-y-4 py-4">
                             <div className="bg-muted/50 rounded-lg p-4">
                                 <div className="flex items-center gap-2 text-sm">
                                     <Target className="w-4 h-4 text-primary" />
-                                    <span className="text-muted-foreground">Challenge Target:</span>
-                                    <span className="font-semibold text-foreground">{selectedChallenge.target} souls</span>
+                                    <span className="text-muted-foreground">{t("subscribe.challengeTarget")}</span>
+                                    <span className="font-semibold text-foreground">{selectedChallenge.target} {t("dashboard.souls")}</span>
                                 </div>
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="personalTarget">Your Personal Target</Label>
+                                <Label htmlFor="personalTarget">{t("subscribe.yourPersonalTarget")}</Label>
                                 <Input
                                     id="personalTarget"
                                     type="number"
@@ -889,7 +802,7 @@ const Dashboard = () => {
                                     required
                                 />
                                 <p className="text-xs text-muted-foreground">
-                                    Set your own goal (minimum suggested: {selectedChallenge.target})
+                                    {t("subscribe.setYourOwnGoal", { target: selectedChallenge.target })}
                                 </p>
                             </div>
                             <DialogFooter>
@@ -898,7 +811,7 @@ const Dashboard = () => {
                                     className="w-full" 
                                     disabled={submitting}
                                 >
-                                    {submitting ? 'Subscribing...' : 'Confirm Subscription'}
+                                    {submitting ? t("subscribe.subscribing") : t("subscribe.confirmSubscription")}
                                 </Button>
                             </DialogFooter>
                         </div>

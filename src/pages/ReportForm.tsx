@@ -9,6 +9,7 @@ import { ArrowLeft, FileText } from 'lucide-react';
 import { subscriptionApi, reportApi, Subscription, ChallengeReport } from '@/lib/api';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
+import { useTranslation } from 'react-i18next';
 
 const ReportForm = () => {
   const { subscriptionId, reportId } = useParams<{ subscriptionId?: string; reportId?: string }>();
@@ -27,6 +28,7 @@ const ReportForm = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (!user) {
@@ -48,8 +50,8 @@ const ReportForm = () => {
     } catch (error) {
       console.error('Error fetching subscription:', error);
       toast({
-        title: "Subscription Not Found",
-        description: "The subscription you're looking for doesn't exist.",
+        title: t("reportForm.subscriptionNotFound"),
+        description: t("reportForm.subscriptionNotFoundDesc"),
         variant: "destructive",
       });
       navigate('/dashboard');
@@ -66,16 +68,15 @@ const ReportForm = () => {
       setNumberFollowedUp(reportData.numberFollowedUp.toString());
       setDifficulties(reportData.difficulties || '');
       setRemark(reportData.remark || '');
-      setReportDate(reportData.reportDate);
+      setReportDate(reportData.createdOn ? new Date(reportData.createdOn).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]);
 
-      // Fetch subscription for display
       const subData = await subscriptionApi.getById(reportData.subscriptionId);
       setSubscription(subData);
     } catch (error) {
       console.error('Error fetching report:', error);
       toast({
-        title: "Report Not Found",
-        description: "The report you're looking for doesn't exist.",
+        title: t("reportForm.reportNotFound"),
+        description: t("reportForm.reportNotFoundDesc"),
         variant: "destructive",
       });
       navigate('/dashboard');
@@ -98,23 +99,19 @@ const ReportForm = () => {
         numberFollowedUp: parseInt(numberFollowedUp) || 0,
         difficulties: difficulties || undefined,
         remark: remark || undefined,
-        reportDate,
       };
 
-      if (isEdit) {
-        await reportApi.update(reportId!, reportData);
+      if (isEdit && reportId) {
+        await reportApi.update(reportId, reportData);
         toast({
-          title: "Report Updated",
-          description: "Your report has been updated successfully.",
+          title: t("dashboard.reportUpdated"),
+          description: t("reportForm.reportUpdatedSuccess"),
         });
-      } else {
-        await reportApi.create({
-          ...reportData,
-          subscriptionId: subscriptionId!,
-        });
+      } else if (subscriptionId) {
+        await reportApi.create(subscriptionId, reportData);
         toast({
-          title: "Report Submitted",
-          description: "Your evangelism report has been recorded. Keep up the good work!",
+          title: t("dashboard.reportCreated"),
+          description: t("reportForm.keepUpGoodWork"),
         });
       }
       
@@ -122,8 +119,8 @@ const ReportForm = () => {
     } catch (error: any) {
       console.error('Error submitting report:', error);
       toast({
-        title: "Submission Failed",
-        description: error.message || "Failed to submit report.",
+        title: t("reportForm.submissionFailed"),
+        description: error.message || t("reportForm.submissionFailed"),
         variant: "destructive",
       });
     } finally {
@@ -134,7 +131,7 @@ const ReportForm = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-heavenly">
-        <div className="animate-pulse text-primary">Loading...</div>
+        <div className="animate-pulse text-primary">{t("common.loading")}</div>
       </div>
     );
   }
@@ -148,7 +145,7 @@ const ReportForm = () => {
           className="mb-6 text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Dashboard
+          {t("reportForm.backToDashboard")}
         </Button>
 
         <Card className="border-0 shadow-divine">
@@ -159,17 +156,17 @@ const ReportForm = () => {
               </div>
             </div>
             <CardTitle className="text-2xl">
-              {isEdit ? 'Edit Challenge Report' : 'Submit Challenge Report'}
+              {isEdit ? t("reportForm.editChallengeReport") : t("reportForm.submitChallengeReport")}
             </CardTitle>
-            {subscription?.name && (
-              <p className="text-muted-foreground">{subscription.name}</p>
+            {subscription?.challenge && (
+              <p className="text-muted-foreground">{subscription.challenge.name}</p>
             )}
           </CardHeader>
 
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="reportDate">Report Date</Label>
+                <Label htmlFor="reportDate">{t("reportForm.reportDate")}</Label>
                 <Input
                   id="reportDate"
                   type="date"
@@ -181,7 +178,7 @@ const ReportForm = () => {
 
               <div className="grid grid-cols-3 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="evangelizedTo">Evangelized To</Label>
+                  <Label htmlFor="evangelizedTo">{t("reportForm.evangelizedTo")}</Label>
                   <Input
                     id="evangelizedTo"
                     type="number"
@@ -192,7 +189,7 @@ const ReportForm = () => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="newConverts">New Converts</Label>
+                  <Label htmlFor="newConverts">{t("reportForm.newConverts")}</Label>
                   <Input
                     id="newConverts"
                     type="number"
@@ -203,7 +200,7 @@ const ReportForm = () => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="followedUp">Followed Up</Label>
+                  <Label htmlFor="followedUp">{t("reportForm.followedUp")}</Label>
                   <Input
                     id="followedUp"
                     type="number"
@@ -216,10 +213,10 @@ const ReportForm = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="difficulties">Difficulties Encountered (Optional)</Label>
+                <Label htmlFor="difficulties">{t("reportForm.difficultiesEncountered")}</Label>
                 <Textarea
                   id="difficulties"
-                  placeholder="Any challenges or difficulties you faced..."
+                  placeholder={t("reportForm.difficultiesPlaceholder")}
                   value={difficulties}
                   onChange={(e) => setDifficulties(e.target.value)}
                   rows={3}
@@ -227,10 +224,10 @@ const ReportForm = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="remark">Remarks (Optional)</Label>
+                <Label htmlFor="remark">{t("reportForm.remarks")}</Label>
                 <Textarea
                   id="remark"
-                  placeholder="Any additional notes, testimonies, or prayer requests..."
+                  placeholder={t("reportForm.remarksPlaceholder")}
                   value={remark}
                   onChange={(e) => setRemark(e.target.value)}
                   rows={3}
@@ -244,7 +241,7 @@ const ReportForm = () => {
                 size="lg"
                 disabled={submitting}
               >
-                {submitting ? 'Submitting...' : isEdit ? 'Update Report' : 'Submit Report'}
+                {submitting ? t("reportForm.submitting") : isEdit ? t("reportForm.updateReport") : t("reportForm.submitReport")}
               </Button>
             </form>
           </CardContent>

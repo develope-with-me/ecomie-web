@@ -34,13 +34,10 @@ import {
     Target,
     FileText,
     Heart,
-    Home,
-    LogOut,
     Plus,
     Edit,
     Trash2,
     BookOpen,
-    Shield,
     Eye,
     X, LayoutDashboard,
 } from "lucide-react";
@@ -51,6 +48,7 @@ import ConfirmRemoveDialog from "@/components/ConfirmRemoveDialog";
 import Validators from "@/components/Validators";
 import UserDetails from "@/components/UserDetails";
 import ReportsCalendar from "@/components/ReportsCalendar";
+import Header from "@/components/home/Header";
 
 const Admin = () => {
     const { user, isAdmin, signOut, loading: authLoading } = useAuth();
@@ -66,8 +64,6 @@ const Admin = () => {
     const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
     const [reports, setReports] = useState<ChallengeReport[]>([]);
     const [loading, setLoading] = useState(true);
-    const [profilePicture, setProfilePicture] = useState<string | null>(null);
-    const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
 
     // New: modal controls for viewing session and challenge
     const [viewSessionDialogOpen, setViewSessionDialogOpen] = useState(false);
@@ -160,17 +156,6 @@ const Admin = () => {
         }
     }, [user, isAdmin, authLoading, navigate]);
 
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            const target = event.target as HTMLElement;
-            if (!target.closest('.profile-dropdown')) {
-                setProfileDropdownOpen(false);
-            }
-        };
-        document.addEventListener('click', handleClickOutside);
-        return () => document.removeEventListener('click', handleClickOutside);
-    }, []);
-
     const fetchAllData = async () => {
         try {
             const fetchUsers = userApi.getAllUsers().catch((err) => {
@@ -213,11 +198,6 @@ const Admin = () => {
                 return []; // or another fallback value like []
             });
 
-            const fetchProfilePix = userApi.getMyPix().catch((err) => {
-                console.error("Failed to fetch profile picture:", err);
-                return null;
-            });
-
             // Use Promise.all to run all fetch operations concurrently
             const [
                 usersRes,
@@ -228,7 +208,6 @@ const Admin = () => {
                 ongoingSessionRes,
                 ongoingSessionUsersRes,
                 ongoingSessionSubscriptionRes,
-                profilePixRes
             ] = await Promise.all([
                 fetchUsers,
                 fetchSessions,
@@ -238,7 +217,6 @@ const Admin = () => {
                 fetchOngoingSession,
                 fetchOngoingSessionUsers,
                 fetchOngoingSessionSubscriptions,
-                fetchProfilePix
             ]);
 
             // Set states with the potentially null values
@@ -250,7 +228,6 @@ const Admin = () => {
             setOngoingSession(ongoingSessionRes);
             setOngoingSessionUsers(ongoingSessionUsersRes);
             setOngoingSessionSubscriptions(ongoingSessionSubscriptionRes);
-            setProfilePicture(profilePixRes);
         } catch (err) {
             console.error(err);
             toast({ title: "Error", description: "Failed to load data", variant: "destructive" });
@@ -790,81 +767,9 @@ const Admin = () => {
 
     return (
         <div className="min-h-screen bg-gradient-heavenly">
-            <header className="bg-primary shadow-gentle">
-                <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-gradient-divine rounded-full flex items-center justify-center">
-                            <Shield className="w-6 h-6 text-primary-foreground" />
-                        </div>
-                        <span className="text-xl font-bold text-primary-foreground">Admin Panel</span>
-                    </div>
+            <Header hideNav />
 
-                    <div className="flex items-center gap-4">
-                        <div className="relative profile-dropdown">
-                            <button 
-                                onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
-                                className="flex items-center gap-2 text-primary-foreground hover:bg-primary-foreground/10 px-3 py-2 rounded-md transition-colors"
-                            >
-                                {profilePicture ? (
-                                    <img 
-                                        src={profilePicture} 
-                                        alt="Profile" 
-                                        className="w-8 h-8 rounded-full object-cover"
-                                    />
-                                ) : (
-                                    <div className="w-8 h-8 rounded-full bg-gradient-divine flex items-center justify-center">
-                                        <Users className="w-4 h-4 text-primary-foreground" />
-                                    </div>
-                                )}
-                                <span className="font-medium">{user?.firstName || 'Admin'}</span>
-                            </button>
-                            {profileDropdownOpen && (
-                                <div className="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg border z-50">
-                                    <div className="px-4 py-3 border-b">
-                                        <p className="text-sm font-medium text-foreground">
-                                            {user?.firstName} {user?.lastName}
-                                        </p>
-                                        <p className="text-xs text-muted-foreground">{user?.email}</p>
-                                    </div>
-                                    <button 
-                                        onClick={() => { setProfileDropdownOpen(false); navigate('/'); }}
-                                        className="w-full flex items-center gap-2 px-4 py-2 text-sm text-foreground hover:bg-muted transition-colors"
-                                    >
-                                        <Home className="w-4 h-4" />
-                                        Home
-                                    </button>
-                                    <button 
-                                        onClick={() => { setProfileDropdownOpen(false); navigate('/dashboard'); }}
-                                        className="w-full flex items-center gap-2 px-4 py-2 text-sm text-foreground hover:bg-muted transition-colors"
-                                    >
-                                        <LayoutDashboard className="w-4 h-4" />
-                                        Dashboard
-                                    </button>
-                                    <button 
-                                        onClick={() => { setProfileDropdownOpen(false); navigate('/admin'); }}
-                                        className="w-full flex items-center gap-2 px-4 py-2 text-sm text-foreground hover:bg-muted transition-colors"
-                                    >
-                                        <Shield className="w-4 h-4" />
-                                        Admin Panel
-                                    </button>
-                                    <button 
-                                        onClick={() => {
-                                            setProfileDropdownOpen(false);
-                                            handleSignOut();
-                                        }}
-                                        className="w-full flex items-center gap-2 px-4 py-2 text-sm text-destructive hover:bg-muted transition-colors"
-                                    >
-                                        <LogOut className="w-4 h-4" />
-                                        Logout
-                                    </button>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                </div>
-            </header>
-
-            <main className="container mx-auto px-4 py-8">
+            <main className="container mx-auto px-4 pt-24 pb-8">
                 <h1 className="text-3xl font-bold text-foreground mb-8">Administration</h1>
 
                 <Tabs defaultValue="sessions" className="w-full">

@@ -4,10 +4,12 @@ import { Button } from '@/components/ui/button';
 import { ArrowRight, BookOpen, User } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import heroBackground from '@/assets/hero-background.jpg';
+import { useTranslation } from 'react-i18next';
 
 const HeroSection = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   return (
     <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden">
@@ -25,19 +27,18 @@ const HeroSection = () => {
                     {/* Badge */}
                     <div className="inline-flex items-center px-4 py-2 rounded-full bg-heavenly-light/90 text-primary border border-accent/30 mb-6">
                         <BookOpen className="w-4 h-4 mr-2" />
-                        <span className="text-sm font-medium">Empowering Evangelists Worldwide</span>
+                        <span className="text-sm font-medium">{t("hero.empowering")}</span>
                     </div>
 
                     {/* Heading */}
                     <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-primary-foreground mb-6 leading-tight">
-                        Track Your
-                        <span className="text-accent block md:inline"> Evangelism Impact</span>
+                        {t("hero.trackYour")}
+                        <span className="text-accent block md:inline"> {t("hero.evangelismImpact")}</span>
                     </h1>
 
                     {/* Subheading */}
                     <p className="text-xl md:text-2xl text-primary-foreground/90 mb-8 max-w-3xl mx-auto leading-relaxed">
-                        Join thousands of evangelists using our platform to record, track, and celebrate
-                        their ministry impact. Because every soul matters.
+                        {t("hero.joinThousands")}
                     </p>
 
           {/* CTA Buttons */}
@@ -51,7 +52,7 @@ const HeroSection = () => {
                   onClick={() => navigate('/dashboard')}
                 >
                   <User className="w-5 h-5 mr-2" />
-                  Go to Dashboard
+                  {t("hero.goToDashboard")}
                 </Button>
                 <Button
                   variant="heavenly"
@@ -61,7 +62,7 @@ const HeroSection = () => {
                     document.getElementById('sessions')?.scrollIntoView({ behavior: 'smooth' });
                   }}
                 >
-                  View Sessions
+                  {t("hero.viewSessions")}
                 </Button>
               </>
             ) : (
@@ -72,7 +73,7 @@ const HeroSection = () => {
                   className="px-8 py-4 text-lg"
                   onClick={() => navigate('/auth')}
                 >
-                  Start Your Journey
+                  {t("hero.startYourJourney")}
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
                 <Button
@@ -81,7 +82,7 @@ const HeroSection = () => {
                   className="px-8 py-4 text-lg"
                   onClick={() => navigate('/auth')}
                 >
-                  Sign In
+                  {t("auth.signIn")}
                 </Button>
               </>
             )}
@@ -91,15 +92,15 @@ const HeroSection = () => {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-2xl mx-auto">
                         <div className="text-center">
                             <div className="text-3xl md:text-4xl font-bold text-accent mb-2">10,000+</div>
-                            <div className="text-primary-foreground/80">Active Evangelists</div>
+                            <div className="text-primary-foreground/80">{t("hero.activeEvangelists")}</div>
                         </div>
                         <div className="text-center">
                             <div className="text-3xl md:text-4xl font-bold text-accent mb-2">50,000+</div>
-                            <div className="text-primary-foreground/80">Lives Touched</div>
+                            <div className="text-primary-foreground/80">{t("hero.livesTouched")}</div>
                         </div>
                         <div className="text-center">
                             <div className="text-3xl md:text-4xl font-bold text-accent mb-2">150+</div>
-                            <div className="text-primary-foreground/80">Countries</div>
+                            <div className="text-primary-foreground/80">{t("hero.countries")}</div>
                         </div>
                     </div>
                 </div>

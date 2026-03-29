@@ -10,6 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import { z } from 'zod';
 import ecomieLogo from "@/images/ecomie-logo.png";
 import {isNonNullArray} from "@/lib/utils";
+import { useTranslation } from 'react-i18next';
 
 const loginSchema = z.object({
   email: z.string().trim().email({ message: "Invalid email address" }),
@@ -34,6 +35,7 @@ const Auth = () => {
   const { signIn, signUp, user, loading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (!loading && user) {
@@ -50,7 +52,7 @@ const Auth = () => {
         const validation = loginSchema.safeParse({ email, password });
         if (!validation.success) {
           toast({
-            title: "Validation Error",
+            title: t("auth.validationError"),
             description: validation.error.errors[0].message,
             variant: "destructive",
           });
@@ -61,17 +63,14 @@ const Auth = () => {
         const { error } = await signIn(email, password);
         if (error) {
           toast({
-            title: "Login Failed",
+            title: t("auth.loginFailed"),
             description: isNonNullArray(error.invalidParams)  ? error.invalidParams[0].reason : error.detail,
-            // description: error.message === 'Invalid login credentials'
-            //   ? 'Invalid email or password. Please try again.'
-            //   : error.message,
             variant: "destructive",
           });
         } else {
           toast({
-            title: "Welcome back!",
-            description: "You have been logged in successfully.",
+            title: t("auth.welcomeBackMessage"),
+            description: t("auth.loggedInSuccessfully"),
           });
           navigate('/dashboard');
         }
@@ -79,7 +78,7 @@ const Auth = () => {
         const validation = signupSchema.safeParse({ firstName, lastName, email, password });
         if (!validation.success) {
           toast({
-            title: "Validation Error",
+            title: t("auth.validationError"),
             description: validation.error.errors[0].message,
             variant: "destructive",
           });
@@ -92,46 +91,23 @@ const Auth = () => {
 
         if (!error) {
             toast({
-                title: "Welcome to ECOMIE!",
-                description: "Your account has been created successfully. Please check your email to verify email",
+                title: t("auth.welcomeToEcomie"),
+                description: t("auth.accountCreated"),
             });
             navigate('/dashboard');
         } else if(error.title === "Unique Constraint") {
             toast({
-                title: "Account Exists",
-                description: "This email is already registered. Please login instead.",
+                title: t("auth.accountExists"),
+                description: t("auth.emailAlreadyRegistered"),
                 variant: "destructive",
             });
         } else {
             toast({
-                title: "Sign Up Failed",
+                title: t("auth.signUpFailed"),
                 description: isNonNullArray(error.invalidParams)  ? error.invalidParams[0].reason : error.detail,
-                // description: error.message,
                 variant: "destructive",
             });
         }
-        // if (error) {
-        //   if (error.title === "Unique Constraint") {
-        //     toast({
-        //       title: "Account Exists",
-        //       description: "This email is already registered. Please login instead.",
-        //       variant: "destructive",
-        //     });
-        //   } else {
-        //     toast({
-        //       title: "Sign Up Failed",
-        //         description: isNonNullArray(error.invalidParams)  ? error.invalidParams[0].reason : error.detail,
-        //         // description: error.message,
-        //       variant: "destructive",
-        //     });
-        //   }
-        // } else {
-        //   toast({
-        //     title: "Welcome to ECOMIE!",
-        //     description: "Your account has been created successfully.",
-        //   });
-        //   navigate('/dashboard');
-        // }
       }
     } finally {
       setIsSubmitting(false);
@@ -141,7 +117,7 @@ const Auth = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-heavenly">
-        <div className="animate-pulse text-primary">Loading...</div>
+        <div className="animate-pulse text-primary">{t("common.loading")}</div>
       </div>
     );
   }
@@ -155,7 +131,7 @@ const Auth = () => {
           className="mb-4 text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Home
+          {t("auth.backToHome")}
         </Button>
 
         <Card className="border-0 shadow-divine">
@@ -167,12 +143,12 @@ const Auth = () => {
               </div>
             </div>
             <h1 className="text-2xl font-bold text-foreground">
-              {isLogin ? 'Welcome Back' : 'Join ECOMIE'}
+              {isLogin ? t("auth.welcomeBack") : t("auth.joinEcomie")}
             </h1>
             <p className="text-muted-foreground">
               {isLogin 
-                ? 'Sign in to continue your Ecomie journey'
-                : 'Create an account to start tracking your ministry impact'}
+                ? t("auth.signInToContinue")
+                : t("auth.createAccountToStart")}
             </p>
           </CardHeader>
 
@@ -181,7 +157,7 @@ const Auth = () => {
               {!isLogin && (
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="firstName">First Name</Label>
+                    <Label htmlFor="firstName">{t("common.firstName")}</Label>
                     <div className="relative">
                       <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                       <Input
@@ -196,7 +172,7 @@ const Auth = () => {
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="lastName">Last Name</Label>
+                    <Label htmlFor="lastName">{t("common.lastName")}</Label>
                     <div className="relative">
                       <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                       <Input
@@ -214,7 +190,7 @@ const Auth = () => {
               )}
 
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">{t("common.email")}</Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <Input
@@ -230,7 +206,7 @@ const Auth = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">{t("auth.password")}</Label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <Input
@@ -253,19 +229,19 @@ const Auth = () => {
                 disabled={isSubmitting}
               >
                 {isSubmitting 
-                  ? 'Please wait...' 
-                  : isLogin ? 'Sign In' : 'Create Account'}
+                  ? t("auth.pleaseWait") 
+                  : isLogin ? t("auth.signIn") : t("auth.createAccount")}
               </Button>
             </form>
 
             <div className="mt-6 text-center">
               <p className="text-muted-foreground">
-                {isLogin ? "Don't have an account?" : "Already have an account?"}
+                {isLogin ? t("auth.dontHaveAccount") : t("auth.alreadyHaveAccount")}
                 <button
                   onClick={() => setIsLogin(!isLogin)}
                   className="ml-2 text-primary font-medium hover:underline"
                 >
-                  {isLogin ? 'Sign up' : 'Sign in'}
+                  {isLogin ? t("auth.signUp") : t("auth.signInLink")}
                 </button>
               </p>
             </div>

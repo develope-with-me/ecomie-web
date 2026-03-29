@@ -5,18 +5,20 @@ import ecomieLogo from '../../images/ecomie-logo.png'
 import {useTranslation} from "react-i18next";
 import MenuIcon from '@mui/icons-material/Menu';
 import {useGlobalTranslation} from "../../translate/translation-provider";
+import { Globe, ChevronDown } from 'lucide-react';
 
 
 const Navbar: React.FC = () => {
     const {t, i18n} = useGlobalTranslation();
 
     const [displaySidebar, setDisplaySidebar] = useState(false);
+    const [langDropdownOpen, setLangDropdownOpen] = useState(false);
 
     const [language, setLanguage] = useState<string>('en');
-    const handleLangChange = (event: any) => {
-        const selectedLanguage = event.target.value;
-        setLanguage(selectedLanguage);
-        i18n.changeLanguage(selectedLanguage)
+    const handleLangChange = (lang: string) => {
+        setLanguage(lang);
+        i18n.changeLanguage(lang);
+        setLangDropdownOpen(false);
     }
 
     return (
@@ -37,12 +39,31 @@ const Navbar: React.FC = () => {
                             {t("home")}</a></div>
                         <div><a>Team</a></div>
                         <div><a>About us</a></div>
-                        <div className='w-1/4 text-black bg-customBlue'>
-                            <select name="language" className="bg-customBlue text-white border-transparent"
-                                    value={language} onChange={handleLangChange}>
-                                <option value="en" className="bg-white text-black">{t("english")}</option>
-                                <option value="fr" className="bg-white text-black">Français</option>
-                            </select>
+                        <div className='relative'>
+                            <button 
+                                onClick={() => setLangDropdownOpen(!langDropdownOpen)}
+                                className="flex items-center gap-1 px-3 py-2 rounded-md hover:bg-white/10 transition-colors"
+                            >
+                                <Globe className="w-4 h-4" />
+                                <span className="text-sm uppercase">{language}</span>
+                                <ChevronDown className="w-3 h-3" />
+                            </button>
+                            {langDropdownOpen && (
+                                <div className="absolute right-0 mt-2 w-32 bg-white rounded-md shadow-lg border z-50">
+                                    <button 
+                                        onClick={() => handleLangChange('en')}
+                                        className={`w-full text-left px-4 py-2 text-sm hover:bg-muted ${language === 'en' ? 'bg-muted text-primary font-medium' : 'text-foreground'}`}
+                                    >
+                                        English
+                                    </button>
+                                    <button 
+                                        onClick={() => handleLangChange('fr')}
+                                        className={`w-full text-left px-4 py-2 text-sm hover:bg-muted ${language === 'fr' ? 'bg-muted text-primary font-medium' : 'text-foreground'}`}
+                                    >
+                                        Français
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

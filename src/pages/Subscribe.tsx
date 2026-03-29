@@ -6,10 +6,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { ArrowLeft, Target, Heart } from 'lucide-react';
-import { challengeApi, subscriptionApi, Challenge } from '@/lib/api';
+import {challengeApi, subscriptionApi, Challenge, UserRole, userApi} from '@/lib/api';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import {isNonNullArray} from "@/lib/utils";
+import { useTranslation } from 'react-i18next';
 
 const Subscribe = () => {
   const { challengeId } = useParams<{ challengeId: string }>();
@@ -23,6 +24,7 @@ const Subscribe = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (!user) {
@@ -43,8 +45,8 @@ const Subscribe = () => {
     } catch (error) {
       console.error('Error fetching challenge:', error);
       toast({
-        title: "Challenge Not Found",
-        description: "The challenge you're looking for doesn't exist.",
+        title: t("subscribe.challengeNotFound"),
+        description: t("subscribe.challengeNotFoundDesc"),
         variant: "destructive",
       });
       navigate('/');
@@ -61,38 +63,23 @@ const Subscribe = () => {
     setSubmitting(true);
     
     try {
-      // Check if already subscribed
-      // const exists = await subscriptionApi.checkExists(challenge.id);
-      // if (exists) {
-      //   toast({
-      //     title: "Already Subscribed",
-      //     description: "You're already subscribed to this challenge.",
-      //     variant: "destructive",
-      //   });
-      //   navigate('/dashboard');
-      //   return;
-      // }
-
-      await subscriptionApi.create({
-        challengeId: challenge.id,
-        target: parseInt(personalTarget) || challenge.target,
-        // name: name || `My ${challenge.name} commitment`,
-        // description: description || undefined,
-        // type: 'personal',
-      });
+        const data = {
+            challengeId: challenge.id,
+            target: parseInt(personalTarget) || challenge.target,
+        };
+        await subscriptionApi.create(data);
 
       toast({
-        title: "Subscribed Successfully!",
-        description: `You've joined the ${challenge.name} challenge. May God bless your efforts!`,
+        title: t("subscribe.subscribedSuccessfully"),
+        description: t("subscribe.joinedChallenge", { challenge: challenge.name }),
       });
       
       navigate('/dashboard');
     } catch (error: any) {
       console.error('Error subscribing:', error);
       toast({
-        title: "Subscription Failed",
+        title: t("subscribe.subscriptionFailed"),
         description: isNonNullArray(error.invalidParams)  ? error.invalidParams[0].reason : error.detail,
-        // description: error.message || "Failed to subscribe to the challenge.",
         variant: "destructive",
       });
     } finally {
@@ -103,7 +90,7 @@ const Subscribe = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-heavenly">
-        <div className="animate-pulse text-primary">Loading...</div>
+        <div className="animate-pulse text-primary">{t("common.loading")}</div>
       </div>
     );
   }
@@ -112,7 +99,26 @@ const Subscribe = () => {
     return null;
   }
 
-  return (
+    const becomeAnEcomiest = async()=> {
+
+        try {
+            const genericResponse = await userApi.requestRoleChange("ECOMIEST");
+
+            toast({
+                title: t("subscribe.emailSent"),
+                description: genericResponse.description
+            });
+        } catch (error: any) {
+            console.error('Error subscribing:', error);
+            toast({
+                title: t("subscribe.subscriptionFailed"),
+                description: isNonNullArray(error.invalidParams)  ? error.invalidParams[0].reason : error.detail,
+                variant: "destructive",
+            });
+        }
+    }
+
+    return (
     <div className="min-h-screen bg-gradient-heavenly py-12 px-4">
       <div className="max-w-2xl mx-auto">
         <Button
@@ -121,7 +127,7 @@ const Subscribe = () => {
           className="mb-6 text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Home
+          {t("subscribe.backToHome")}
         </Button>
 
         <Card className="border-0 shadow-divine">
@@ -132,39 +138,36 @@ const Subscribe = () => {
               </div>
             </div>
             <h1 className="text-2xl font-bold text-foreground">
-              Subscribe to {challenge.name} Challenge
+                { (user?.role !== UserRole.ECOMIEST) ? t("subscribe.ecomiestOnly") : t("subscribe.subscribeToChallenge", { challenge: challenge.name }) }
             </h1>
+              {(user?.role === UserRole.ECOMIEST) && (
             <p className="text-muted-foreground">
-              {challenge.description || "Commit to making a difference in your community"}
+              {challenge.description || t("subscribe.commitToMakeDifference")}
             </p>
+              )}
           </CardHeader>
 
           <CardContent>
+              {(user?.role !== UserRole.ECOMIEST) ?
+              <div className="bg-muted/50 rounded-lg p-4 mb-6">
+                  <div className="flex items-center gap-2 text-sm">
+                      <span className="text-foreground">{t("subscribe.contactAdmin")} <a href={""} className="font-bold" onClick={becomeAnEcomiest}>{t("subscribe.becomeAnEcomiest")}</a></span>
+                  </div>
+              </div>
+               :
+            <div>
             <div className="bg-muted/50 rounded-lg p-4 mb-6">
               <div className="flex items-center gap-2 text-sm">
                 <Target className="w-4 h-4 text-primary" />
-                <span className="text-muted-foreground">Challenge Target:</span>
-                <span className="font-semibold text-foreground">{challenge.target} souls</span>
+                <span className="text-muted-foreground">{t("subscribe.challengeTarget")}</span>
+                <span className="font-semibold text-foreground">{challenge.target} {t("dashboard.souls")}</span>
               </div>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="name">Commitment Name (Optional)</Label>
-                <Input
-                  id="name"
-                  type="text"
-                  placeholder={`My ${challenge.name} commitment`}
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                />
-                <p className="text-xs text-muted-foreground">
-                  Give your commitment a personal name
-                </p>
-              </div>
 
               <div className="space-y-2">
-                <Label htmlFor="target">Your Personal Target</Label>
+                <Label htmlFor="target">{t("subscribe.yourPersonalTarget")}</Label>
                 <Input
                   id="target"
                   type="number"
@@ -175,19 +178,8 @@ const Subscribe = () => {
                   required
                 />
                 <p className="text-xs text-muted-foreground">
-                  Set your own goal (minimum suggested: {challenge.target})
+                  {t("subscribe.setYourOwnGoal", { target: challenge.target })}
                 </p>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="description">Personal Notes (Optional)</Label>
-                <Textarea
-                  id="description"
-                  placeholder="Any personal notes or prayer requests for this commitment..."
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  rows={4}
-                />
               </div>
 
               <Button 
@@ -197,9 +189,11 @@ const Subscribe = () => {
                 size="lg"
                 disabled={submitting}
               >
-                {submitting ? 'Subscribing...' : 'Confirm Subscription'}
+                {submitting ? t("subscribe.subscribing") : t("subscribe.confirmSubscription")}
               </Button>
             </form>
+            </div>
+              }
           </CardContent>
         </Card>
       </div>

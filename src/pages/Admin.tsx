@@ -34,22 +34,21 @@ import {
     Target,
     FileText,
     Heart,
-    Home,
-    LogOut,
     Plus,
     Edit,
     Trash2,
     BookOpen,
-    Shield,
     Eye,
-    X,
+    X, LayoutDashboard,
 } from "lucide-react";
-import { isNonNullArray, formatDate } from "@/lib/utils";
+import { isNonNullArray, formatDate, computeUserName } from "@/lib/utils";
 import SessionDetails from "@/components/SessionDetails";
 import ChallengeDetails from "@/components/ChallengeDetails";
 import ConfirmRemoveDialog from "@/components/ConfirmRemoveDialog";
 import Validators from "@/components/Validators";
 import UserDetails from "@/components/UserDetails";
+import ReportsCalendar from "@/components/ReportsCalendar";
+import Header from "@/components/home/Header";
 
 const Admin = () => {
     const { user, isAdmin, signOut, loading: authLoading } = useAuth();
@@ -109,6 +108,8 @@ const Admin = () => {
     const [userCountry, setUserCountry] = useState("");
     const [userRegion, setUserRegion] = useState("");
     const [userCity, setUserCity] = useState("");
+    const [userAvatar, setUserAvatar] = useState<File | null>(null);
+    const [userAvatarPreview, setUserAvatarPreview] = useState<string | null>(null);
 
     // Subscription
     const [subscriptionDialogOpen, setSubscriptionDialogOpen] = useState(false);
@@ -206,7 +207,7 @@ const Admin = () => {
                 reportsRes,
                 ongoingSessionRes,
                 ongoingSessionUsersRes,
-                ongoingSessionSubscriptionRes
+                ongoingSessionSubscriptionRes,
             ] = await Promise.all([
                 fetchUsers,
                 fetchSessions,
@@ -215,7 +216,7 @@ const Admin = () => {
                 fetchReports,
                 fetchOngoingSession,
                 fetchOngoingSessionUsers,
-                fetchOngoingSessionSubscriptions
+                fetchOngoingSessionSubscriptions,
             ]);
 
             // Set states with the potentially null values
@@ -498,6 +499,7 @@ const Admin = () => {
                 country: userCountry,
                 region: userRegion,
                 city: userCity,
+                avatar: userAvatar,
             });
             if (editingUser.role !== userRole) {
                 await userApi.assignNewRole(userEmail, userRole);
@@ -510,6 +512,8 @@ const Admin = () => {
             toast({ title: "Error", description: Array.isArray(err.invalidParams) ? err.invalidParams[0].reason : err.detail, variant: "destructive" });
         }
     };
+
+
 
     const handleEditUser = (userProfile: User) => {
         setEditingUser(userProfile);
@@ -578,6 +582,8 @@ const Admin = () => {
         setUserRegion("");
         setUserCity("");
         setUserPassword("");
+        setUserAvatar(null);
+        setUserAvatarPreview(null);
     };
 
     const handleSubscribeUser = (userProfile: User) => {
@@ -761,33 +767,9 @@ const Admin = () => {
 
     return (
         <div className="min-h-screen bg-gradient-heavenly">
-            <header className="bg-primary shadow-gentle">
-                <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-gradient-divine rounded-full flex items-center justify-center">
-                            <Shield className="w-6 h-6 text-primary-foreground" />
-                        </div>
-                        <span className="text-xl font-bold text-primary-foreground">Admin Panel</span>
-                    </div>
+            <Header hideNav />
 
-                    <div className="flex items-center gap-4">
-                        <Button variant="ghost" size="sm" onClick={() => navigate("/")} className="text-primary-foreground hover:bg-primary-foreground/10">
-                            <Home className="w-4 h-4 mr-2" />
-                            Home
-                        </Button>
-                        <Button variant="ghost" size="sm" onClick={() => navigate("/dashboard")} className="text-primary-foreground hover:bg-primary-foreground/10">
-                            <Heart className="w-4 h-4 mr-2" />
-                            Dashboard
-                        </Button>
-                        <Button variant="heavenly" size="sm" onClick={handleSignOut}>
-                            <LogOut className="w-4 h-4 mr-2" />
-                            Sign Out
-                        </Button>
-                    </div>
-                </div>
-            </header>
-
-            <main className="container mx-auto px-4 py-8">
+            <main className="container mx-auto px-4 pt-24 pb-8">
                 <h1 className="text-3xl font-bold text-foreground mb-8">Administration</h1>
 
                 <Tabs defaultValue="sessions" className="w-full">
@@ -1211,7 +1193,7 @@ const Admin = () => {
                             <DialogContent>
                                 <DialogHeader><DialogTitle>User Details</DialogTitle></DialogHeader>
                                 <div className="py-2">
-                                    <div className="text-sm"><strong>Name:</strong> {viewingUser?.firstName} {viewingUser?.lastName}</div>
+                                    <div className="text-sm"><strong>Name:</strong> {computeUserName(viewingUser)} </div>
                                     <div className="text-sm"><strong>Email:</strong> {viewingUser?.email}</div>
                                     <div className="text-sm"><strong>Role:</strong> {viewingUser?.role?.toString()}</div>
                                     <div className="text-sm"><strong>Phone:</strong> {viewingUser?.phoneNumber}</div>
@@ -1252,8 +1234,11 @@ const Admin = () => {
 
                                                 <div className="flex-1">
                                                     <h3 className="font-semibold cursor-pointer">
-                                                        {userName} → Pledge: {sub?.target}
+                                                        {computeUserName(usr)} → Pledge: {sub?.target}
                                                     </h3>
+                                                    <p className="flex items-center gap-4 mt-2 text-xs">
+                                                        { (usr && usr?.email) ? usr.email : computeUserName(usr)}
+                                                    </p>
                                                     <p className="flex items-center gap-4 mt-2">
                                                         Session: {ses.name}
                                                     </p>
@@ -1288,9 +1273,10 @@ const Admin = () => {
                             <DialogContent>
                                 <DialogHeader><DialogTitle>Subscription Details</DialogTitle></DialogHeader>
                                 <div className="py-2">
-                                    <div className="text-sm"><strong>User:</strong> {userName}</div>
-                                    <div className="text-sm"><strong>Session:</strong> {viewingSubscription ? sessions.find(s => s.id === viewingSubscription.session?.id)?.name : ""}</div>
-                                    <div className="text-sm"><strong>Challenge:</strong> {viewingSubscription ? challenges.find(c => c.id === viewingSubscription.challenge?.id)?.name : ""}</div>
+                                    <div className="text-sm"><strong>User:</strong> {computeUserName(viewingSubscription ? viewingSubscription?.user : null)}</div>
+                                    <div className="text-sm"><strong>Email:</strong> { (viewingSubscription?.user && viewingSubscription?.user?.email) ? viewingSubscription?.user.email : computeUserName(viewingSubscription?.user)}</div>
+                                    <div className="text-sm"><strong>Session:</strong> {viewingSubscription ? viewingSubscription.session?.name : ""}</div>
+                                    <div className="text-sm"><strong>Challenge:</strong> {viewingSubscription ? viewingSubscription.challenge?.name : ""}</div>
                                     <div className="text-sm"><strong>Commitment:</strong> {viewingSubscription?.target}</div>
                                     <div className="text-sm"><strong>Target:</strong> { viewingSubscription?.challenge?.target}</div>
                                     <div className="text-sm"><strong>Subscribed On:</strong> {formatDate(viewingSubscription?.createdOn)}</div>
@@ -1303,8 +1289,16 @@ const Admin = () => {
 
                     {/* Reports */}
                     <TabsContent value="reports">
-                        <div className="flex justify-between items-center mb-6">
-                            <h2 className="text-xl font-semibold">Reports ({reports.length})</h2>
+                        <ReportsCalendar 
+                            reports={reports}
+                            title="All Reports"
+                            onViewReport={handleViewReport}
+                            onEditReport={handleEditReport}
+                            defaultView="year"
+                        />
+                        
+                        <div className="flex justify-between items-center mt-6 mb-4">
+                            <h2 className="text-xl font-semibold">Reports List ({reports.length})</h2>
                             <div className="flex gap-2">
                                 <Button onClick={() => { resetReportForm(); setReportDialogOpen(true); }}>
                                     <Plus className="w-4 h-4 mr-2" /> Add Report
@@ -1313,6 +1307,25 @@ const Admin = () => {
                         </div>
 
                         <div className="space-y-4">
+                            <Card key={"reportHeader"} className="shadow-gentle">
+                                <CardContent className="flex justify-between py-4">
+                                    <div className="flex-grow grid grid-cols-12 gap-2">
+                                    {/*<div className="grid grid-cols-5 gap-4 p-3 bg-muted rounded-t-lg font-medium text-sm">*/}
+                                            <div className="col-span-1 font-bold">User</div>
+                                            <div className="col-span-2 font-bold">Email</div>
+                                            <div className="col-span-1 font-bold">Session</div>
+                                            <div className="col-span-1 font-bold">Challenge</div>
+                                            <div className="col-span-1 font-bold">Pledge</div>
+                                            <div className="col-span-1 font-bold">Target</div>
+                                            <div className="col-span-1 font-bold">Evangelized</div>
+                                            <div className="col-span-1 font-bold">Converts</div>
+                                            <div className="col-span-1 font-bold">Followed up</div>
+                                            <div className="col-span-1 font-bold">Reported On</div>
+                                            {/*<div className="flex items-center gap-0.1"></div>*/}
+                                    </div>
+                                </CardContent>
+                            </Card>
+
                             {reports.map((r) => {
                                 const ses = sessions.find((s) => s?.id === r.subscription?.session?.id);
                                 const chl = challenges.find((c) => c?.id === r.subscription?.challenge?.id);
@@ -1325,37 +1338,40 @@ const Admin = () => {
 
                                     <Card key={r.id} className="shadow-gentle">
                                         <CardContent className="flex justify-between py-4">
-                                            <div className="flex-grow grid grid-cols-9 gap-2">
-                                                <div className="text-sm">
-                                                    <span className="text-muted-foreground">User:</span> {userName}
+                                            <div className="flex-grow grid grid-cols-12 gap-2">
+                                                <div className="text-sm col-span-1">
+                                                    {computeUserName(usr)}
                                                 </div>
-                                                <div className="text-sm">
-                                                    <span className="text-muted-foreground">Session:</span> {ses?.name}
+                                                <div className="text-sm col-span-2">
+                                                    { (usr && usr?.email) ? usr.email : computeUserName(usr)}
                                                 </div>
-                                                <div className="text-sm">
-                                                    <span className="text-muted-foreground">Challenge:</span> {chl?.name}
+                                                <div className="text-sm col-span-1">
+                                                    {ses?.name}
                                                 </div>
-                                                <div className="text-sm">
-                                                    <span className="text-muted-foreground">Pledge:</span> {sub?.target}
+                                                <div className="text-sm col-span-1">
+                                                    {chl?.name}
                                                 </div>
-                                                <div className="text-sm">
-                                                    <span className="text-muted-foreground">Target:</span> {chl?.target}
+                                                <div className="text-sm col-span-1">
+                                                    {sub?.target}
                                                 </div>
-                                                <div className="text-sm">
-                                                    <span className="text-muted-foreground">Evangelized:</span> {r.numberEvangelizedTo}
+                                                <div className="text-sm col-span-1">
+                                                    {chl?.target}
                                                 </div>
-                                                <div className="text-sm">
-                                                    <span className="text-muted-foreground">Converts:</span> {r.numberOfNewConverts}
+                                                <div className="text-sm col-span-1">
+                                                    {r.numberEvangelizedTo}
                                                 </div>
-                                                <div className="text-sm">
-                                                    <span className="text-muted-foreground">Followed up:</span> {r.numberFollowedUp}
+                                                <div className="text-sm col-span-1">
+                                                    {r.numberOfNewConverts}
                                                 </div>
-                                                <div className="text-sm">
-                                                    <span className="text-muted-foreground">Reported On:</span> {formatDate(r.createdOn)}
+                                                <div className="text-sm col-span-1">
+                                                    {r.numberFollowedUp}
+                                                </div>
+                                                <div className="text-sm col-span-1">
+                                                    {formatDate(r.createdOn)}
                                                 </div>
                                             </div>
 
-                                            <div className="flex items-center gap-2">
+                                            <div className="flex items-center gap-0.1">
                                                 <Button variant="ghost" size="sm" onClick={() => handleViewReport(r)}>
                                                     <Eye className="w-4 h-4" />
                                                 </Button>
@@ -1384,7 +1400,8 @@ const Admin = () => {
                             <DialogContent>
                                 <DialogHeader><DialogTitle>Report Details</DialogTitle></DialogHeader>
                                 <div className="py-2">
-                                    <div className="text-sm"><strong>User:</strong> {userName}</div>
+                                    <div className="text-sm"><strong>User:</strong> {computeUserName(concernedUser)}</div>
+                                    <div className="text-sm"><strong>Email:</strong> { (concernedUser && concernedUser?.email) ? concernedUser?.email : computeUserName(concernedUser)}</div>
                                     <div className="text-sm"><strong>Session:</strong> {concernedSession ? concernedSession?.name : ""}</div>
                                     <div className="text-sm"><strong>Challenge:</strong> {concernedChallenge ? concernedChallenge?.name : ""}</div>
                                     <div className="text-sm"><strong>Pledged:</strong> {concernedSubscription?.target}</div>
@@ -1436,26 +1453,51 @@ const Admin = () => {
                         )}
 
                         {editingUser && (
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <Label>Role</Label>
-                                    <Select value={userRole} onValueChange={setUserRole}>
-                                        <SelectTrigger><SelectValue /></SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value={UserRole.USER}>User</SelectItem>
-                                            <SelectItem value={UserRole.ADMIN}>Admin</SelectItem>
-                                            <SelectItem value={UserRole.SUPER_ADMIN}>Super Admin</SelectItem>
-                                            <SelectItem value={UserRole.ECOMIEST}>Ecomiest</SelectItem>
-                                            <SelectItem value={UserRole.COACH}>Coach</SelectItem>
-                                        </SelectContent>
-                                    </Select>
+                            <>
+                                <div className="space-y-2">
+                                    <Label>Profile Picture</Label>
+                                    <Input 
+                                        type="file" 
+                                        accept="image/*"
+                                        onChange={(e) => {
+                                            const file = e.target.files?.[0];
+                                            if (file) {
+                                                setUserAvatar(file);
+                                                setUserAvatarPreview(URL.createObjectURL(file));
+                                            }
+                                        }} 
+                                    />
+                                    {userAvatarPreview && (
+                                        <div className="mt-2">
+                                            <img 
+                                                src={userAvatarPreview} 
+                                                alt="Avatar preview" 
+                                                className="w-20 h-20 rounded-full object-cover"
+                                            />
+                                        </div>
+                                    )}
                                 </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <Label>Role</Label>
+                                        <Select value={userRole} onValueChange={setUserRole}>
+                                            <SelectTrigger><SelectValue /></SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value={UserRole.USER}>User</SelectItem>
+                                                <SelectItem value={UserRole.ADMIN}>Admin</SelectItem>
+                                                <SelectItem value={UserRole.SUPER_ADMIN}>Super Admin</SelectItem>
+                                                <SelectItem value={UserRole.ECOMIEST}>Ecomiest</SelectItem>
+                                                <SelectItem value={UserRole.COACH}>Coach</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
 
-                                <div>
-                                    <Label>Phone</Label>
-                                    <Input value={userPhoneNumber} onChange={(e) => setUserPhoneNumber(e.target.value)} />
+                                    <div>
+                                        <Label>Phone</Label>
+                                        <Input value={userPhoneNumber} onChange={(e) => setUserPhoneNumber(e.target.value)} />
+                                    </div>
                                 </div>
-                            </div>
+                            </>
                         )}
 
                         {editingUser && (
@@ -1523,7 +1565,7 @@ const Admin = () => {
                             <Label>User</Label>
                             <Select value={subscriptionUserId} onValueChange={setSubscriptionUserId}>
                                 <SelectTrigger><SelectValue placeholder="Select a user" /></SelectTrigger>
-                                <SelectContent>{users.map(u => <SelectItem key={u.id} value={u.id}>{u.firstName} {u.lastName}</SelectItem>)}</SelectContent>
+                                <SelectContent>{users.map(u => <SelectItem key={u.id} value={u.id}> {computeUserName(u)}</SelectItem>)}</SelectContent>
                             </Select>
                         </div>
                         <div className="space-y-2">

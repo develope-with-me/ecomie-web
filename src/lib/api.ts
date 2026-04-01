@@ -264,7 +264,9 @@ export const authApi = {
       method: 'POST',
       body: JSON.stringify({ email, password }),
     });
-    setAuthToken(response.token);
+    if (response.success) {
+      setAuthToken(response.token);
+    }
     return response;
   },
 
@@ -282,15 +284,15 @@ export const authApi = {
     });
   },
 
-  resetPassword: async (email: string, token: string, oldPassword: string, password: string, confirmPassword: string): Promise<GenericResponse> => {
-      return await apiRequest<GenericResponse>(`/auth/reset-password?email=${email}&token=${token}`, {
+  resetPassword: async (email: string, token: string, password: string, confirmPassword: string): Promise<ConfirmAccountResponse> => {
+      return await apiRequest<ConfirmAccountResponse>(`/auth/reset-password?email=${encodeURIComponent(email)}&token=${encodeURIComponent(token)}`, {
         method: 'POST',
-        body: JSON.stringify({ oldPassword, password, confirmPassword }),
+        body: JSON.stringify({ password, confirmPassword }),
     });
   },
 
   confirmAccount: async (email: string, token: string): Promise<ConfirmAccountResponse> => {
-      return await apiRequest<ConfirmAccountResponse>(`/auth/confirm-account?email=${email}&token=${token}`, {
+      return await apiRequest<ConfirmAccountResponse>(`/auth/confirm-account?email=${encodeURIComponent(email)}&token=${encodeURIComponent(token)}`, {
         method: 'POST'
     });
   },

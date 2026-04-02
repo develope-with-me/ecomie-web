@@ -1,13 +1,15 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import {authApi, EcomieError, User} from '@/lib/api';
+import {authApi, AuthResponse, EcomieError, User} from '@/lib/api';
 
 interface AuthContextType {
   user: User | null;
   isAdmin: boolean;
   loading: boolean;
   signUp: (email: string, password: string, firstName: string, lastName: string) => Promise<{ error: EcomieError | null }>;
-  signIn: (email: string, password: string) => Promise<{ error: EcomieError | null }>;
+  signIn: (email: string, password: string) => Promise<{ error: EcomieError | null; success?: boolean; message?: string }>;
   signOut: () => Promise<void>;
+  forgotPassword: (email: string) => Promise<{ error: EcomieError | null }>;
+  resendConfirmationEmail: (email: string) => Promise<{ error: EcomieError | null }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -62,9 +64,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const signIn = async (email: string, password: string) => {
     try {
       const response = await authApi.signIn(email, password);
+      if (!response.success) {
+        return { error: null, success: false, message: response.message };
+      }
       setUser(response.user);
       setIsAdmin(response.user.role === 'ADMIN' || response.user.role === 'SUPER_ADMIN');
-      return { error: null };
+      return { error: null, success: true };
     } catch (error) {
       return { error: error as EcomieError };
     }
@@ -76,8 +81,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setIsAdmin(false);
   };
 
+  const forgotPassword = async (email: string) => {
+    try {
+      await authApi.sendPasswordResetLink(email);
+      return { error: null };
+    } catch (error) {
+      return { error: error as EcomieError };
+    }
+  };
+
+  const resendConfirmationEmail = async (email: string) => {
+    try {
+      await authApi.resendConfirmationLink(email);
+      return { error: null };
+    } catch (error) {
+      return { error: error as EcomieError };
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, isAdmin, loading, signUp, signIn, signOut }}>
+    <AuthContext.Provider value={{ user, isAdmin, loading, signUp, signIn, signOut, forgotPassword, resendConfirmationEmail }}>
       {children}
     </AuthContext.Provider>
   );

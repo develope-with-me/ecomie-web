@@ -92,6 +92,9 @@ const challengeColors: Record<string, string> = {
     const [personalTarget, setPersonalTarget] = useState('');
     const [submitting, setSubmitting] = useState(false);
 
+    const [roleChangeDialogOpen, setRoleChangeDialogOpen] = useState(false);
+    const [roleChangeSubmitting, setRoleChangeSubmitting] = useState(false);
+
     const [sessionExpanded, setSessionExpanded] = useState(true);
 
     useEffect(() => {
@@ -162,9 +165,33 @@ const challengeColors: Record<string, string> = {
     };
 
     const handleOpenSubscribeDialog = (challenge: Challenge) => {
+        if (!isEcomiest) {
+            setRoleChangeDialogOpen(true);
+            return;
+        }
         setSelectedChallenge(challenge);
         setPersonalTarget(challenge.target.toString());
         setSubscribeDialogOpen(true);
+    };
+
+    const handleRequestRoleChange = async () => {
+        setRoleChangeSubmitting(true);
+        try {
+            const response = await userApi.requestRoleChange("ECOMIEST");
+            toast({
+                title: t("subscribe.emailSent"),
+                description: response.description,
+            });
+            setRoleChangeDialogOpen(false);
+        } catch (err: any) {
+            toast({ 
+                title: "Error", 
+                description: isNonNullArray(err.invalidParams) ? err.invalidParams[0].reason : err.detail, 
+                variant: "destructive" 
+            });
+        } finally {
+            setRoleChangeSubmitting(false);
+        }
     };
 
     const handleSubscribe = async () => {
@@ -816,6 +843,46 @@ const challengeColors: Record<string, string> = {
                             </DialogFooter>
                         </div>
                     )}
+                </DialogContent>
+            </Dialog>
+
+            {/* Role Change Request Modal */}
+            <Dialog open={roleChangeDialogOpen} onOpenChange={setRoleChangeDialogOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>{t("subscribe.becomeAnEcomiest")}</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4 py-4">
+                        <p className="text-muted-foreground">
+                            {t("subscribe.roleChangeRequestDescription")}
+                        </p>
+                        <div className="bg-muted/50 rounded-lg p-4">
+                            <div className="flex items-center gap-2">
+                                <Crown className="w-5 h-5 text-accent" />
+                                <span className="font-semibold">{t("subscribe.ecomiestsCan")}:</span>
+                            </div>
+                            <ul className="mt-2 space-y-1 text-sm text-muted-foreground ml-7">
+                                <li>{t("subscribe.canSubscribeToChallenges")}</li>
+                                <li>{t("subscribe.canSubmitReports")}</li>
+                                <li>{t("subscribe.canTrackProgress")}</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button 
+                            variant="outline" 
+                            onClick={() => setRoleChangeDialogOpen(false)}
+                        >
+                            {t("common.cancel")}
+                        </Button>
+                        <Button 
+                            variant="cta" 
+                            onClick={handleRequestRoleChange}
+                            disabled={roleChangeSubmitting}
+                        >
+                            {roleChangeSubmitting ? t("common.loading") : t("subscribe.requestRoleChange")}
+                        </Button>
+                    </DialogFooter>
                 </DialogContent>
             </Dialog>
         </div>

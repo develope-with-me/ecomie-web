@@ -13,8 +13,8 @@ const Footer = () => {
         { nameKey: "home.home", href: "#home" },
         { nameKey: "home.features", href: "#features" },
         { nameKey: "home.pricing", href: "#pricing" },
-        { nameKey: "home.team", href: "#team" },
-        { nameKey: "home.contact", href: "#contact" }
+        { nameKey: "home.footerTeam", href: "#team" },
+        { nameKey: "home.footerContact", href: "#contact" }
     ];
 
     const resources = [

@@ -354,6 +354,7 @@
   "home": {
     "home": "Accueil",
     "about": "À propos",
+    "footerContact": "Contact",
     "headerContact": "Contact",
     "login": "Connexion",
     "signup": "Inscription",
@@ -367,6 +368,7 @@
     "partners": "Partenaires",
     "support": "Support",
     "community": "Communauté",
+    "footerTeam": "Équipe",
     "headerTeam": "Équipe",
     "getStarted": "Commencer",
     "language": "Langue",

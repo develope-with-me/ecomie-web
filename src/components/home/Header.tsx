@@ -74,8 +74,8 @@ const Header: React.FC<HeaderProps> = ({ hideNav = false }) => {
               <a href="#home" className="text-primary-foreground hover:text-accent transition-colors">{t("home.home")}</a>
               <a href="#features" className="text-primary-foreground hover:text-accent transition-colors">{t("home.features")}</a>
               <a href="#sessions" className="text-primary-foreground hover:text-accent transition-colors">{t("dashboard.sessions")}</a>
-              <a href="#team" className="text-primary-foreground hover:text-accent transition-colors">{t("home.team")}</a>
-              <a href="#contact" className="text-primary-foreground hover:text-accent transition-colors">{t("home.contact")}</a>
+              <a href="#team" className="text-primary-foreground hover:text-accent transition-colors">{t("home.headerTeam")}</a>
+              <a href="#contact" className="text-primary-foreground hover:text-accent transition-colors">{t("home.headerContact")}</a>
             </nav>
           )}
 

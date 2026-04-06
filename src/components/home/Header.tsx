@@ -97,13 +97,13 @@ const Header: React.FC<HeaderProps> = ({ hideNav = false }) => {
                     onClick={(e) => { e.stopPropagation(); handleLanguageChange('en'); }}
                     className={`w-full text-left px-4 py-2 text-sm hover:bg-muted ${currentLang === 'en' ? 'bg-muted text-primary font-medium' : 'text-foreground'}`}
                   >
-                    English
+                    {t("home.english")}
                   </button>
                   <button 
                     onClick={(e) => { e.stopPropagation(); handleLanguageChange('fr'); }}
                     className={`w-full text-left px-4 py-2 text-sm hover:bg-muted ${currentLang === 'fr' ? 'bg-muted text-primary font-medium' : 'text-foreground'}`}
                   >
-                    Français
+                    {t("home.french")}
                   </button>
                 </div>
               )}
@@ -223,8 +223,8 @@ const Header: React.FC<HeaderProps> = ({ hideNav = false }) => {
                   <a href="#home" className="text-primary-foreground hover:text-accent transition-colors">{t("home.home")}</a>
                   <a href="#features" className="text-primary-foreground hover:text-accent transition-colors">{t("home.features")}</a>
                   <a href="#sessions" className="text-primary-foreground hover:text-accent transition-colors">{t("dashboard.sessions")}</a>
-                  <a href="#team" className="text-primary-foreground hover:text-accent transition-colors">{t("home.team")}</a>
-                  <a href="#contact" className="text-primary-foreground hover:text-accent transition-colors">{t("home.contact")}</a>
+                  <a href="#team" className="text-primary-foreground hover:text-accent transition-colors">{t("home.headerTeam")}</a>
+                  <a href="#contact" className="text-primary-foreground hover:text-accent transition-colors">{t("home.headerContact")}</a>
 
                   {/* Language Selector Mobile */}
                   <div className="flex items-center gap-2 pt-2 border-t border-primary-foreground/20">

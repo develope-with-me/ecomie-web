@@ -2,8 +2,11 @@ import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Linkedin, Twitter, Mail } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const TeamSection = () => {
+    const { t } = useTranslation();
+
     const team = [
         {
             name: "Rev. Jonathan Pierce",
@@ -13,7 +16,7 @@ const TeamSection = () => {
             social: {
                 linkedin: "#",
                 twitter: "#",
-                email: "jonathan@evangeltrack.com"
+                email: "jonathan@ecomie.com"
             }
         },
         {
@@ -24,7 +27,7 @@ const TeamSection = () => {
             social: {
                 linkedin: "#",
                 twitter: "#",
-                email: "ruth@evangeltrack.com"
+                email: "ruth@ecomie.com"
             }
         },
         {
@@ -35,7 +38,7 @@ const TeamSection = () => {
             social: {
                 linkedin: "#",
                 twitter: "#",
-                email: "marcus@evangeltrack.com"
+                email: "marcus@ecomie.com"
             }
         },
         {
@@ -46,7 +49,7 @@ const TeamSection = () => {
             social: {
                 linkedin: "#",
                 twitter: "#",
-                email: "mary@evangeltrack.com"
+                email: "mary@ecomie.com"
             }
         }
     ];
@@ -56,12 +59,12 @@ const TeamSection = () => {
             <div className="container mx-auto px-4">
                 {/* Header */}
                 <div className="text-center max-w-3xl mx-auto mb-16">
-                    <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-6">
-                        Meet Our <span className="text-primary">Ministry Team</span>
-                    </h2>
+                    <h2
+                        className="text-3xl md:text-5xl font-bold text-foreground mb-6"
+                        dangerouslySetInnerHTML={{ __html: t("home.team.title") }}
+                    />
                     <p className="text-xl text-muted-foreground leading-relaxed">
-                        A diverse team of ministry veterans, technologists, and biblical scholars
-                        united by one mission: empowering evangelists worldwide.
+                        {t("home.team.subtitle")}
                     </p>
                 </div>
 
@@ -103,12 +106,9 @@ const TeamSection = () => {
                 {/* Mission Statement */}
                 <div className="text-center max-w-4xl mx-auto">
                     <div className="bg-gradient-heavenly rounded-lg p-8 shadow-gentle">
-                        <h3 className="text-2xl font-bold text-foreground mb-4">Our Mission</h3>
+                        <h3 className="text-2xl font-bold text-foreground mb-4">{t("home.team.ourMission")}</h3>
                         <p className="text-lg text-muted-foreground leading-relaxed">
-                            "Therefore go and make disciples of all nations..." - Matthew 28:19.
-                            We believe technology should serve the Great Commission, not complicate it.
-                            Our team is committed to building tools that help every evangelist track,
-                            measure, and celebrate the Kingdom impact they're making every day.
+                            {t("home.team.missionText")}
                         </p>
                     </div>
                 </div>

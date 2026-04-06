@@ -1,8 +1,10 @@
 import React, {useState} from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Star, Quote } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const SocialProofSection = () => {
+    const { t } = useTranslation();
     const [imgError, setImgError] = useState(false);
 
     const testimonials = [
@@ -30,10 +32,10 @@ const SocialProofSection = () => {
     ];
 
     const stats = [
-        { number: "98%", label: "User Satisfaction" },
-        { number: "2.5x", label: "More Conversions" },
-        { number: "75%", label: "Better Follow-up Rates" },
-        { number: "4.9/5", label: "App Store Rating" }
+        { number: "98%", labelKey: "home.socialProof.userSatisfaction" },
+        { number: "2.5x", labelKey: "home.socialProof.moreConversions" },
+        { number: "75%", labelKey: "home.socialProof.betterFollowUp" },
+        { number: "4.9/5", labelKey: "home.socialProof.appStoreRating" }
     ];
 
     const churches = [
@@ -50,11 +52,12 @@ const SocialProofSection = () => {
             <div className="container mx-auto px-4">
                 {/* Header */}
                 <div className="text-center max-w-3xl mx-auto mb-16">
-                    <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-6">
-                        Trusted by <span className="text-primary">Thousands</span> of Evangelists
-                    </h2>
+                    <h2
+                        className="text-3xl md:text-5xl font-bold text-foreground mb-6"
+                        dangerouslySetInnerHTML={{ __html: t("home.socialProof.trustedBy") }}
+                    />
                     <p className="text-xl text-muted-foreground">
-                        Join a growing community of faithful servants making a measurable impact for the Kingdom
+                        {t("home.socialProof.joinGrowing")}
                     </p>
                 </div>
 
@@ -63,7 +66,7 @@ const SocialProofSection = () => {
                     {stats.map((stat, index) => (
                         <div key={index} className="text-center">
                             <div className="text-3xl md:text-4xl font-bold text-primary mb-2">{stat.number}</div>
-                            <div className="text-muted-foreground">{stat.label}</div>
+                            <div className="text-muted-foreground">{t(stat.labelKey)}</div>
                         </div>
                     ))}
                 </div>
@@ -101,7 +104,7 @@ const SocialProofSection = () => {
 
                 {/* Church Logos */}
                 <div className="text-center">
-                    <p className="text-muted-foreground mb-8">Trusted by leading churches worldwide</p>
+                    <p className="text-muted-foreground mb-8">{t("home.socialProof.trustedByChurches")}</p>
                     <div className="flex flex-wrap justify-center items-center gap-8 opacity-60">
                         {churches.map((church, index) => (
                             <div key={index} className="text-lg font-semibold text-muted-foreground">

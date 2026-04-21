@@ -9,9 +9,9 @@ const TeamSection = () => {
 
     const team = [
         {
-            name: "Rev. Jonathan Pierce",
-            role: "Founder & CEO",
-            bio: "Former missionary with 15 years of evangelism experience. Passionate about combining technology with ministry.",
+            name: t("home.team.members.1.name"),
+            role: t("home.team.members.1.role"),
+            bio: t("home.team.members.1.bio"),
             image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=300&h=300&fit=crop&crop=face",
             social: {
                 linkedin: "#",
@@ -20,9 +20,9 @@ const TeamSection = () => {
             }
         },
         {
-            name: "Dr. Ruth Martinez",
-            role: "Head of Product",
-            bio: "PhD in Theology and former church planter. Designs features that truly serve the Great Commission.",
+            name: t("home.team.members.2.name"),
+            role: t("home.team.members.2.role"),
+            bio: t("home.team.members.2.bio"),
             image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300&h=300&fit=crop&crop=face",
             social: {
                 linkedin: "#",
@@ -31,9 +31,9 @@ const TeamSection = () => {
             }
         },
         {
-            name: "Marcus Thompson",
-            role: "CTO",
-            bio: "Tech veteran and worship leader. Ensures our platform is both powerful and user-friendly.",
+            name: t("home.team.members.3.name"),
+            role: t("home.team.members.3.role"),
+            bio: t("home.team.members.3.bio"),
             image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&crop=face",
             social: {
                 linkedin: "#",
@@ -42,9 +42,9 @@ const TeamSection = () => {
             }
         },
         {
-            name: "Sister Mary Catherine",
-            role: "Ministry Advisor",
-            bio: "30 years of global missions experience. Guides our platform development with biblical wisdom.",
+            name: t("home.team.members.4.name"),
+            role: t("home.team.members.4.role"),
+            bio: t("home.team.members.4.bio"),
             image: "https://images.unsplash.com/photo-1551836022-deb4988cc6c0?w=300&h=300&fit=crop&crop=face",
             social: {
                 linkedin: "#",

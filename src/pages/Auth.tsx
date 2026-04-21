@@ -240,41 +240,42 @@ const Auth = () => {
   return (
     <div className="min-h-screen bg-gradient-heavenly">
       <header className="bg-primary/95 backdrop-blur-md shadow-gentle">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center space-x-3 cursor-pointer" onClick={() => navigate('/')}>
-            <div className="w-10 h-10 bg-gradient-heavenly rounded-full flex items-center justify-center shadow-gentle">
+        <div className="container mx-auto px-2 sm:px-4 py-3 sm:py-4">
+          <div className="flex items-center space-x-2 sm:space-x-3 cursor-pointer" onClick={() => navigate('/')}>
+            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-heavenly rounded-full flex items-center justify-center shadow-gentle">
               <img src={ecomieLogo} className="w-full h-full" alt="ECOMIE Logo"/>
             </div>
-            <span className="text-xl font-bold text-primary-foreground">ECOMIE</span>
+            <span className="text-lg sm:text-xl font-bold text-primary-foreground">ECOMIE</span>
           </div>
         </div>
       </header>
 
-      <div className="flex items-center justify-center p-4">
+      <div className="flex items-center justify-center p-2 sm:p-4">
         <div className="w-full max-w-md">
           <Button
             variant="ghost"
             onClick={() => navigate('/')}
-            className="mb-4 text-muted-foreground hover:text-foreground"
+            className="mb-3 sm:mb-4 text-muted-foreground hover:text-foreground"
           >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            {t("auth.backToHome")}
+            <ArrowLeft className="w-4 h-4 mr-1 sm:mr-2" />
+            <span className="sm:hidden">{t("common.back")}</span>
+            <span className="hidden sm:inline">{t("auth.backToHome")}</span>
           </Button>
 
           <Card className="border-0 shadow-divine">
-            <CardHeader className="text-center pb-4">
-              <div className="flex justify-center mb-4">
-                <div className="w-16 h-16 bg-gradient-divine rounded-full flex items-center justify-center shadow-gentle">
-                    <img src={ecomieLogo} className="w-6 h-6" alt="ECOMIE Logo"/>
+            <CardHeader className="text-center pb-3 sm:pb-4">
+              <div className="flex justify-center mb-3 sm:mb-4">
+                <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-divine rounded-full flex items-center justify-center shadow-gentle">
+                    <img src={ecomieLogo} className="w-5 h-5 sm:w-6 sm:h-6" alt="ECOMIE Logo"/>
                 </div>
               </div>
-              <h1 className="text-2xl font-bold text-foreground">
+              <h1 className="text-xl sm:text-2xl font-bold text-foreground">
               {view === 'login' && t("auth.welcomeBack")}
               {view === 'signup' && t("auth.joinEcomie")}
               {view === 'forgotPassword' && t("auth.forgotPassword")}
               {view === 'resendConfirmation' && t("auth.resendConfirmation")}
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-sm sm:text-base text-muted-foreground">
               {view === 'login' && t("auth.signInToContinue")}
               {view === 'signup' && t("auth.createAccountToStart")}
               {view === 'forgotPassword' && t("auth.enterEmailToResetPassword")}
@@ -283,9 +284,9 @@ const Auth = () => {
           </CardHeader>
 
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
               {view === 'signup' && (
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="firstName">{t("common.firstName")}</Label>
                     <div className="relative">
@@ -369,7 +370,7 @@ const Auth = () => {
               </Button>
             </form>
 
-            <div className="mt-6 text-center space-y-2">
+            <div className="mt-4 sm:mt-6 text-center space-y-2">
               {view === 'login' && (
                 <>
                   <button
@@ -378,11 +379,11 @@ const Auth = () => {
                   >
                     {t("auth.forgotPassword")}
                   </button>
-                  <p className="text-muted-foreground">
+                  <p className="text-xs sm:text-sm text-muted-foreground">
                     {t("auth.dontHaveAccount")}
                     <button
                       onClick={() => handleViewChange('signup')}
-                      className="ml-2 text-primary font-medium hover:underline"
+                      className="ml-1 sm:ml-2 text-primary font-medium hover:underline"
                     >
                       {t("auth.signUp")}
                     </button>
@@ -392,11 +393,11 @@ const Auth = () => {
 
               {view === 'signup' && (
                 <>
-                  <p className="text-muted-foreground">
+                  <p className="text-xs sm:text-sm text-muted-foreground">
                     {t("auth.alreadyHaveAccount")}
                     <button
                       onClick={() => handleViewChange('login')}
-                      className="ml-2 text-primary font-medium hover:underline"
+                      className="ml-1 sm:ml-2 text-primary font-medium hover:underline"
                     >
                       {t("auth.signInLink")}
                     </button>
@@ -411,11 +412,11 @@ const Auth = () => {
               )}
 
               {view === 'forgotPassword' && (
-                <p className="text-muted-foreground">
+                <p className="text-xs sm:text-sm text-muted-foreground">
                   {t("auth.rememberYourPassword")}
                   <button
                     onClick={() => handleViewChange('login')}
-                    className="ml-2 text-primary font-medium hover:underline"
+                    className="ml-1 sm:ml-2 text-primary font-medium hover:underline"
                   >
                     {t("auth.signInLink")}
                   </button>
@@ -423,11 +424,11 @@ const Auth = () => {
               )}
 
               {view === 'resendConfirmation' && (
-                <p className="text-muted-foreground">
+                <p className="text-xs sm:text-sm text-muted-foreground">
                   {t("auth.rememberYourPassword")}
                   <button
                     onClick={() => handleViewChange('login')}
-                    className="ml-2 text-primary font-medium hover:underline"
+                    className="ml-1 sm:ml-2 text-primary font-medium hover:underline"
                   >
                     {t("auth.signInLink")}
                   </button>

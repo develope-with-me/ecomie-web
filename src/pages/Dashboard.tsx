@@ -160,7 +160,7 @@ const challengeColors: Record<string, string> = {
             setProfileAvatarPreview(null);
             toast({ title: t("dashboard.profileUpdated"), description: t("dashboard.profileUpdatedSuccess") });
         } catch (err: any) {
-            toast({ title: "Error", description: isNonNullArray(err.invalidParams) ? err.invalidParams[0].reason : err.detail, variant: "destructive" });
+            toast({ title: t("dashboard.error"), description: isNonNullArray(err.invalidParams) ? err.invalidParams[0].reason : err.detail, variant: "destructive" });
         }
     };
 
@@ -207,7 +207,7 @@ const challengeColors: Record<string, string> = {
             setSelectedChallenge(null);
             fetchData();
         } catch (err: any) {
-            toast({ title: "Error", description: isNonNullArray(err.invalidParams) ? err.invalidParams[0].reason : err.detail, variant: "destructive" });
+            toast({ title: t("dashboard.error"), description: isNonNullArray(err.invalidParams) ? err.invalidParams[0].reason : err.detail, variant: "destructive" });
         } finally {
             setSubmitting(false);
         }
@@ -244,7 +244,7 @@ const challengeColors: Record<string, string> = {
             setEditReportDialogOpen(false);
             fetchData();
         } catch (err: any) {
-            toast({ title: "Error", description: isNonNullArray(err.invalidParams) ? err.invalidParams[0].reason : err.detail, variant: "destructive" });
+            toast({ title: t("dashboard.error"), description: isNonNullArray(err.invalidParams) ? err.invalidParams[0].reason : err.detail, variant: "destructive" });
         }
     };
 
@@ -267,7 +267,7 @@ const challengeColors: Record<string, string> = {
             resetReportForm();
             fetchData();
         } catch (err: any) {
-            toast({ title: "Error", description: isNonNullArray(err.invalidParams) ? err.invalidParams[0].reason : err.detail, variant: "destructive" });
+            toast({ title: t("dashboard.error"), description: isNonNullArray(err.invalidParams) ? err.invalidParams[0].reason : err.detail, variant: "destructive" });
         }
     };
 
@@ -287,7 +287,7 @@ const challengeColors: Record<string, string> = {
             setReports(prev => prev.filter(r => r.id !== reportId));
             toast({ title: t("dashboard.reportDeleted") });
         } catch (err: any) {
-            toast({ title: "Error", description: isNonNullArray(err.invalidParams) ? err.invalidParams[0].reason : err.detail, variant: "destructive" });
+            toast({ title: t("dashboard.error"), description: isNonNullArray(err.invalidParams) ? err.invalidParams[0].reason : err.detail, variant: "destructive" });
         }
     };
 
@@ -307,7 +307,7 @@ const challengeColors: Record<string, string> = {
     };
 
     const renderChallengeCards = (challenges: Challenge[], showSubscribeButton: boolean = true) => (
-        <div className="grid md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {challenges.map((challenge) => {
                 const IconComponent = challengeIcons[challenge.name] || Heart;
                 const colorClass = challengeColors[challenge.name] || 'text-primary';
@@ -315,14 +315,14 @@ const challengeColors: Record<string, string> = {
                 
                 return (
                     <Card key={challenge.id} className="shadow-gentle hover:shadow-md transition-all">
-                        <CardHeader className="text-center pb-4">
-                            <div className="w-12 h-12 mx-auto rounded-full bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center mb-4">
-                                <IconComponent className={`w-6 h-6 ${colorClass}`} />
+                        <CardHeader className="text-center pb-2 sm:pb-4">
+                            <div className="w-10 h-10 sm:w-12 mx-auto rounded-full bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center mb-2 sm:mb-4">
+                                <IconComponent className={`w-5 h-5 sm:w-6 sm:h-6 ${colorClass}`} />
                             </div>
-                            <h3 className="text-xl font-bold text-foreground">{challenge.name}</h3>
-                            <p className="text-sm text-muted-foreground">{challenge.description}</p>
-                            <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground mt-2">
-                                <Target className="w-4 h-4" />
+                            <h3 className="text-lg sm:text-xl font-bold text-foreground">{challenge.name}</h3>
+                            <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2">{challenge.description}</p>
+                            <div className="flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm text-muted-foreground mt-1 sm:mt-2">
+                                <Target className="w-3 h-3 sm:w-4 sm:h-4" />
                                 <span>{t("dashboard.target")}: {challenge.target} {t("dashboard.souls")}</span>
                             </div>
                         </CardHeader>
@@ -363,13 +363,13 @@ const challengeColors: Record<string, string> = {
         <div className="min-h-screen bg-gradient-heavenly">
             <Header hideNav />
 
-            <main className="container mx-auto px-4 pt-24 pb-8">
-                <h1 className="text-3xl font-bold text-foreground mb-8">
+            <main className="container mx-auto px-2 sm:px-4 pt-20 sm:pt-24 pb-8">
+                <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground mb-6 sm:mb-8">
                     {t("dashboard.welcome", { name: profile?.firstName || profile?.lastName || '' }) || t("dashboard.defaultWelcome")}
                 </h1>
 
                 <Tabs defaultValue="sessions" className="w-full">
-                    <TabsList className="grid w-full max-w-2xl grid-cols-3 mb-8">
+                    <TabsList className="grid w-full max-w-2xl grid-cols-3 mb-6 sm:mb-8 gap-1 sm:gap-0">
                         <TabsTrigger value="sessions" className="flex items-center gap-2">
                             <Calendar className="w-4 h-4" />
                             {t("dashboard.sessions")}
@@ -428,9 +428,9 @@ const challengeColors: Record<string, string> = {
 
                             {subscriptions.length > 0 && isEcomiest && (
                                 <div>
-                                    <h2 className="text-xl font-semibold text-foreground mb-4">{t("dashboard.pastSubscriptions")}</h2>
-                                    <div className="space-y-2">
-                                        <div className="grid grid-cols-5 gap-4 p-3 bg-muted rounded-t-lg font-medium text-sm">
+                                    <h2 className="text-lg sm:text-xl font-semibold text-foreground mb-3 sm:mb-4">{t("dashboard.pastSubscriptions")}</h2>
+                                    <div className="space-y-2 overflow-x-auto">
+                                        <div className="hidden md:grid grid-cols-5 gap-4 p-3 bg-muted rounded-t-lg font-medium text-sm">
                                              <div>{t("dashboard.session")}</div>
                                              <div>{t("dashboard.challenge")}</div>
                                              <div>{t("dashboard.challengeTarget")}</div>
@@ -440,14 +440,29 @@ const challengeColors: Record<string, string> = {
                                         {subscriptions.map(sub => (
                                             <div key={sub.id}>
                                                 <div 
-                                                    className="grid grid-cols-5 gap-4 p-3 bg-card rounded-lg shadow-gentle cursor-pointer hover:bg-muted/50 transition-colors"
+                                                    className="grid grid-cols-1 md:grid-cols-5 gap-2 md:gap-4 p-3 bg-card rounded-lg shadow-gentle cursor-pointer hover:bg-muted/50 transition-colors"
                                                     onClick={() => toggleSessionExpansion(sub.id!)}
                                                 >
-                                                    <div className="font-medium truncate">{sub.session?.name || '-'}</div>
-                                                    <div className="truncate">{sub.challenge?.name || '-'}</div>
-                                                    <div>{sub.challenge?.target || '-'}</div>
-                                                    <div>{sub.target || '-'}</div>
-                                                    <div className="text-muted-foreground text-sm">{formatDate(sub.createdOn)}</div>
+                                                    <div className="font-medium truncate md:col-span-1">
+                                                        <span className="md:hidden font-semibold text-xs text-muted-foreground">{t("dashboard.session")}: </span>
+                                                        {sub.session?.name || '-'}
+                                                    </div>
+                                                    <div className="truncate md:col-span-1">
+                                                        <span className="md:hidden font-semibold text-xs text-muted-foreground">{t("dashboard.challenge")}: </span>
+                                                        {sub.challenge?.name || '-'}
+                                                    </div>
+                                                    <div className="md:col-span-1">
+                                                        <span className="md:hidden font-semibold text-xs text-muted-foreground">{t("dashboard.challengeTarget")}: </span>
+                                                        {sub.challenge?.target || '-'}
+                                                    </div>
+                                                    <div className="md:col-span-1">
+                                                        <span className="md:hidden font-semibold text-xs text-muted-foreground">{t("dashboard.pledge")}: </span>
+                                                        {sub.target || '-'}
+                                                    </div>
+                                                    <div className="text-muted-foreground text-xs sm:text-sm md:col-span-1">
+                                                        <span className="md:hidden font-semibold text-xs text-muted-foreground">{t("dashboard.subscribedOn")}: </span>
+                                                        {formatDate(sub.createdOn)}
+                                                    </div>
                                                 </div>
                                                 {expandedSessionId === sub.id && sub.session && (
                                                     <Card className="mt-2 shadow-gentle">
@@ -485,19 +500,21 @@ const challengeColors: Record<string, string> = {
                             <div className="space-y-6">
                                 <ReportsCalendar 
                                     reports={reports}
+                                    authUserIsAdmin={isAdmin}
                                     title={t("dashboard.reportsCalendar")}
                                     onViewReport={handleViewReport}
                                     onEditReport={handleEditReport}
                                     defaultView="year"
                                 />
 
-                                <div className="flex items-center justify-between">
-                                    <h2 className="text-xl font-semibold text-foreground">{t("dashboard.myReports")}</h2>
+                                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                                    <h2 className="text-lg sm:text-xl font-semibold text-foreground">{t("dashboard.myReports")}</h2>
                                     <Dialog open={addReportDialogOpen} onOpenChange={setAddReportDialogOpen}>
                                         <DialogTrigger asChild>
-                                            <Button>
-                                                <Plus className="w-4 h-4 mr-2" />
-                                                {t("dashboard.addReport")}
+                                            <Button size="sm" className="w-full sm:w-auto">
+                                                <Plus className="w-4 h-4 mr-1 sm:mr-2" />
+                                                <span className="sm:hidden">{t("dashboard.add")}</span>
+                                                <span className="hidden sm:inline">{t("dashboard.addReport")}</span>
                                             </Button>
                                         </DialogTrigger>
                                         <DialogContent>
@@ -508,7 +525,7 @@ const challengeColors: Record<string, string> = {
                                                 <div className="space-y-2">
                                                      <Label>{t("dashboard.subscription")}</Label>
                                                     <select 
-                                                        className="w-full p-2 border rounded-md"
+                                                        className="w-full p-2 sm:p-2.5 border rounded-md text-sm"
                                                         value={newReportSubscriptionId}
                                                         onChange={(e) => setNewReportSubscriptionId(e.target.value)}
                                                     >
@@ -520,7 +537,7 @@ const challengeColors: Record<string, string> = {
                                                         ))}
                                                     </select>
                                                 </div>
-                                                <div className="grid grid-cols-3 gap-4">
+                                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
                                                     <div className="space-y-2">
                                                         <Label>{t("dashboard.evangelizedTo")}</Label>
                                                         <Input type="number" value={reportEvangelized} onChange={(e) => setReportEvangelized(e.target.value)} />
@@ -558,8 +575,8 @@ const challengeColors: Record<string, string> = {
                                         </CardContent>
                                     </Card>
                                 ) : (
-                                    <div className="space-y-2">
-                                        <div className="grid grid-cols-12 gap-4 p-3 bg-muted rounded-t-lg font-medium text-sm">
+                                    <div className="space-y-2 overflow-x-auto">
+                                        <div className="hidden lg:grid grid-cols-12 gap-4 p-3 bg-muted rounded-t-lg font-medium text-sm">
                                              <div className="col-span-2">{t("dashboard.session")}</div>
                                              <div className="col-span-2">{t("dashboard.challenge")}</div>
                                              <div className="col-span-1">{t("dashboard.target")}</div>
@@ -572,17 +589,41 @@ const challengeColors: Record<string, string> = {
                                         </div>
                                         {reports.map(report => (
                                             <Card key={report.id} className="shadow-gentle">
-                                                <CardContent className="py-4">
-                                                    <div className="grid grid-cols-12 gap-4 items-center">
-                                                        <div className="col-span-2 truncate">{report.subscription?.session?.name || '-'}</div>
-                                                        <div className="col-span-2 truncate">{report.subscription?.challenge?.name || '-'}</div>
-                                                        <div className="col-span-1">{report.subscription?.challenge?.target || '-'}</div>
-                                                        <div className="col-span-1">{report.subscription?.target || '-'}</div>
-                                                        <div className="col-span-1">{report.numberEvangelizedTo || '-'}</div>
-                                                        <div className="col-span-1">{report.numberOfNewConverts || '-'}</div>
-                                                        <div className="col-span-1">{report.numberFollowedUp || '-'}</div>
-                                                        <div className="col-span-2 text-sm text-muted-foreground">{formatDate(report.createdOn)}</div>
-                                                        <div className="col-span-1 flex justify-end gap-2">
+                                                <CardContent className="py-3 sm:py-4">
+                                                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-2 lg:gap-4 items-center">
+                                                        <div className="lg:col-span-2 truncate">
+                                                            <span className="lg:hidden font-semibold text-xs text-muted-foreground">{t("dashboard.session")}: </span>
+                                                            {report.subscription?.session?.name || '-'}
+                                                        </div>
+                                                        <div className="lg:col-span-2 truncate">
+                                                            <span className="lg:hidden font-semibold text-xs text-muted-foreground">{t("dashboard.challenge")}: </span>
+                                                            {report.subscription?.challenge?.name || '-'}
+                                                        </div>
+                                                        <div className="lg:col-span-1">
+                                                            <span className="lg:hidden font-semibold text-xs text-muted-foreground">{t("dashboard.target")}: </span>
+                                                            {report.subscription?.challenge?.target || '-'}
+                                                        </div>
+                                                        <div className="lg:col-span-1">
+                                                            <span className="lg:hidden font-semibold text-xs text-muted-foreground">{t("dashboard.pledge")}: </span>
+                                                            {report.subscription?.target || '-'}
+                                                        </div>
+                                                        <div className="lg:col-span-1">
+                                                            <span className="lg:hidden font-semibold text-xs text-muted-foreground">{t("dashboard.evangelized")}: </span>
+                                                            {report.numberEvangelizedTo || '-'}
+                                                        </div>
+                                                        <div className="lg:col-span-1">
+                                                            <span className="lg:hidden font-semibold text-xs text-muted-foreground">{t("dashboard.converts")}: </span>
+                                                            {report.numberOfNewConverts || '-'}
+                                                        </div>
+                                                        <div className="lg:col-span-1">
+                                                            <span className="lg:hidden font-semibold text-xs text-muted-foreground">{t("dashboard.followedUp")}: </span>
+                                                            {report.numberFollowedUp || '-'}
+                                                        </div>
+                                                        <div className="lg:col-span-2 text-xs sm:text-sm text-muted-foreground">
+                                                            <span className="lg:hidden font-semibold text-xs text-muted-foreground">{t("dashboard.reportedOn")}: </span>
+                                                            {formatDate(report.createdOn)}
+                                                        </div>
+                                                        <div className="lg:col-span-1 flex justify-end gap-1 sm:gap-2">
                                                             <Button variant="ghost" size="sm" onClick={() => handleViewReport(report)}>
                                                                 <Eye className="w-4 h-4" />
                                                             </Button>
@@ -607,12 +648,13 @@ const challengeColors: Record<string, string> = {
                     <TabsContent value="profile">
                         <Card className="max-w-2xl shadow-gentle">
                             <CardHeader>
-                                <CardTitle className="flex items-center justify-between">
-                                     <span>{t("dashboard.profileInfo")}</span>
+                                <CardTitle className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                                     <span className="text-lg">{t("dashboard.profileInfo")}</span>
                                     {!editingProfile && (
                                         <Button variant="outline" size="sm" onClick={() => setEditingProfile(true)}>
-                                            <Edit className="w-4 h-4 mr-2" />
-                                             {t("dashboard.edit")}
+                                            <Edit className="w-4 h-4 mr-1 sm:mr-2" />
+                                             <span className="sm:hidden">{t("dashboard.edit")}</span>
+                                             <span className="hidden sm:inline">{t("dashboard.edit")}</span>
                                         </Button>
                                     )}
                                 </CardTitle>
@@ -620,7 +662,7 @@ const challengeColors: Record<string, string> = {
                             <CardContent>
                                 {editingProfile ? (
                                     <div className="space-y-4">
-                                        <div className="grid grid-cols-2 gap-4">
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                                             <div className="space-y-2">
                                                  <Label htmlFor="firstName">{t("common.firstName")}</Label>
                                                 <Input id="firstName" value={profileFirstName} onChange={(e) => setProfileFirstName(e.target.value)} />
@@ -635,7 +677,7 @@ const challengeColors: Record<string, string> = {
                                             <Input id="email" value={profile?.email || ''} disabled />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label htmlFor="avatar">Profile Picture</Label>
+                                            <Label htmlFor="avatar">{t("dashboard.profilePicture")}</Label>
                                             <Input 
                                                 id="avatar" 
                                                 type="file" 
@@ -653,7 +695,7 @@ const challengeColors: Record<string, string> = {
                                                     <img 
                                                         src={profileAvatarPreview} 
                                                         alt="Avatar preview" 
-                                                        className="w-20 h-20 rounded-full object-cover"
+                                                        className="w-16 h-16 sm:w-20 rounded-full object-cover"
                                                     />
                                                 </div>
                                             )}
@@ -662,7 +704,7 @@ const challengeColors: Record<string, string> = {
                                              <Label htmlFor="phoneNumber">{t("common.phoneNumber")}</Label>
                                             <Input id="phoneNumber" value={profilePhoneNumber} onChange={(e) => setProfilePhoneNumber(e.target.value)} />
                                         </div>
-                                        <div className="grid grid-cols-3 gap-4">
+                                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
                                             <div className="space-y-2">
                                                  <Label htmlFor="country">{t("common.country")}</Label>
                                                 <Input id="country" value={profileCountry} onChange={(e) => setProfileCountry(e.target.value)} />
@@ -680,55 +722,55 @@ const challengeColors: Record<string, string> = {
                                              <Label htmlFor="language">{t("common.language")}</Label>
                                             <Input id="language" value={profileLanguage} onChange={(e) => setProfileLanguage(e.target.value)} />
                                         </div>
-                                        <div className="flex gap-2">
-                                             <Button onClick={handleUpdateProfile}>{t("dashboard.saveChanges")}</Button>
+                                        <div className="flex flex-col sm:flex-row gap-2">
+                                             <Button onClick={handleUpdateProfile} className="w-full sm:w-auto">{t("dashboard.saveChanges")}</Button>
                                              <Button variant="outline" onClick={() => {
                                                  setEditingProfile(false);
                                                  setProfileAvatar(null);
                                                  setProfileAvatarPreview(null);
-                                             }}>{t("common.cancel")}</Button>
+                                             }} className="w-full sm:w-auto">{t("common.cancel")}</Button>
                                         </div>
                                     </div>
                                 ) : (
                                     <div className="space-y-4">
-                                        <div className="grid grid-cols-2 gap-4">
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                                             <div>
-                                                <Label className="text-muted-foreground">{t("common.firstName")}</Label>
+                                                <Label className="text-muted-foreground text-xs sm:text-sm">{t("common.firstName")}</Label>
                                                 <p className="text-foreground font-medium">{profile?.firstName || '-'}</p>
                                             </div>
                                             <div>
-                                                <Label className="text-muted-foreground">{t("common.lastName")}</Label>
+                                                <Label className="text-muted-foreground text-xs sm:text-sm">{t("common.lastName")}</Label>
                                                 <p className="text-foreground font-medium">{profile?.lastName || '-'}</p>
                                             </div>
                                         </div>
                                         <div>
-                                             <Label className="text-muted-foreground">{t("common.email")}</Label>
-                                            <p className="text-foreground font-medium">{profile?.email || '-'}</p>
+                                             <Label className="text-muted-foreground text-xs sm:text-sm">{t("common.email")}</Label>
+                                            <p className="text-foreground font-medium text-sm sm:text-base">{profile?.email || '-'}</p>
                                         </div>
                                         <div>
-                                             <Label className="text-muted-foreground">{t("common.phoneNumber")}</Label>
+                                             <Label className="text-muted-foreground text-xs sm:text-sm">{t("common.phoneNumber")}</Label>
                                             <p className="text-foreground font-medium">{profile?.phoneNumber || '-'}</p>
                                         </div>
-                                        <div className="grid grid-cols-3 gap-4">
+                                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
                                             <div>
-                                                <Label className="text-muted-foreground">{t("common.country")}</Label>
+                                                <Label className="text-muted-foreground text-xs sm:text-sm">{t("common.country")}</Label>
                                                 <p className="text-foreground font-medium">{profile?.country || '-'}</p>
                                             </div>
                                             <div>
-                                                <Label className="text-muted-foreground">{t("common.region")}</Label>
+                                                <Label className="text-muted-foreground text-xs sm:text-sm">{t("common.region")}</Label>
                                                 <p className="text-foreground font-medium">{profile?.region || '-'}</p>
                                             </div>
                                             <div>
-                                                <Label className="text-muted-foreground">{t("common.city")}</Label>
+                                                <Label className="text-muted-foreground text-xs sm:text-sm">{t("common.city")}</Label>
                                                 <p className="text-foreground font-medium">{profile?.city || '-'}</p>
                                             </div>
                                         </div>
                                         <div>
-                                             <Label className="text-muted-foreground">{t("common.language")}</Label>
+                                             <Label className="text-muted-foreground text-xs sm:text-sm">{t("common.language")}</Label>
                                             <p className="text-foreground font-medium">{profile?.language || '-'}</p>
                                         </div>
                                         <div>
-                                             <Label className="text-muted-foreground">{t("common.role")}</Label>
+                                             <Label className="text-muted-foreground text-xs sm:text-sm">{t("common.role")}</Label>
                                             <p className="text-foreground font-medium">{profile?.role?.toString() || '-'}</p>
                                         </div>
                                     </div>
@@ -773,7 +815,7 @@ const challengeColors: Record<string, string> = {
                         <DialogTitle>{t("reportForm.editChallengeReport")}</DialogTitle>
                     </DialogHeader>
                     <div className="space-y-4 py-4">
-                        <div className="grid grid-cols-3 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
                             <div className="space-y-2">
                                 <Label>{t("dashboard.evangelizedTo")}</Label>
                                 <Input type="number" value={reportEvangelized} onChange={(e) => setReportEvangelized(e.target.value)} />

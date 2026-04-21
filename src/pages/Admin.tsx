@@ -28,6 +28,7 @@ import {
     SubscriptionBody,
 } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
+import { useTranslation } from "react-i18next";
 import {
     Users,
     Calendar,
@@ -54,6 +55,7 @@ const Admin = () => {
     const { user, isAdmin, signOut, loading: authLoading } = useAuth();
     const navigate = useNavigate();
     const { toast } = useToast();
+    const { t } = useTranslation();
 
     const [users, setUsers] = useState<User[]>([]);
     const [ongoingSessionUsers, setOngoingSessionUsers] = useState<User[]>([]);
@@ -145,8 +147,8 @@ const Admin = () => {
                 navigate("/auth");
             } else if (!isAdmin) {
                 toast({
-                    title: "Access Denied",
-                    description: "You don't have admin privileges.",
+                    title: t("admin.accessDenied"),
+                    description: t("admin.noAdminPrivileges"),
                     variant: "destructive",
                 });
                 navigate("/dashboard");
@@ -230,7 +232,7 @@ const Admin = () => {
             setOngoingSessionSubscriptions(ongoingSessionSubscriptionRes);
         } catch (err) {
             console.error(err);
-            toast({ title: "Error", description: "Failed to load data", variant: "destructive" });
+            toast({ title: t("common.error"), description: t("admin.failedToLoadData"), variant: "destructive" });
         } finally {
             setLoading(false);
         }
@@ -261,7 +263,7 @@ const Admin = () => {
         if (!sessionId || !status) return;
         try {
             await sessionApi.updateStatus(sessionId, status.toString());
-            toast({ title: "Session status updated" });
+            toast({ title: t("admin.sessionStatusUpdated") });
             fetchAllData();
         } catch (err: any) {
             toast({ title: "Error", description: isNonNullArray(err.invalidParams) ? err.invalidParams[0].reason : err.detail, variant: "destructive" });
@@ -272,7 +274,7 @@ const Admin = () => {
         if (!sessionId || !challengeId) return;
         try {
             await sessionApi.removeChallenge(sessionId, challengeId);
-            toast({ title: "Challenge removed from session" });
+            toast({ title: t("admin.challengeRemovedFromSession") });
             fetchAllData();
         } catch (err: any) {
             toast({ title: "Error", description: isNonNullArray(err.invalidParams) ? err.invalidParams[0].reason : err.detail, variant: "destructive" });
@@ -282,15 +284,15 @@ const Admin = () => {
     const handleSaveSession = async () => {
         // validation
         if (!Validators.required(sessionName)) {
-            toast({ title: "Validation Error", description: "Session name is required", variant: "destructive" });
+            toast({ title: t("common.error"), description: t("admin.name") + " is required", variant: "destructive" });
             return;
         }
         if (!Validators.isDate(sessionStartDate) || !Validators.isDate(sessionEndDate)) {
-            toast({ title: "Validation Error", description: "Start and end dates must be valid", variant: "destructive" });
+            toast({ title: t("common.error"), description: t("admin.startDate") + " and " + t("admin.endDate") + " must be valid", variant: "destructive" });
             return;
         }
         if (new Date(sessionStartDate) > new Date(sessionEndDate)) {
-            toast({ title: "Validation Error", description: "Start date cannot be after end date", variant: "destructive" });
+            toast({ title: t("common.error"), description: t("admin.startDate") + " cannot be after " + t("admin.endDate"), variant: "destructive" });
             return;
         }
 
@@ -304,10 +306,10 @@ const Admin = () => {
             };
             if (editingSession) {
                 await sessionApi.update(editingSession.id!, sessionData);
-                toast({ title: "Session Updated" });
+                toast({ title: t("admin.sessionUpdated") });
             } else {
                 await sessionApi.create(sessionData);
-                toast({ title: "Session Created" });
+                toast({ title: t("admin.sessionCreated") });
             }
             setSessionDialogOpen(false);
             resetSessionForm();
@@ -331,7 +333,7 @@ const Admin = () => {
         if (!id) return;
         try {
             await sessionApi.delete(id);
-            toast({ title: "Session Deleted" });
+            toast({ title: t("admin.sessionDeleted") });
             fetchAllData();
         } catch (err: any) {
             toast({ title: "Error", description: isNonNullArray(err.invalidParams) ? err.invalidParams[0].reason : err.detail, variant: "destructive" });
@@ -360,12 +362,12 @@ const Admin = () => {
 
     const handleAddExistingChallengeToSession = async (challengeId?: string, sessionId?: string) => {
         if (!challengeId || !sessionId) {
-            toast({ title: "Error", description: "Select a session first", variant: "destructive" });
+            toast({ title: t("common.error"), description: t("admin.selectSession"), variant: "destructive" });
             return;
         }
         try {
             await sessionApi.addChallenge(sessionId, challengeId);
-            toast({ title: "Challenge added to session" });
+            toast({ title: t("admin.challengeAddedToSession") });
             fetchAllData();
         } catch (err: any) {
             toast({ title: "Error", description: isNonNullArray(err.invalidParams) ? err.invalidParams[0].reason : err.detail, variant: "destructive" });
@@ -376,7 +378,7 @@ const Admin = () => {
         if (!challengeId || !type) return;
         try {
             await challengeApi.updateType(challengeId, type);
-            toast({ title: "Challenge type updated" });
+            toast({ title: t("admin.challengeTypeUpdated") });
             fetchAllData();
         } catch (err: any) {
             toast({ title: "Error", description: isNonNullArray(err.invalidParams) ? err.invalidParams[0].reason : err.detail, variant: "destructive" });
@@ -385,11 +387,11 @@ const Admin = () => {
 
     const handleSaveChallenge = async () => {
         if (!Validators.required(challengeName)) {
-            toast({ title: "Validation Error", description: "Challenge name is required", variant: "destructive" });
+            toast({ title: t("common.error"), description: t("admin.name") + " is required", variant: "destructive" });
             return;
         }
         if (!Validators.isPositiveInteger(challengeTarget)) {
-            toast({ title: "Validation Error", description: "Target must be a non-negative integer", variant: "destructive" });
+            toast({ title: t("common.error"), description: t("admin.target") + " must be a non-negative integer", variant: "destructive" });
             return;
         }
 
@@ -405,13 +407,13 @@ const Admin = () => {
                 if (challengeSessionId && resp.success) {
                     await sessionApi.addChallenge(challengeSessionId, editingChallenge.id!);
                 }
-                toast({ title: "Challenge Updated" });
+                toast({ title: t("admin.challengeUpdated") });
             } else {
                 const resp = await challengeApi.create(challengeData);
                 if (challengeSessionId && resp.success) {
                     await sessionApi.addChallenge(challengeSessionId, resp.data!.id!);
                 }
-                toast({ title: "Challenge Created" });
+                toast({ title: t("admin.challengeCreated") });
             }
             setChallengeDialogOpen(false);
             resetChallengeForm();
@@ -435,7 +437,7 @@ const Admin = () => {
         if (!id) return;
         try {
             await challengeApi.delete(id);
-            toast({ title: "Challenge Deleted" });
+            toast({ title: t("admin.challengeDeleted") });
             fetchAllData();
         } catch (err: any) {
             toast({ title: "Error", description: isNonNullArray(err.invalidParams) ? err.invalidParams[0].reason : err.detail, variant: "destructive" });
@@ -457,12 +459,12 @@ const Admin = () => {
         if (!editingUser) {
             // creation validation
             if (!Validators.required(userFirstName) || !Validators.required(userLastName) || !Validators.required(userEmail) || !Validators.required(userPassword)) {
-                toast({ title: "Validation Error", description: "First name, last name, email and password are required", variant: "destructive" });
+                toast({ title: t("common.error"), description: t("common.firstName") + ", " + t("common.lastName") + ", " + t("common.email") + " and " + t("admin.password") + " are required", variant: "destructive" });
                 return;
             }
             // simple email check
             if (!/^\S+@\S+\.\S+$/.test(userEmail)) {
-                toast({ title: "Validation Error", description: "Email is invalid", variant: "destructive" });
+                toast({ title: t("common.error"), description: t("common.email") + " is invalid", variant: "destructive" });
                 return;
             }
 
@@ -475,7 +477,7 @@ const Admin = () => {
                     password: userPassword,
                 };
                 await userApi.create(payload);
-                toast({ title: "User Created" });
+                toast({ title: t("admin.userCreated") });
                 setUserDialogOpen(false);
                 resetUserForm();
                 fetchAllData();
@@ -487,7 +489,7 @@ const Admin = () => {
 
         // existing update flow when editingUser is set
         if (!Validators.required(userFirstName) || !Validators.required(userLastName)) {
-            toast({ title: "Validation Error", description: "First and last name are required", variant: "destructive" });
+            toast({ title: t("common.error"), description: t("common.firstName") + " and " + t("common.lastName") + " are required", variant: "destructive" });
             return;
         }
 
@@ -504,7 +506,7 @@ const Admin = () => {
             if (editingUser.role !== userRole) {
                 await userApi.assignNewRole(userEmail, userRole);
             }
-            toast({ title: "User Updated" });
+            toast({ title: t("admin.userUpdated") });
             setUserDialogOpen(false);
             resetUserForm();
             fetchAllData();
@@ -564,7 +566,7 @@ const Admin = () => {
         if (!id) return;
         try {
             await userApi.deleteUser(id);
-            toast({ title: "User Deleted" });
+            toast({ title: t("admin.userDeleted") });
             fetchAllData();
         } catch (err: any) {
             toast({ title: "Error", description: isNonNullArray(err.invalidParams) ? err.invalidParams[0].reason : err.detail, variant: "destructive" });
@@ -597,11 +599,11 @@ const Admin = () => {
     // ---------- Subscriptions ----------
     const handleSaveSubscription = async () => {
         if (!Validators.required(subscriptionUserId) || !Validators.required(subscriptionChallengeId)) {
-            toast({ title: "Validation Error", description: "User and challenge are required", variant: "destructive" });
+            toast({ title: t("common.error"), description: t("admin.user") + " and " + t("admin.challenges") + " are required", variant: "destructive" });
             return;
         }
         if (!Validators.isPositiveInteger(subscriptionTarget)) {
-            toast({ title: "Validation Error", description: "Target must be a non-negative integer", variant: "destructive" });
+            toast({ title: t("common.error"), description: t("admin.target") + " must be a non-negative integer", variant: "destructive" });
             return;
         }
         try {
@@ -611,10 +613,10 @@ const Admin = () => {
             };
             if (editingSubscription) {
                 await subscriptionApi.update(editingSubscription.id!, body);
-                toast({ title: "Subscription Updated" });
+                toast({ title: t("admin.subscriptionUpdated") });
             } else {
                 await subscriptionApi.createForUser(subscriptionUserId, body);
-                toast({ title: "Subscription Created" });
+                toast({ title: t("admin.subscriptionCreated") });
             }
             setSubscriptionDialogOpen(false);
             resetSubscriptionForm();
@@ -651,7 +653,7 @@ const Admin = () => {
         if (!id) return;
         try {
             await subscriptionApi.delete(id);
-            toast({ title: "Subscription Deleted" });
+            toast({ title: t("admin.subscriptionDeleted") });
             fetchAllData();
         } catch (err: any) {
             toast({ title: "Error", description: isNonNullArray(err.invalidParams) ? err.invalidParams[0].reason : err.detail, variant: "destructive" });
@@ -669,11 +671,11 @@ const Admin = () => {
     // Modified to allow selecting session and user in add/update form.
     const handleSaveReport = async () => {
         if (!Validators.isPositiveInteger(reportEvangelized) || !Validators.isPositiveInteger(reportConverts) || !Validators.isPositiveInteger(reportFollowedUp)) {
-            toast({ title: "Validation Error", description: "Numeric report fields must be non-negative integers", variant: "destructive" });
+            toast({ title: t("common.error"), description: "Numeric report fields must be non-negative integers", variant: "destructive" });
             return;
         }
         if (!Validators.required(reportUserId) || !Validators.required(reportSubscriptionId)) {
-            toast({ title: "Validation Error", description: "User and session selection required", variant: "destructive" });
+            toast({ title: t("common.error"), description: t("admin.user") + " and session selection required", variant: "destructive" });
             return;
         }
         try {
@@ -686,11 +688,11 @@ const Admin = () => {
             };
             if (editingReport) {
                 await reportApi.updateForUser(editingReport.id!, body);
-                toast({ title: "Report Updated" });
+                toast({ title: t("admin.reportUpdated") });
             } else {
                 // createForUser expects (userId, sessionId, data)
                 await reportApi.createForUser(reportUserId, reportSubscriptionId, body);
-                toast({ title: "Report Created" });
+                toast({ title: t("admin.reportCreated") });
             }
             setReportDialogOpen(false);
             resetReportForm();
@@ -712,7 +714,7 @@ const Admin = () => {
         setReportDialogOpen(true);
     };
 
-    const handleViewReport = (r: ChallengeReport) => {
+    function handleViewReportForCalendar(r: ChallengeReport) {
         const ses = sessions.find(s => s.id === r.subscription?.session?.id);
         setConcernedSession(ses);
         const sub = subscriptions.find(s => s.id === r.subscription?.id);
@@ -724,8 +726,12 @@ const Admin = () => {
             : usr?.firstName ? usr?.firstName
                 : usr?.lastName ? usr?.lastName : "UNKNOWN USER";
         setUserName(userName);
-        setConcernedUser(user);
+        setConcernedUser(usr);
         setViewingReport(r);
+    }
+
+    const handleViewReport = (r: ChallengeReport) => {
+        handleViewReportForCalendar(r);
         setViewReportDialogOpen(true);
     };
 
@@ -733,7 +739,7 @@ const Admin = () => {
         if (!id) return;
         try {
             await reportApi.delete(id);
-            toast({ title: "Report Deleted" });
+            toast({ title: t("admin.reportDeleted") });
             fetchAllData();
         } catch (err: any) {
             toast({ title: "Error", description: isNonNullArray(err.invalidParams) ? err.invalidParams[0].reason : err.detail, variant: "destructive" });
@@ -760,7 +766,7 @@ const Admin = () => {
     if (authLoading || loading) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gradient-heavenly">
-                <div className="animate-pulse text-primary">Loading...</div>
+                <div className="animate-pulse text-primary">{t("common.loading")}</div>
             </div>
         );
     }
@@ -769,88 +775,94 @@ const Admin = () => {
         <div className="min-h-screen bg-gradient-heavenly">
             <Header hideNav />
 
-            <main className="container mx-auto px-4 pt-24 pb-8">
-                <h1 className="text-3xl font-bold text-foreground mb-8">Administration</h1>
+            <main className="container mx-auto px-2 sm:px-4 pt-20 sm:pt-24 pb-8">
+                <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground mb-6 sm:mb-8">{t("admin.title")}</h1>
 
                 <Tabs defaultValue="sessions" className="w-full">
-                    <TabsList className="grid w-full max-w-3xl grid-cols-5 mb-8">
-                        <TabsTrigger value="sessions" className="text-xs sm:text-sm">
-                            <Calendar className="w-4 h-4 mr-1 hidden sm:inline" />
-                            Sessions
+                    <TabsList className="grid w-full max-w-3xl grid-cols-5 mb-6 sm:mb-8 gap-1 sm:gap-0">
+                        <TabsTrigger value="sessions" className="text-[10px] sm:text-xs md:text-sm px-1 py-1 sm:py-2">
+                            <Calendar className="w-3 h-3 sm:w-4 sm:h-4 mr-0.5 sm:mr-1 hidden sm:inline" />
+                            <span className="hidden lg:inline">{t("admin.sessions")}</span>
+                            <span className="sm:hidden">Sess</span>
                         </TabsTrigger>
-                        <TabsTrigger value="challenges" className="text-xs sm:text-sm">
-                            <Target className="w-4 h-4 mr-1 hidden sm:inline" />
-                            Challenges
+                        <TabsTrigger value="challenges" className="text-[10px] sm:text-xs md:text-sm px-1 py-1 sm:py-2">
+                            <Target className="w-3 h-3 sm:w-4 sm:h-4 mr-0.5 sm:mr-1 hidden sm:inline" />
+                            <span className="hidden lg:inline">{t("admin.challenges")}</span>
+                            <span className="sm:hidden">Chal</span>
                         </TabsTrigger>
-                        <TabsTrigger value="users" className="text-xs sm:text-sm">
-                            <Users className="w-4 h-4 mr-1 hidden sm:inline" />
-                            Users
+                        <TabsTrigger value="users" className="text-[10px] sm:text-xs md:text-sm px-1 py-1 sm:py-2">
+                            <Users className="w-3 h-3 sm:w-4 sm:h-4 mr-0.5 sm:mr-1 hidden sm:inline" />
+                            <span className="hidden lg:inline">{t("admin.users")}</span>
+                            <span className="sm:hidden">Usr</span>
                         </TabsTrigger>
-                        <TabsTrigger value="subscriptions" className="text-xs sm:text-sm">
-                            <BookOpen className="w-4 h-4 mr-1 hidden sm:inline" />
-                            Subs
+                        <TabsTrigger value="subscriptions" className="text-[10px] sm:text-xs md:text-sm px-1 py-1 sm:py-2">
+                            <BookOpen className="w-3 h-3 sm:w-4 sm:h-4 mr-0.5 sm:mr-1 hidden sm:inline" />
+                            <span className="hidden lg:inline">{t("admin.subscriptions")}</span>
+                            <span className="sm:hidden">Subs</span>
                         </TabsTrigger>
-                        <TabsTrigger value="reports" className="text-xs sm:text-sm">
-                            <FileText className="w-4 h-4 mr-1 hidden sm:inline" />
-                            Reports
+                        <TabsTrigger value="reports" className="text-[10px] sm:text-xs md:text-sm px-1 py-1 sm:py-2">
+                            <FileText className="w-3 h-3 sm:w-4 sm:h-4 mr-0.5 sm:mr-1 hidden sm:inline" />
+                            <span className="hidden lg:inline">{t("admin.reports")}</span>
+                            <span className="sm:hidden">Rprt</span>
                         </TabsTrigger>
                     </TabsList>
 
                     {/* Sessions Tab */}
                     <TabsContent value="sessions">
                         <div className="flex justify-between items-center mb-6">
-                            <h2 className="text-xl font-semibold">Sessions ({sessions.length})</h2>
+                            <h2 className="text-lg sm:text-xl font-semibold">{t("admin.sessions")} ({sessions.length})</h2>
                             <div className="flex gap-2">
                                 <Dialog open={sessionDialogOpen} onOpenChange={setSessionDialogOpen}>
                                     <DialogTrigger asChild>
-                                        <Button onClick={resetSessionForm}>
-                                            <Plus className="w-4 h-4 mr-2" />
-                                            Add Session
+                                        <Button size="sm" onClick={resetSessionForm}>
+                                            <Plus className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                                            <span className="sm:hidden">{t("admin.add")}</span>
+                                            <span className="hidden sm:inline">{t("admin.addSession")}</span>
                                         </Button>
                                     </DialogTrigger>
                                     <DialogContent>
                                         <DialogHeader>
-                                            <DialogTitle>{editingSession ? "Edit Session" : "Create Session"}</DialogTitle>
+                                            <DialogTitle>{editingSession ? t("admin.editSession") : t("admin.createSession")}</DialogTitle>
                                         </DialogHeader>
                                         <div className="space-y-4 py-4">
                                             <div className="space-y-2">
-                                                <Label>Name</Label>
+                                                <Label>{t("admin.name")}</Label>
                                                 <Input value={sessionName} onChange={(e) => setSessionName(e.target.value)} />
                                             </div>
                                             <div className="space-y-2">
-                                                <Label>Description</Label>
+                                                <Label>{t("admin.description")}</Label>
                                                 <Textarea value={sessionDescription} onChange={(e) => setSessionDescription(e.target.value)} />
                                             </div>
-                                            <div className="grid grid-cols-2 gap-4">
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                                                 <div className="space-y-2">
-                                                    <Label>Start Date</Label>
+                                                    <Label>{t("admin.startDate")}</Label>
                                                     <Input type="date" value={sessionStartDate} onChange={(e) => setSessionStartDate(e.target.value)} />
                                                 </div>
                                                 <div className="space-y-2">
-                                                    <Label>End Date</Label>
+                                                    <Label>{t("admin.endDate")}</Label>
                                                     <Input type="date" value={sessionEndDate} onChange={(e) => setSessionEndDate(e.target.value)} />
                                                 </div>
                                             </div>
                                             {editingSession && (
                                                 <div className="space-y-2">
-                                                    <Label>Status</Label>
+                                                    <Label>{t("admin.status")}</Label>
                                                     <Select value={sessionStatus.toString() || SessionStatus.INACTIVE.toString()} onValueChange={setSessionStatus}>
                                                         <SelectTrigger>
                                                             <SelectValue />
                                                         </SelectTrigger>
                                                         <SelectContent>
-                                                            <SelectItem value={SessionStatus.UPCOMING}>Upcoming</SelectItem>
-                                                            <SelectItem value={SessionStatus.ONGOING}>Ongoing</SelectItem>
-                                                            <SelectItem value={SessionStatus.PAUSED}>Paused</SelectItem>
-                                                            <SelectItem value={SessionStatus.ENDED}>Ended</SelectItem>
-                                                            <SelectItem value={SessionStatus.INACTIVE}>Inactive</SelectItem>
+                                                            <SelectItem value={SessionStatus.UPCOMING}>{t("admin.upcoming")}</SelectItem>
+                                                            <SelectItem value={SessionStatus.ONGOING}>{t("admin.ongoing")}</SelectItem>
+                                                            <SelectItem value={SessionStatus.PAUSED}>{t("admin.paused")}</SelectItem>
+                                                            <SelectItem value={SessionStatus.ENDED}>{t("admin.ended")}</SelectItem>
+                                                            <SelectItem value={SessionStatus.INACTIVE}>{t("admin.inactive")}</SelectItem>
                                                         </SelectContent>
                                                     </Select>
                                                 </div>
                                             )}
                                             <DialogFooter>
                                                 <Button onClick={handleSaveSession} className="w-full">
-                                                    {editingSession ? "Update Session" : "Create Session"}
+                                                    {editingSession ? t("admin.updateSession") : t("admin.createSession")}
                                                 </Button>
                                             </DialogFooter>
                                         </div>
@@ -862,32 +874,36 @@ const Admin = () => {
                         <div className="grid gap-4">
                             {sessions.map((session) => (
                                 <Card key={session.id} className="shadow-gentle hover:shadow-md transition-shadow">
-                                    <CardContent className="py-4">
-                                        <div className="flex items-start justify-between">
-                                            <div className="flex-1">
-                                                <div className="flex items-center gap-3">
+                                    <CardContent className="py-3 sm:py-4">
+                                        <div className="flex flex-col sm:flex-row items-start justify-between gap-3">
+                                            <div className="flex-1 w-full">
+                                                <div className="flex flex-wrap items-center gap-2 sm:gap-3">
                                                     <h3
-                                                        className="font-semibold text-lg cursor-pointer"
+                                                        className="font-semibold text-base sm:text-lg cursor-pointer"
                                                         onClick={() => openSessionDetailsModal(session)}
                                                     >
                                                         {session.name}
                                                     </h3>
-                                                    <Badge variant={session.status === SessionStatus.ONGOING ? "default" : "secondary"}>
+                                                    <Badge variant={session.status === SessionStatus.ONGOING ? "default" : "secondary"} className="text-xs">
                                                         {session.status?.toString()}
                                                     </Badge>
                                                 </div>
                                                 <p
-                                                    className="text-sm text-muted-foreground mt-1 line-clamp-2 cursor-pointer"
+                                                    className="text-xs sm:text-sm text-muted-foreground mt-1 line-clamp-2 cursor-pointer"
                                                     onClick={() => openSessionDetailsModal(session)}
                                                 >
                                                     {session.description}
                                                 </p>
-                                                <div className="flex items-center gap-4 mt-2">
-                                                  <span className="text-xs text-muted-foreground">
-                                                    📅 { formatDate(new Date(session.startDate).toLocaleDateString()) } - { formatDate(new Date(session.endDate).toLocaleDateString()) }
+                                                <div className="flex flex-wrap items-center gap-2 sm:gap-4 mt-2 text-xs text-muted-foreground">
+                                                  <span className="flex items-center gap-1">
+                                                    <Calendar className="w-3 h-3" />
+                                                    { formatDate(new Date(session.startDate).toLocaleDateString()) } - { formatDate(new Date(session.endDate).toLocaleDateString()) }
                                                   </span>
                                                     {session.challenges && (
-                                                        <span className="text-xs text-muted-foreground">🎯 {session.challenges.length} challenges</span>
+                                                        <span className="flex items-center gap-1">
+                                                            <Target className="w-3 h-3" />
+                                                            {session.challenges.length} ch
+                                                        </span>
                                                     )}
                                                 </div>
 
@@ -903,16 +919,16 @@ const Admin = () => {
                                                 )}
                                             </div>
 
-                                            <div className="flex flex-col gap-1">
-                                                <div className="flex gap-1">
+                                            <div className="flex sm:flex-col gap-1 w-full sm:w-auto justify-end">
+                                                <div className="flex gap-1 justify-end">
                                                     <Button variant="ghost" size="sm" onClick={() => toggleViewSession(session)} title="View">
-                                                        <Eye className="w-4 h-4" />
+                                                        <Eye className="w-3 h-3 sm:w-4 sm:h-4" />
                                                     </Button>
                                                     <Button variant="ghost" size="sm" onClick={() => handleEditSession(session)} title="Edit">
-                                                        <Edit className="w-4 h-4" />
+                                                        <Edit className="w-3 h-3 sm:w-4 sm:h-4" />
                                                     </Button>
                                                     <ConfirmRemoveDialog
-                                                        trigger={<Button variant="ghost" size="sm" title="Delete"><Trash2 className="w-4 h-4 text-destructive" /></Button>}
+                                                        trigger={<Button variant="ghost" size="sm" title="Delete"><Trash2 className="w-3 h-3 sm:w-4 sm:h-4 text-destructive" /></Button>}
                                                         title={`Delete session "${session.name}"`}
                                                         description={`This will delete the session and associated data. Continue?`}
                                                         confirmLabel="Delete"
@@ -930,24 +946,24 @@ const Admin = () => {
                         <Dialog open={viewSessionDialogOpen} onOpenChange={setViewSessionDialogOpen}>
                             <DialogContent>
                                 <DialogHeader>
-                                    <DialogTitle>Session Details</DialogTitle>
+                                    <DialogTitle>{t("admin.sessionDetails")}</DialogTitle>
                                 </DialogHeader>
                                 <div className="py-2">
                                     {viewingSession && (
                                             <div className="py-2">
-                                                <div className="text-sm"><strong>Name:</strong> {viewingSession?.name} </div>
-                                                <div className="text-sm"><strong>Description:</strong> {viewingSession?.description}</div>
-                                                <div className="text-sm"><strong>Status:</strong> {viewingSession?.status?.toString()}</div>
-                                                <div className="text-sm"><strong>Number of Challenges:</strong> {viewingSession?.challenges?.length}</div>
-                                                <div className="text-sm"><strong>Start Date:</strong> {formatDate(viewingSession?.startDate)}</div>
-                                                <div className="text-sm"><strong>End Date:</strong> {formatDate(viewingSession?.endDate)}</div>
-                                                <div className="text-sm"><strong>Created On:</strong> {formatDate(viewingSession?.createdOn)} </div>
-                                                <div className="text-sm"><strong>Updated On:</strong> {formatDate(viewingSession?.updatedOn)} </div>
+                                                <div className="text-sm"><strong>{t("admin.name")}:</strong> {viewingSession?.name} </div>
+                                                <div className="text-sm"><strong>{t("admin.description")}:</strong> {viewingSession?.description}</div>
+                                                <div className="text-sm"><strong>{t("admin.status")}:</strong> {viewingSession?.status?.toString()}</div>
+                                                <div className="text-sm"><strong>{t("admin.numberOfChallenges")}:</strong> {viewingSession?.challenges?.length}</div>
+                                                <div className="text-sm"><strong>{t("admin.startDate")}:</strong> {formatDate(viewingSession?.startDate)}</div>
+                                                <div className="text-sm"><strong>{t("admin.endDate")}:</strong> {formatDate(viewingSession?.endDate)}</div>
+                                                <div className="text-sm"><strong>{t("admin.createdOn")}:</strong> {formatDate(viewingSession?.createdOn)} </div>
+                                                <div className="text-sm"><strong>{t("admin.updatedOn")}:</strong> {formatDate(viewingSession?.updatedOn)} </div>
                                             </div>
                                     )}
                                 </div>
                                 <DialogFooter>
-                                    <Button onClick={() => setViewSessionDialogOpen(false)}>Close</Button>
+                                    <Button onClick={() => setViewSessionDialogOpen(false)}>{t("admin.close")}</Button>
                                 </DialogFooter>
                             </DialogContent>
                         </Dialog>
@@ -955,52 +971,54 @@ const Admin = () => {
 
                     {/* Challenges */}
                     <TabsContent value="challenges">
-                        <div className="flex justify-between items-center mb-6">
-                            <h2 className="text-xl font-semibold">Challenges ({challenges.length})</h2>
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
+                            <h2 className="text-lg sm:text-xl font-semibold">{t("admin.challenges")} ({challenges.length})</h2>
                             <div className="flex gap-2">
                                 <Dialog open={challengeDialogOpen} onOpenChange={setChallengeDialogOpen}>
                                     <DialogTrigger asChild>
-                                        <Button onClick={resetChallengeForm}>
-                                            <Plus className="w-4 h-4 mr-2" /> Add Challenge
+                                        <Button size="sm" onClick={resetChallengeForm}>
+                                            <Plus className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" /> 
+                                            <span className="sm:hidden">{t("admin.add")}</span>
+                                            <span className="hidden sm:inline">{t("admin.addChallenge")}</span>
                                         </Button>
                                     </DialogTrigger>
                                     <DialogContent>
                                         <DialogHeader>
-                                            <DialogTitle>{editingChallenge ? "Edit Challenge" : "Create Challenge"}</DialogTitle>
+                                            <DialogTitle>{editingChallenge ? t("admin.editChallenge") : t("admin.createChallenge")}</DialogTitle>
                                         </DialogHeader>
                                         <div className="space-y-4 py-4">
                                             <div className="space-y-2">
-                                                <Label>Name</Label>
+                                                <Label>{t("admin.name")}</Label>
                                                 <Input value={challengeName} onChange={(e) => setChallengeName(e.target.value)} />
                                             </div>
                                             <div className="space-y-2">
-                                                <Label>Description</Label>
+                                                <Label>{t("admin.description")}</Label>
                                                 <Textarea value={challengeDescription} onChange={(e) => setChallengeDescription(e.target.value)} />
                                             </div>
-                                            <div className="grid grid-cols-2 gap-4">
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                                                 <div className="space-y-2">
-                                                    <Label>Target (souls)</Label>
+                                                    <Label>{t("admin.targetSouls")}</Label>
                                                     <Input type="number" value={challengeTarget} onChange={(e) => setChallengeTarget(e.target.value)} />
                                                 </div>
                                                 <div className="space-y-2">
-                                                    <Label>Type</Label>
+                                                    <Label>{t("admin.type")}</Label>
                                                     <Select value={challengeType?.toString()} onValueChange={setChallengeType}>
                                                         <SelectTrigger>
                                                             <SelectValue />
                                                         </SelectTrigger>
                                                         <SelectContent>
-                                                            <SelectItem value={ChallengeType.NORMAL}>Normal</SelectItem>
-                                                            <SelectItem value={ChallengeType.EVENT}>Event</SelectItem>
-                                                            <SelectItem value={ChallengeType.INDIVIDUAL}>Individual</SelectItem>
+                                                            <SelectItem value={ChallengeType.NORMAL}>{t("admin.normal")}</SelectItem>
+                                                            <SelectItem value={ChallengeType.EVENT}>{t("admin.event")}</SelectItem>
+                                                            <SelectItem value={ChallengeType.INDIVIDUAL}>{t("admin.individual")}</SelectItem>
                                                         </SelectContent>
                                                     </Select>
                                                 </div>
                                             </div>
                                             <div className="space-y-2">
-                                                <Label>Session</Label>
+                                                <Label>{t("admin.session")}</Label>
                                                 <Select value={challengeSessionId} onValueChange={setChallengeSessionId}>
                                                     <SelectTrigger>
-                                                        <SelectValue placeholder="Select a session" />
+                                                        <SelectValue placeholder={t("admin.selectSession")} />
                                                     </SelectTrigger>
                                                     <SelectContent>
                                                         {sessions.map((s) => (
@@ -1013,7 +1031,7 @@ const Admin = () => {
                                             </div>
                                             <DialogFooter>
                                                 <Button onClick={handleSaveChallenge} className="w-full">
-                                                    {editingChallenge ? "Update" : "Create"}
+                                                    {editingChallenge ? t("admin.updateChallenge") : t("admin.createChallenge")}
                                                 </Button>
                                             </DialogFooter>
                                         </div>
@@ -1027,25 +1045,25 @@ const Admin = () => {
                                 const session = sessions.find((s) => challenge.sessions && challenge.sessions.some((cs) => cs.id === s.id));
                                 return (
                                     <Card key={challenge.id} className="shadow-gentle">
-                                        <CardContent className="py-4">
-                                            <div className="flex items-center justify-between">
-                                                <div className="flex-1">
+                                        <CardContent className="py-3 sm:py-4">
+                                            <div className="flex flex-col sm:flex-row items-start justify-between gap-3">
+                                                <div className="flex-1 w-full">
                                                     <h3
-                                                        className="font-semibold cursor-pointer"
+                                                        className="font-semibold cursor-pointer text-base sm:text-lg"
                                                         onClick={() => openChallengeDetailsModal(challenge)}
                                                     >
                                                         {challenge.name}
                                                     </h3>
                                                     <p
-                                                        className="text-sm text-muted-foreground"
+                                                        className="text-xs sm:text-sm text-muted-foreground line-clamp-2"
                                                         onClick={() => openChallengeDetailsModal(challenge)}
                                                     >
                                                         {challenge.description}
                                                     </p>
-                                                    <div className="flex items-center gap-4 mt-2">
-                                                        <Badge variant="outline">{challenge.type?.toString()}</Badge>
+                                                    <div className="flex flex-wrap items-center gap-2 sm:gap-4 mt-2">
+                                                        <Badge variant="outline" className="text-xs">{challenge.type?.toString()}</Badge>
                                                         <span className="text-xs text-muted-foreground">Target: {challenge.target}</span>
-                                                        {session && <span className="text-xs text-muted-foreground">Session: {session.name}</span>}
+                                                        {session && <span className="text-xs text-muted-foreground truncate max-w-[100px] sm:max-w-none">Session: {session.name}</span>}
                                                     </div>
 
                                                     {expandedChallengeId === challenge.id && (
@@ -1058,20 +1076,22 @@ const Admin = () => {
                                                     )}
                                                 </div>
 
-                                                <div className="flex gap-2">
-                                                    <Button variant="ghost" size="sm" onClick={() => toggleViewChallenge(challenge)}>
-                                                        <Eye className="w-4 h-4" />
-                                                    </Button>
-                                                    <Button variant="ghost" size="sm" onClick={() => handleEditChallenge(challenge)}>
-                                                        <Edit className="w-4 h-4" />
-                                                    </Button>
-                                                    <ConfirmRemoveDialog
-                                                        trigger={<Button variant="ghost" size="sm"><Trash2 className="w-4 h-4 text-destructive" /></Button>}
-                                                        title={`Delete "${challenge.name}"`}
-                                                        description={`This will delete the challenge and related subscriptions. Continue?`}
-                                                        confirmLabel="Delete"
-                                                        onConfirm={() => handleDeleteChallenge(challenge.id)}
-                                                    />
+                                                <div className="flex sm:flex-col gap-1 w-full sm:w-auto justify-end">
+                                                    <div className="flex gap-1 justify-end">
+                                                        <Button variant="ghost" size="sm" onClick={() => toggleViewChallenge(challenge)}>
+                                                            <Eye className="w-3 h-3 sm:w-4 sm:h-4" />
+                                                        </Button>
+                                                        <Button variant="ghost" size="sm" onClick={() => handleEditChallenge(challenge)}>
+                                                            <Edit className="w-3 h-3 sm:w-4 sm:h-4" />
+                                                        </Button>
+                                                        <ConfirmRemoveDialog
+                                                            trigger={<Button variant="ghost" size="sm"><Trash2 className="w-3 h-3 sm:w-4 sm:h-4 text-destructive" /></Button>}
+                                                            title={`Delete "${challenge.name}"`}
+                                                            description={`This will delete the challenge and related subscriptions. Continue?`}
+                                                            confirmLabel="Delete"
+                                                            onConfirm={() => handleDeleteChallenge(challenge.id)}
+                                                        />
+                                                    </div>
                                                 </div>
                                             </div>
                                         </CardContent>
@@ -1084,24 +1104,24 @@ const Admin = () => {
                         <Dialog open={viewChallengeDialogOpen} onOpenChange={setViewChallengeDialogOpen}>
                             <DialogContent>
                                 <DialogHeader>
-                                    <DialogTitle>Challenge Details</DialogTitle>
+                                    <DialogTitle>{t("admin.challengeDetails")}</DialogTitle>
                                 </DialogHeader>
                                 <div className="py-2">
 
                                     {viewingChallenge && (
                                     <div className="py-2">
-                                        <div className="text-sm"><strong>Name:</strong> {viewingChallenge?.name} </div>
-                                        <div className="text-sm"><strong>Description:</strong> {viewingChallenge?.description}</div>
-                                        <div className="text-sm"><strong>Type:</strong> {viewingChallenge?.type?.toString()}</div>
-                                        <div className="text-sm"><strong>Target:</strong> {viewingChallenge?.target}</div>
-                                        <div className="text-sm"><strong>Number of Sessions:</strong> {viewingChallenge?.sessions?.length}</div>
-                                        <div className="text-sm"><strong>Created On:</strong> {formatDate(viewingChallenge?.createdOn)} </div>
-                                        <div className="text-sm"><strong>Updated On:</strong> {formatDate(viewingChallenge?.updatedOn)} </div>
+                                        <div className="text-sm"><strong>{t("admin.name")}:</strong> {viewingChallenge?.name} </div>
+                                        <div className="text-sm"><strong>{t("admin.description")}:</strong> {viewingChallenge?.description}</div>
+                                        <div className="text-sm"><strong>{t("admin.type")}:</strong> {viewingChallenge?.type?.toString()}</div>
+                                        <div className="text-sm"><strong>{t("admin.target")}:</strong> {viewingChallenge?.target}</div>
+                                        <div className="text-sm"><strong>{t("admin.numberOfSessions")}:</strong> {viewingChallenge?.sessions?.length}</div>
+                                        <div className="text-sm"><strong>{t("admin.createdOn")}:</strong> {formatDate(viewingChallenge?.createdOn)} </div>
+                                        <div className="text-sm"><strong>{t("admin.updatedOn")}:</strong> {formatDate(viewingChallenge?.updatedOn)} </div>
                                     </div>
                                     )}
                                 </div>
                                 <DialogFooter>
-                                    <Button onClick={() => setViewChallengeDialogOpen(false)}>Close</Button>
+                                    <Button onClick={() => setViewChallengeDialogOpen(false)}>{t("admin.close")}</Button>
                                 </DialogFooter>
                             </DialogContent>
                         </Dialog>
@@ -1109,11 +1129,13 @@ const Admin = () => {
 
                     {/* Users */}
                     <TabsContent value="users">
-                        <div className="flex justify-between items-center mb-6">
-                            <h2 className="text-xl font-semibold">Users ({users.length})</h2>
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
+                            <h2 className="text-lg sm:text-xl font-semibold">{t("admin.users")} ({users.length})</h2>
                             <div className="flex gap-2">
-                                <Button onClick={() => { resetUserForm(); setUserDialogOpen(true); }}>
-                                    <Plus className="w-4 h-4 mr-2" /> Add User
+                                <Button size="sm" onClick={() => { resetUserForm(); setUserDialogOpen(true); }}>
+                                    <Plus className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" /> 
+                                    <span className="sm:hidden">{t("admin.add")}</span>
+                                    <span className="hidden sm:inline">{t("admin.addUser")}</span>
                                 </Button>
                             </div>
                         </div>
@@ -1122,27 +1144,27 @@ const Admin = () => {
                             {users.map((u) => (
                                 <div key={u.id}>
                                     <Card className="shadow-gentle">
-                                        <CardContent className="py-4">
-                                            <div className="flex items-center justify-between">
-                                                <div onClick={() => openUserDetailsModal(u)} className="cursor-pointer">
-                                                    <h3 className="font-semibold">{u.firstName} {u.lastName}</h3>
-                                                    <p className="text-sm text-muted-foreground">{u.email}</p>
+                                        <CardContent className="py-3 sm:py-4">
+                                            <div className="flex flex-col sm:flex-row items-start justify-between gap-3">
+                                                <div onClick={() => openUserDetailsModal(u)} className="cursor-pointer w-full">
+                                                    <h3 className="font-semibold text-base sm:text-lg">{u.firstName} {u.lastName}</h3>
+                                                    <p className="text-xs sm:text-sm text-muted-foreground truncate max-w-[200px] sm:max-w-none">{u.email}</p>
                                                 </div>
-                                                <div className="flex items-center gap-2">
+                                                <div className="flex flex-wrap gap-1 sm:gap-2 w-full sm:w-auto justify-end">
                                                     <Button variant="ghost" size="sm" onClick={() => toggleViewUser(u)}>
-                                                        <Eye className="w-4 h-4" />
+                                                        <Eye className="w-3 h-3 sm:w-4 sm:h-4" />
                                                     </Button>
                                                     <Button variant="ghost" size="sm" onClick={() => handleEditUser(u)}>
-                                                        <Edit className="w-4 h-4" />
+                                                        <Edit className="w-3 h-3 sm:w-4 sm:h-4" />
                                                     </Button>
                                                     <ConfirmRemoveDialog
-                                                        trigger={<Button variant="ghost" size="sm"><Trash2 className="w-4 h-4 text-destructive" /></Button>}
+                                                        trigger={<Button variant="ghost" size="sm"><Trash2 className="w-3 h-3 sm:w-4 sm:h-4 text-destructive" /></Button>}
                                                         title={`Delete "${u.firstName} ${u.lastName}"`}
                                                         description={`This will delete the user. Continue?`}
                                                         confirmLabel="Delete"
                                                         onConfirm={() => handleDeleteUser(u.id)}
                                                     />
-                                                    <Button size="sm" onClick={() => handleSubscribeUser(u)}>Subscribe</Button>
+                                                    <Button size="sm" onClick={() => handleSubscribeUser(u)} className="text-xs sm:text-sm px-2 sm:px-4">{t("admin.subscribe")}</Button>
                                                 </div>
                                             </div>
                                         </CardContent>
@@ -1156,7 +1178,7 @@ const Admin = () => {
                                                     onRoleChanged={async (newRole) => {
                                                         try {
                                                             await userApi.assignNewRole(u.email!, newRole);
-                                                            toast({ title: "Role updated" });
+                                                            toast({ title: t("admin.roleUpdated") });
                                                             fetchAllData();
                                                         } catch (err: any) {
                                                             toast({ title: "Error", description: isNonNullArray(err.invalidParams) ? err.invalidParams[0].reason : err.detail, variant: "destructive" });
@@ -1165,7 +1187,7 @@ const Admin = () => {
                                                     onToggleBlock={async () => {
                                                         try {
                                                             await userApi.toggleBlock(u.id!);
-                                                            toast({ title: "User block state toggled" });
+                                                            toast({ title: t("admin.userBlockStateToggled") });
                                                             fetchAllData();
                                                         } catch (err: any) {
                                                             toast({ title: "Error", description: isNonNullArray(err.invalidParams) ? err.invalidParams[0].reason : err.detail, variant: "destructive" });
@@ -1174,7 +1196,7 @@ const Admin = () => {
                                                     onEnableUser={async () => {
                                                         try {
                                                             await userApi.enableUser(u.id!);
-                                                            toast({ title: "User enabled" });
+                                                            toast({ title: t("admin.userEnabled") });
                                                             fetchAllData();
                                                         } catch (err: any) {
                                                             toast({ title: "Error", description: isNonNullArray(err.invalidParams) ? err.invalidParams[0].reason : err.detail, variant: "destructive" });
@@ -1191,30 +1213,32 @@ const Admin = () => {
 
                         <Dialog open={viewUserDialogOpen} onOpenChange={setViewUserDialogOpen}>
                             <DialogContent>
-                                <DialogHeader><DialogTitle>User Details</DialogTitle></DialogHeader>
+                                <DialogHeader><DialogTitle>{t("admin.userDetails")}</DialogTitle></DialogHeader>
                                 <div className="py-2">
-                                    <div className="text-sm"><strong>Name:</strong> {computeUserName(viewingUser)} </div>
-                                    <div className="text-sm"><strong>Email:</strong> {viewingUser?.email}</div>
-                                    <div className="text-sm"><strong>Role:</strong> {viewingUser?.role?.toString()}</div>
-                                    <div className="text-sm"><strong>Phone:</strong> {viewingUser?.phoneNumber}</div>
-                                    <div className="text-sm"><strong>Location:</strong> {viewingUser?.city}, {viewingUser?.region}, {viewingUser?.country}</div>
-                                    <div className="text-sm"><strong>Enabled:</strong> {viewingUser?.accountEnabled  ? "Yes" : "No"} </div>
-                                    <div className="text-sm"><strong>Blocked:</strong> {viewingUser?.accountBlocked ? "Yes" : "No"} </div>
-                                    <div className="text-sm"><strong>Created On:</strong> {formatDate(viewingUser?.createdOn)} </div>
-                                    <div className="text-sm"><strong>Updated On:</strong> {formatDate(viewingUser?.updatedOn)} </div>
+                                    <div className="text-sm"><strong>{t("admin.name")}:</strong> {computeUserName(viewingUser)} </div>
+                                    <div className="text-sm"><strong>{t("admin.email")}:</strong> {viewingUser?.email}</div>
+                                    <div className="text-sm"><strong>{t("admin.role")}:</strong> {viewingUser?.role?.toString()}</div>
+                                    <div className="text-sm"><strong>{t("admin.phone")}:</strong> {viewingUser?.phoneNumber}</div>
+                                    <div className="text-sm"><strong>{t("admin.location")}:</strong> {viewingUser?.city}, {viewingUser?.region}, {viewingUser?.country}</div>
+                                    <div className="text-sm"><strong>{t("admin.enabled")}:</strong> {viewingUser?.accountEnabled ? t("admin.yes") : t("admin.no")} </div>
+                                    <div className="text-sm"><strong>{t("admin.blocked")}:</strong> {viewingUser?.accountBlocked ? t("admin.yes") : t("admin.no")} </div>
+                                    <div className="text-sm"><strong>{t("admin.createdOn")}:</strong> {formatDate(viewingUser?.createdOn)} </div>
+                                    <div className="text-sm"><strong>{t("admin.updatedOn")}:</strong> {formatDate(viewingUser?.updatedOn)} </div>
                                 </div>
-                                <DialogFooter><Button onClick={() => setViewUserDialogOpen(false)}>Close</Button></DialogFooter>
+                                <DialogFooter><Button onClick={() => setViewUserDialogOpen(false)}>{t("admin.close")}</Button></DialogFooter>
                             </DialogContent>
                         </Dialog>
                     </TabsContent>
 
                     {/* Subscriptions */}
                     <TabsContent value="subscriptions">
-                        <div className="flex justify-between items-center mb-6">
-                            <h2 className="text-xl font-semibold">Subscriptions ({subscriptions.length})</h2>
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
+                            <h2 className="text-lg sm:text-xl font-semibold">{t("admin.subscriptions")} ({subscriptions.length})</h2>
                             <div className="flex gap-2">
-                                <Button onClick={() => { resetSubscriptionForm(); setSubscriptionDialogOpen(true); }}>
-                                    <Plus className="w-4 h-4 mr-2" /> Add Subscription
+                                <Button size="sm" onClick={() => { resetSubscriptionForm(); setSubscriptionDialogOpen(true); }}>
+                                    <Plus className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" /> 
+                                    <span className="sm:hidden">{t("admin.add")}</span>
+                                    <span className="hidden sm:inline">{t("admin.addSubscription")}</span>
                                 </Button>
                             </div>
                         </div>
@@ -1228,34 +1252,34 @@ const Admin = () => {
                                     : usr?.firstName ? usr?.firstName
                                         : usr?.lastName ? usr?.lastName : "UNKNOWN USER";
                                 return (
-                                    <Card key={sub.id} className="shadow-gentle">
-                                        <CardContent className="py-4">
-                                            <div className="flex items-center justify-between">
+<Card key={sub.id} className="shadow-gentle">
+                                        <CardContent className="py-3 sm:py-4">
+                                            <div className="flex flex-col sm:flex-row items-start justify-between gap-3">
 
-                                                <div className="flex-1">
-                                                    <h3 className="font-semibold cursor-pointer">
+                                                <div className="flex-1 w-full">
+                                                    <h3 className="font-semibold cursor-pointer text-sm sm:text-base">
                                                         {computeUserName(usr)} → Pledge: {sub?.target}
                                                     </h3>
-                                                    <p className="flex items-center gap-4 mt-2 text-xs">
+                                                    <p className="flex items-center gap-4 mt-1 sm:mt-2 text-xs text-muted-foreground">
                                                         { (usr && usr?.email) ? usr.email : computeUserName(usr)}
                                                     </p>
-                                                    <p className="flex items-center gap-4 mt-2">
+                                                    <p className="flex items-center gap-4 mt-1 sm:mt-2 text-xs">
                                                         Session: {ses.name}
                                                     </p>
-                                                    <div className="flex items-center gap-4 mt-2">
+                                                    <div className="flex flex-wrap items-center gap-2 sm:gap-4 mt-1 sm:mt-2">
                                                         <span className="text-xs text-muted-foreground">Challenge: {chl.name}</span>
                                                         {sub.challenge && <span className="text-xs text-muted-foreground">target: {sub.target}</span>}
                                                     </div>
-                                                    <div className="flex items-center gap-4 mt-2">
-                                                        <Badge variant="outline">ON</Badge>
+                                                    <div className="flex items-center gap-4 mt-1 sm:mt-2">
+                                                        <Badge variant="outline" className="text-xs">ON</Badge>
                                                         <span className="text-xs text-muted-foreground"> {formatDate(sub.createdOn)}</span>
                                                     </div>
                                                 </div>
-                                                <div className="flex gap-2">
-                                                    <Button variant="ghost" size="sm" onClick={() => handleViewSubscription(sub)}><Eye className="w-4 h-4" /></Button>
-                                                    <Button variant="ghost" size="sm" onClick={() => handleEditSubscription(sub)}><Edit className="w-4 h-4" /></Button>
+                                                <div className="flex gap-1 sm:gap-2 w-full sm:w-auto justify-end">
+                                                    <Button variant="ghost" size="sm" onClick={() => handleViewSubscription(sub)}><Eye className="w-3 h-3 sm:w-4 sm:h-4" /></Button>
+                                                    <Button variant="ghost" size="sm" onClick={() => handleEditSubscription(sub)}><Edit className="w-3 h-3 sm:w-4 sm:h-4" /></Button>
                                                     <ConfirmRemoveDialog
-                                                        trigger={<Button variant="ghost" size="sm"><Trash2 className="w-4 h-4 text-destructive" /></Button>}
+                                                        trigger={<Button variant="ghost" size="sm"><Trash2 className="w-3 h-3 sm:w-4 sm:h-4 text-destructive" /></Button>}
                                                         title={`Delete subscription`}
                                                         description={`Delete subscription for ${usr?.firstName || "Unknown"}?`}
                                                         confirmLabel="Delete"
@@ -1271,18 +1295,18 @@ const Admin = () => {
 
                         <Dialog open={viewSubscriptionDialogOpen} onOpenChange={setViewSubscriptionDialogOpen}>
                             <DialogContent>
-                                <DialogHeader><DialogTitle>Subscription Details</DialogTitle></DialogHeader>
+                                <DialogHeader><DialogTitle>{t("admin.subscriptionDetails")}</DialogTitle></DialogHeader>
                                 <div className="py-2">
-                                    <div className="text-sm"><strong>User:</strong> {computeUserName(viewingSubscription ? viewingSubscription?.user : null)}</div>
-                                    <div className="text-sm"><strong>Email:</strong> { (viewingSubscription?.user && viewingSubscription?.user?.email) ? viewingSubscription?.user.email : computeUserName(viewingSubscription?.user)}</div>
-                                    <div className="text-sm"><strong>Session:</strong> {viewingSubscription ? viewingSubscription.session?.name : ""}</div>
-                                    <div className="text-sm"><strong>Challenge:</strong> {viewingSubscription ? viewingSubscription.challenge?.name : ""}</div>
-                                    <div className="text-sm"><strong>Commitment:</strong> {viewingSubscription?.target}</div>
-                                    <div className="text-sm"><strong>Target:</strong> { viewingSubscription?.challenge?.target}</div>
-                                    <div className="text-sm"><strong>Subscribed On:</strong> {formatDate(viewingSubscription?.createdOn)}</div>
-                                    <div className="text-sm"><strong>Updated On:</strong> {formatDate(viewingSubscription?.updatedOn)}</div>
+                                    <div className="text-sm"><strong>{t("admin.user")}:</strong> {computeUserName(viewingSubscription ? viewingSubscription?.user : null)}</div>
+                                    <div className="text-sm"><strong>{t("admin.email")}:</strong> { (viewingSubscription?.user && viewingSubscription?.user?.email) ? viewingSubscription?.user.email : computeUserName(viewingSubscription?.user)}</div>
+                                    <div className="text-sm"><strong>{t("admin.session")}:</strong> {viewingSubscription ? viewingSubscription.session?.name : ""}</div>
+                                    <div className="text-sm"><strong>{t("admin.challenges")}:</strong> {viewingSubscription ? viewingSubscription.challenge?.name : ""}</div>
+                                    <div className="text-sm"><strong>{t("admin.commitment")}:</strong> {viewingSubscription?.target}</div>
+                                    <div className="text-sm"><strong>{t("admin.target")}:</strong> { viewingSubscription?.challenge?.target}</div>
+                                    <div className="text-sm"><strong>{t("admin.subscribedOn")}:</strong> {formatDate(viewingSubscription?.createdOn)}</div>
+                                    <div className="text-sm"><strong>{t("admin.updatedOn")}:</strong> {formatDate(viewingSubscription?.updatedOn)}</div>
                                 </div>
-                                <DialogFooter><Button onClick={() => setViewSubscriptionDialogOpen(false)}>Close</Button></DialogFooter>
+                                <DialogFooter><Button onClick={() => setViewSubscriptionDialogOpen(false)}>{t("admin.close")}</Button></DialogFooter>
                             </DialogContent>
                         </Dialog>
                     </TabsContent>
@@ -1291,104 +1315,141 @@ const Admin = () => {
                     <TabsContent value="reports">
                         <ReportsCalendar 
                             reports={reports}
-                            title="All Reports"
-                            onViewReport={handleViewReport}
+                            authUserIsAdmin={isAdmin}
+                            title={t("admin.allReports")}
+                            onViewReport={handleViewReportForCalendar}
                             onEditReport={handleEditReport}
                             defaultView="year"
                         />
                         
-                        <div className="flex justify-between items-center mt-6 mb-4">
-                            <h2 className="text-xl font-semibold">Reports List ({reports.length})</h2>
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mt-6 mb-4">
+                            <h2 className="text-lg sm:text-xl font-semibold">{t("admin.reportsList")} ({reports.length})</h2>
                             <div className="flex gap-2">
-                                <Button onClick={() => { resetReportForm(); setReportDialogOpen(true); }}>
-                                    <Plus className="w-4 h-4 mr-2" /> Add Report
+                                <Button size="sm" onClick={() => { resetReportForm(); setReportDialogOpen(true); }}>
+                                    <Plus className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" /> 
+                                    <span className="sm:hidden">{t("admin.add")}</span>
+                                    <span className="hidden sm:inline">{t("admin.addReport")}</span>
                                 </Button>
                             </div>
                         </div>
 
                         <div className="space-y-4">
-                            <Card key={"reportHeader"} className="shadow-gentle">
-                                <CardContent className="flex justify-between py-4">
-                                    <div className="flex-grow grid grid-cols-12 gap-2">
-                                    {/*<div className="grid grid-cols-5 gap-4 p-3 bg-muted rounded-t-lg font-medium text-sm">*/}
-                                            <div className="col-span-1 font-bold">User</div>
-                                            <div className="col-span-2 font-bold">Email</div>
-                                            <div className="col-span-1 font-bold">Session</div>
-                                            <div className="col-span-1 font-bold">Challenge</div>
-                                            <div className="col-span-1 font-bold">Pledge</div>
-                                            <div className="col-span-1 font-bold">Target</div>
-                                            <div className="col-span-1 font-bold">Evangelized</div>
-                                            <div className="col-span-1 font-bold">Converts</div>
-                                            <div className="col-span-1 font-bold">Followed up</div>
-                                            <div className="col-span-1 font-bold">Reported On</div>
-                                            {/*<div className="flex items-center gap-0.1"></div>*/}
-                                    </div>
-                                </CardContent>
-                            </Card>
+                            <div className="hidden lg:block">
+                                <Card key={"reportHeader"} className="shadow-gentle">
+                                    <CardContent className="flex justify-between py-4">
+                                        <div className="flex-grow grid grid-cols-12 gap-2">
+                                                <div className="col-span-1 font-bold text-xs">User</div>
+                                                <div className="col-span-2 font-bold text-xs">Email</div>
+                                                <div className="col-span-1 font-bold text-xs">Session</div>
+                                                <div className="col-span-1 font-bold text-xs">Challenge</div>
+                                                <div className="col-span-1 font-bold text-xs">Pledge</div>
+                                                <div className="col-span-1 font-bold text-xs">Target</div>
+                                                <div className="col-span-1 font-bold text-xs">Evangelized</div>
+                                                <div className="col-span-1 font-bold text-xs">Converts</div>
+                                                <div className="col-span-1 font-bold text-xs">Followed up</div>
+                                                <div className="col-span-1 font-bold text-xs">Reported On</div>
+                                        </div>
+                                        <div className="w-24"></div>
+                                    </CardContent>
+                                </Card>
+                            </div>
 
                             {reports.map((r) => {
                                 const ses = sessions.find((s) => s?.id === r.subscription?.session?.id);
                                 const chl = challenges.find((c) => c?.id === r.subscription?.challenge?.id);
                                 const sub = subscriptions.find((s) => s?.id === r.subscription?.id);
                                 const usr = users.find((u) => u?.id === r.subscription?.user?.id);
-                                const userName = usr?.firstName && usr?.lastName ? `${usr?.firstName} ${usr?.lastName}`
-                                    : usr?.firstName ? usr?.firstName
-                                        : usr?.lastName ? usr?.lastName : "UNKNOWN USER";
                                 return (
 
                                     <Card key={r.id} className="shadow-gentle">
-                                        <CardContent className="flex justify-between py-4">
-                                            <div className="flex-grow grid grid-cols-12 gap-2">
-                                                <div className="text-sm col-span-1">
+                                        <CardContent className="py-3 sm:py-4">
+                                            {/* Desktop view - grid */}
+                                            <div className="hidden lg:grid grid-cols-12 gap-2 items-center">
+                                                <div className="text-xs col-span-1 truncate">
                                                     {computeUserName(usr)}
                                                 </div>
-                                                <div className="text-sm col-span-2">
+                                                <div className="text-xs col-span-2 truncate">
                                                     { (usr && usr?.email) ? usr.email : computeUserName(usr)}
                                                 </div>
-                                                <div className="text-sm col-span-1">
+                                                <div className="text-xs col-span-1 truncate">
                                                     {ses?.name}
                                                 </div>
-                                                <div className="text-sm col-span-1">
+                                                <div className="text-xs col-span-1 truncate">
                                                     {chl?.name}
                                                 </div>
-                                                <div className="text-sm col-span-1">
+                                                <div className="text-xs col-span-1">
                                                     {sub?.target}
                                                 </div>
-                                                <div className="text-sm col-span-1">
+                                                <div className="text-xs col-span-1">
                                                     {chl?.target}
                                                 </div>
-                                                <div className="text-sm col-span-1">
+                                                <div className="text-xs col-span-1">
                                                     {r.numberEvangelizedTo}
                                                 </div>
-                                                <div className="text-sm col-span-1">
+                                                <div className="text-xs col-span-1">
                                                     {r.numberOfNewConverts}
                                                 </div>
-                                                <div className="text-sm col-span-1">
+                                                <div className="text-xs col-span-1">
                                                     {r.numberFollowedUp}
                                                 </div>
-                                                <div className="text-sm col-span-1">
+                                                <div className="text-xs col-span-1">
                                                     {formatDate(r.createdOn)}
+                                                </div>
+                                                <div className="col-span-1 flex justify-end gap-1">
+                                                    <Button variant="ghost" size="sm" onClick={() => handleViewReport(r)}>
+                                                        <Eye className="w-3 h-3 sm:w-4 sm:h-4" />
+                                                    </Button>
+                                                    <Button variant="ghost" size="sm" onClick={() => handleEditReport(r)}>
+                                                        <Edit className="w-3 h-3 sm:w-4 sm:h-4" />
+                                                    </Button>
+                                                    <ConfirmRemoveDialog
+                                                        trigger={
+                                                            <Button variant="ghost" size="sm">
+                                                                <Trash2 className="w-3 h-3 sm:w-4 sm:h-4 text-destructive" />
+                                                            </Button>
+                                                        }
+                                                        title={`Delete report`}
+                                                        description={`Delete this report?`}
+                                                        confirmLabel="Delete"
+                                                        onConfirm={() => handleDeleteReport(r.id)}
+                                                    />
                                                 </div>
                                             </div>
 
-                                            <div className="flex items-center gap-0.1">
-                                                <Button variant="ghost" size="sm" onClick={() => handleViewReport(r)}>
-                                                    <Eye className="w-4 h-4" />
-                                                </Button>
-                                                <Button variant="ghost" size="sm" onClick={() => handleEditReport(r)}>
-                                                    <Edit className="w-4 h-4" />
-                                                </Button>
-                                                <ConfirmRemoveDialog
-                                                    trigger={
-                                                        <Button variant="ghost" size="sm">
-                                                            <Trash2 className="w-4 h-4 text-destructive" />
+                                            {/* Mobile view - stacked */}
+                                            <div className="lg:hidden space-y-2">
+                                                <div className="flex justify-between items-start">
+                                                    <div className="text-sm font-medium truncate">{computeUserName(usr)}</div>
+                                                    <div className="text-xs text-muted-foreground">{formatDate(r.createdOn)}</div>
+                                                </div>
+                                                <div className="text-xs text-muted-foreground truncate">{ (usr && usr?.email) ? usr.email : computeUserName(usr)}</div>
+                                                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
+                                                    <div><span className="text-muted-foreground">Session:</span> {ses?.name}</div>
+                                                    <div><span className="text-muted-foreground">Challenge:</span> {chl?.name}</div>
+                                                    <div><span className="text-muted-foreground">Pledge:</span> {sub?.target}</div>
+                                                    <div><span className="text-muted-foreground">Target:</span> {chl?.target}</div>
+                                                    <div><span className="text-muted-foreground">Evangelized:</span> {r.numberEvangelizedTo}</div>
+                                                    <div><span className="text-muted-foreground">Converts:</span> {r.numberOfNewConverts}</div>
+                                                    <div className="col-span-2 flex justify-end gap-1">
+                                                        <Button variant="ghost" size="sm" onClick={() => handleViewReport(r)}>
+                                                            <Eye className="w-3 h-3" />
                                                         </Button>
-                                                    }
-                                                    title={`Delete report`}
-                                                    description={`Delete this report?`}
-                                                    confirmLabel="Delete"
-                                                    onConfirm={() => handleDeleteReport(r.id)}
-                                                />
+                                                        <Button variant="ghost" size="sm" onClick={() => handleEditReport(r)}>
+                                                            <Edit className="w-3 h-3" />
+                                                        </Button>
+                                                        <ConfirmRemoveDialog
+                                                            trigger={
+                                                                <Button variant="ghost" size="sm">
+                                                                    <Trash2 className="w-3 h-3 text-destructive" />
+                                                                </Button>
+                                                            }
+                                                            title={`Delete report`}
+                                                            description={`Delete this report?`}
+                                                            confirmLabel="Delete"
+                                                            onConfirm={() => handleDeleteReport(r.id)}
+                                                        />
+                                                    </div>
+                                                </div>
                                             </div>
                                         </CardContent>
                                     </Card>
@@ -1398,23 +1459,23 @@ const Admin = () => {
 
                         <Dialog open={viewReportDialogOpen} onOpenChange={setViewReportDialogOpen}>
                             <DialogContent>
-                                <DialogHeader><DialogTitle>Report Details</DialogTitle></DialogHeader>
+                                <DialogHeader><DialogTitle>{t("admin.reportDetails")}</DialogTitle></DialogHeader>
                                 <div className="py-2">
-                                    <div className="text-sm"><strong>User:</strong> {computeUserName(concernedUser)}</div>
-                                    <div className="text-sm"><strong>Email:</strong> { (concernedUser && concernedUser?.email) ? concernedUser?.email : computeUserName(concernedUser)}</div>
-                                    <div className="text-sm"><strong>Session:</strong> {concernedSession ? concernedSession?.name : ""}</div>
-                                    <div className="text-sm"><strong>Challenge:</strong> {concernedChallenge ? concernedChallenge?.name : ""}</div>
-                                    <div className="text-sm"><strong>Pledged:</strong> {concernedSubscription?.target}</div>
-                                    <div className="text-sm"><strong>Target:</strong> {concernedChallenge?.target}</div>
-                                    <div className="text-sm"><strong>Evangelized:</strong> {viewingReport?.numberEvangelizedTo}</div>
-                                    <div className="text-sm"><strong>Converts:</strong> {viewingReport?.numberOfNewConverts}</div>
-                                    <div className="text-sm"><strong>Followed up:</strong> {viewingReport?.numberFollowedUp}</div>
-                                    <div className="text-sm"><strong>Difficulties:</strong> {viewingReport?.difficulties}</div>
-                                    <div className="text-sm"><strong>Remark:</strong> {viewingReport?.remark}</div>
-                                    <div className="text-sm"><strong>Created On:</strong> {formatDate(viewingReport?.createdOn)} </div>
-                                    <div className="text-sm"><strong>Updated On:</strong> {formatDate(viewingReport?.updatedOn)} </div>
+                                    <div className="text-sm"><strong>{t("admin.user")}:</strong> {computeUserName(concernedUser)}</div>
+                                    <div className="text-sm"><strong>{t("admin.email")}:</strong> { (concernedUser && concernedUser?.email) ? concernedUser?.email : computeUserName(concernedUser)}</div>
+                                    <div className="text-sm"><strong>{t("admin.session")}:</strong> {concernedSession ? concernedSession?.name : ""}</div>
+                                    <div className="text-sm"><strong>{t("admin.challenges")}:</strong> {concernedChallenge ? concernedChallenge?.name : ""}</div>
+                                    <div className="text-sm"><strong>{t("admin.pledge")}:</strong> {concernedSubscription?.target}</div>
+                                    <div className="text-sm"><strong>{t("admin.target")}:</strong> {concernedChallenge?.target}</div>
+                                    <div className="text-sm"><strong>{t("admin.evangelized")}:</strong> {viewingReport?.numberEvangelizedTo}</div>
+                                    <div className="text-sm"><strong>{t("admin.converts")}:</strong> {viewingReport?.numberOfNewConverts}</div>
+                                    <div className="text-sm"><strong>{t("admin.followedUp")}:</strong> {viewingReport?.numberFollowedUp}</div>
+                                    <div className="text-sm"><strong>{t("admin.difficulties")}:</strong> {viewingReport?.difficulties}</div>
+                                    <div className="text-sm"><strong>{t("admin.remark")}:</strong> {viewingReport?.remark}</div>
+                                    <div className="text-sm"><strong>{t("admin.createdOn")}:</strong> {formatDate(viewingReport?.createdOn)} </div>
+                                    <div className="text-sm"><strong>{t("admin.updatedOn")}:</strong> {formatDate(viewingReport?.updatedOn)} </div>
                                 </div>
-                                <DialogFooter><Button onClick={() => setViewReportDialogOpen(false)}>Close</Button></DialogFooter>
+                                <DialogFooter><Button onClick={() => setViewReportDialogOpen(false)}>{t("admin.close")}</Button></DialogFooter>
                             </DialogContent>
                         </Dialog>
                     </TabsContent>
@@ -1426,36 +1487,36 @@ const Admin = () => {
             <Dialog open={userDialogOpen} onOpenChange={setUserDialogOpen}  >
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>{editingUser ? "Edit User" : "Create User"}</DialogTitle>
+                        <DialogTitle>{editingUser ? t("admin.editUser") : t("admin.createUser")}</DialogTitle>
                     </DialogHeader>
                     <div className="space-y-4 py-4">
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <Label>First name</Label>
+                                <Label>{t("admin.firstName")}</Label>
                                 <Input value={userFirstName} onChange={(e) => setUserFirstName(e.target.value)} />
                             </div>
                             <div>
-                                <Label>Last name</Label>
+                                <Label>{t("admin.lastName")}</Label>
                                 <Input value={userLastName} onChange={(e) => setUserLastName(e.target.value)} />
                             </div>
                         </div>
 
                         <div className="space-y-2">
-                            <Label>Email</Label>
+                            <Label>{t("admin.email")}</Label>
                             <Input value={userEmail} onChange={(e) => setUserEmail(e.target.value)} />
                         </div>
 
                         {!editingUser && (
                             <div className="space-y-2">
-                                <Label>Password</Label>
+                                <Label>{t("admin.password")}</Label>
                                 <Input type="password" value={userPassword} onChange={(e) => setUserPassword(e.target.value)} />
                             </div>
                         )}
 
                         {editingUser && (
-                            <>
-                                <div className="space-y-2">
-                                    <Label>Profile Picture</Label>
+                                <>
+                                    <div className="space-y-2">
+                                        <Label>{t("admin.profilePicture")}</Label>
                                     <Input 
                                         type="file" 
                                         accept="image/*"
@@ -1479,21 +1540,21 @@ const Admin = () => {
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
-                                        <Label>Role</Label>
+                                        <Label>{t("admin.role")}</Label>
                                         <Select value={userRole} onValueChange={setUserRole}>
                                             <SelectTrigger><SelectValue /></SelectTrigger>
                                             <SelectContent>
-                                                <SelectItem value={UserRole.USER}>User</SelectItem>
-                                                <SelectItem value={UserRole.ADMIN}>Admin</SelectItem>
-                                                <SelectItem value={UserRole.SUPER_ADMIN}>Super Admin</SelectItem>
-                                                <SelectItem value={UserRole.ECOMIEST}>Ecomiest</SelectItem>
-                                                <SelectItem value={UserRole.COACH}>Coach</SelectItem>
+                                                <SelectItem value={UserRole.USER}>{t("admin.userRole.user")}</SelectItem>
+                                                <SelectItem value={UserRole.ADMIN}>{t("admin.userRole.admin")}</SelectItem>
+                                                <SelectItem value={UserRole.SUPER_ADMIN}>{t("admin.userRole.superAdmin")}</SelectItem>
+                                                <SelectItem value={UserRole.ECOMIEST}>{t("admin.userRole.ecomiest")}</SelectItem>
+                                                <SelectItem value={UserRole.COACH}>{t("admin.userRole.coach")}</SelectItem>
                                             </SelectContent>
                                         </Select>
                                     </div>
 
                                     <div>
-                                        <Label>Phone</Label>
+                                        <Label>{t("admin.phone")}</Label>
                                         <Input value={userPhoneNumber} onChange={(e) => setUserPhoneNumber(e.target.value)} />
                                     </div>
                                 </div>
@@ -1503,22 +1564,22 @@ const Admin = () => {
                         {editingUser && (
                             <div className="grid grid-cols-3 gap-4">
                                 <div>
-                                    <Label>Country</Label>
+                                    <Label>{t("admin.country")}</Label>
                                     <Input value={userCountry} onChange={(e) => setUserCountry(e.target.value)} />
                                 </div>
                                 <div>
-                                    <Label>Region</Label>
+                                    <Label>{t("admin.region")}</Label>
                                     <Input value={userRegion} onChange={(e) => setUserRegion(e.target.value)} />
                                 </div>
                                 <div>
-                                    <Label>City</Label>
+                                    <Label>{t("admin.city")}</Label>
                                     <Input value={userCity} onChange={(e) => setUserCity(e.target.value)} />
                                 </div>
                             </div>
                         )}
 
                         <DialogFooter>
-                            <Button onClick={handleSaveUser} className="w-full">{editingUser ? "Update User" : "Create User"}</Button>
+                            <Button onClick={handleSaveUser} className="w-full">{editingUser ? t("admin.updateUser") : t("admin.createUser")}</Button>
                         </DialogFooter>
                     </div>
                 </DialogContent>
@@ -1527,31 +1588,31 @@ const Admin = () => {
             {/* Challenge dialog */}
             <Dialog open={challengeDialogOpen} onOpenChange={setChallengeDialogOpen}>
                 <DialogContent>
-                    <DialogHeader><DialogTitle>{editingChallenge ? "Edit Challenge" : "Create Challenge"}</DialogTitle></DialogHeader>
+                    <DialogHeader><DialogTitle>{editingChallenge ? t("admin.editChallenge") : t("admin.createChallenge")}</DialogTitle></DialogHeader>
                     <div className="space-y-4 py-4">
-                        <div className="space-y-2"><Label>Name</Label><Input value={challengeName} onChange={(e) => setChallengeName(e.target.value)} /></div>
-                        <div className="space-y-2"><Label>Description</Label><Textarea value={challengeDescription} onChange={(e) => setChallengeDescription(e.target.value)} /></div>
+                        <div className="space-y-2"><Label>{t("admin.name")}</Label><Input value={challengeName} onChange={(e) => setChallengeName(e.target.value)} /></div>
+                        <div className="space-y-2"><Label>{t("admin.description")}</Label><Textarea value={challengeDescription} onChange={(e) => setChallengeDescription(e.target.value)} /></div>
                         <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-2"><Label>Target (souls)</Label><Input type="number" value={challengeTarget} onChange={(e) => setChallengeTarget(e.target.value)} /></div>
-                            <div className="space-y-2"><Label>Type</Label>
+                            <div className="space-y-2"><Label>{t("admin.targetSouls")}</Label><Input type="number" value={challengeTarget} onChange={(e) => setChallengeTarget(e.target.value)} /></div>
+                            <div className="space-y-2"><Label>{t("admin.type")}</Label>
                                 <Select value={challengeType?.toString()} onValueChange={setChallengeType}>
                                     <SelectTrigger><SelectValue /></SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value={ChallengeType.NORMAL}>Normal</SelectItem>
-                                        <SelectItem value={ChallengeType.EVENT}>Event</SelectItem>
-                                        <SelectItem value={ChallengeType.INDIVIDUAL}>Individual</SelectItem>
+                                        <SelectItem value={ChallengeType.NORMAL}>{t("admin.normal")}</SelectItem>
+                                        <SelectItem value={ChallengeType.EVENT}>{t("admin.event")}</SelectItem>
+                                        <SelectItem value={ChallengeType.INDIVIDUAL}>{t("admin.individual")}</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
                         </div>
                         <div className="space-y-2">
-                            <Label>Session</Label>
+                            <Label>{t("admin.session")}</Label>
                             <Select value={challengeSessionId} onValueChange={setChallengeSessionId}>
-                                <SelectTrigger><SelectValue placeholder="Select a session" /></SelectTrigger>
+                                <SelectTrigger><SelectValue placeholder={t("admin.selectSession")} /></SelectTrigger>
                                 <SelectContent>{sessions.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent>
                             </Select>
                         </div>
-                        <DialogFooter><Button onClick={handleSaveChallenge} className="w-full">{editingChallenge ? "Update" : "Create"}</Button></DialogFooter>
+                        <DialogFooter><Button onClick={handleSaveChallenge} className="w-full">{editingChallenge ? t("admin.updateChallenge") : t("admin.createChallenge")}</Button></DialogFooter>
                     </div>
                 </DialogContent>
             </Dialog>
@@ -1559,24 +1620,24 @@ const Admin = () => {
             {/* Subscription dialog */}
             <Dialog open={subscriptionDialogOpen} onOpenChange={setSubscriptionDialogOpen}>
                 <DialogContent>
-                    <DialogHeader><DialogTitle>{editingSubscription ? "Edit Subscription" : "Create Subscription"}</DialogTitle></DialogHeader>
+                    <DialogHeader><DialogTitle>{editingSubscription ? t("admin.editSubscription") : t("admin.createSubscription")}</DialogTitle></DialogHeader>
                     <div className="space-y-4 py-4">
                         <div className="space-y-2">
-                            <Label>User</Label>
+                            <Label>{t("admin.user")}</Label>
                             <Select value={subscriptionUserId} onValueChange={setSubscriptionUserId}>
-                                <SelectTrigger><SelectValue placeholder="Select a user" /></SelectTrigger>
+                                <SelectTrigger><SelectValue placeholder={t("admin.selectUser")} /></SelectTrigger>
                                 <SelectContent>{users.map(u => <SelectItem key={u.id} value={u.id}> {computeUserName(u)}</SelectItem>)}</SelectContent>
                             </Select>
                         </div>
                         <div className="space-y-2">
-                            <Label>Challenge</Label>
+                            <Label>{t("admin.challenges")}</Label>
                             <Select value={subscriptionChallengeId} onValueChange={setSubscriptionChallengeId}>
-                                <SelectTrigger><SelectValue placeholder="Select a challenge" /></SelectTrigger>
+                                <SelectTrigger><SelectValue placeholder={t("admin.selectChallenge")} /></SelectTrigger>
                                 <SelectContent>{ ongoingSession?.challenges.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
                             </Select>
                         </div>
-                        <div className="space-y-2"><Label>Target</Label><Input type="number" value={subscriptionTarget} onChange={(e) => setSubscriptionTarget(e.target.value)} /></div>
-                        <DialogFooter><Button onClick={handleSaveSubscription} className="w-full">{editingSubscription ? "Update" : "Create"}</Button></DialogFooter>
+                        <div className="space-y-2"><Label>{t("admin.target")}</Label><Input type="number" value={subscriptionTarget} onChange={(e) => setSubscriptionTarget(e.target.value)} /></div>
+                        <DialogFooter><Button onClick={handleSaveSubscription} className="w-full">{editingSubscription ? t("admin.updateSubscription") : t("admin.createSubscription")}</Button></DialogFooter>
                     </div>
                 </DialogContent>
             </Dialog>
@@ -1584,35 +1645,35 @@ const Admin = () => {
             {/* Report dialog - now includes selects for session and user */}
             <Dialog open={reportDialogOpen} onOpenChange={setReportDialogOpen}>
                 <DialogContent>
-                    <DialogHeader><DialogTitle>{editingReport ? "Edit Report" : "Create Report"}</DialogTitle></DialogHeader>
+                    <DialogHeader><DialogTitle>{editingReport ? t("admin.editReport") : t("admin.createReport")}</DialogTitle></DialogHeader>
                     <div className="space-y-4 py-4">
 
                         <div className="space-y-2">
-                            <Label>User</Label>
+                            <Label>{t("admin.user")}</Label>
                             <Select value={reportUserId} onValueChange={setReportUserId}>
-                                <SelectTrigger><SelectValue placeholder="Select user" /></SelectTrigger>
+                                <SelectTrigger><SelectValue placeholder={t("admin.selectUser")} /></SelectTrigger>
                                 <SelectContent>{ongoingSessionUsers.map(u => <SelectItem key={u.id} value={u.id}>{u.firstName} {u.lastName}</SelectItem>)}</SelectContent>
                             </Select>
                         </div>
 
                         <div className="space-y-2">
-                            <Label>Challenge</Label>
+                            <Label>{t("admin.challenges")}</Label>
                             <Select value={reportSubscriptionId} onValueChange={setReportSubscriptionId}>
-                                <SelectTrigger><SelectValue placeholder="Select Challenge" /></SelectTrigger>
+                                <SelectTrigger><SelectValue placeholder={t("admin.selectChallenge")} /></SelectTrigger>
                                 <SelectContent>{ongoingSessionSubscriptions.filter(s => s.user?.id === reportUserId).map(s => <SelectItem key={s.id} value={s.id}>{s.challenge?.name}</SelectItem>)}</SelectContent>
                             </Select>
                         </div>
 
                         <div className="grid grid-cols-3 gap-4">
-                            <div className="space-y-2"><Label>Evangelized</Label><Input type="number" value={reportEvangelized} onChange={(e) => setReportEvangelized(e.target.value)} /></div>
-                            <div className="space-y-2"><Label>Converts</Label><Input type="number" value={reportConverts} onChange={(e) => setReportConverts(e.target.value)} /></div>
-                            <div className="space-y-2"><Label>Followed up</Label><Input type="number" value={reportFollowedUp} onChange={(e) => setReportFollowedUp(e.target.value)} /></div>
+                            <div className="space-y-2"><Label>{t("admin.evangelized")}</Label><Input type="number" value={reportEvangelized} onChange={(e) => setReportEvangelized(e.target.value)} /></div>
+                            <div className="space-y-2"><Label>{t("admin.converts")}</Label><Input type="number" value={reportConverts} onChange={(e) => setReportConverts(e.target.value)} /></div>
+                            <div className="space-y-2"><Label>{t("admin.followedUp")}</Label><Input type="number" value={reportFollowedUp} onChange={(e) => setReportFollowedUp(e.target.value)} /></div>
                         </div>
 
-                        <div className="space-y-2"><Label>Difficulties</Label><Textarea value={reportDifficulties} onChange={(e) => setReportDifficulties(e.target.value)} /></div>
-                        <div className="space-y-2"><Label>Remark</Label><Textarea value={reportRemark} onChange={(e) => setReportRemark(e.target.value)} /></div>
+                        <div className="space-y-2"><Label>{t("admin.difficulties")}</Label><Textarea value={reportDifficulties} onChange={(e) => setReportDifficulties(e.target.value)} /></div>
+                        <div className="space-y-2"><Label>{t("admin.remark")}</Label><Textarea value={reportRemark} onChange={(e) => setReportRemark(e.target.value)} /></div>
 
-                        <DialogFooter><Button onClick={handleSaveReport} className="w-full">{editingReport ? "Update" : "Create"}</Button></DialogFooter>
+                        <DialogFooter><Button onClick={handleSaveReport} className="w-full">{editingReport ? t("admin.updateReport") : t("admin.createReport")}</Button></DialogFooter>
                     </div>
                 </DialogContent>
             </Dialog>

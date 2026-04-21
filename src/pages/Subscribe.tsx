@@ -118,30 +118,31 @@ const Subscribe = () => {
         }
     }
 
-    return (
-    <div className="min-h-screen bg-gradient-heavenly py-12 px-4">
+return (
+    <div className="min-h-screen bg-gradient-heavenly py-8 sm:py-12 px-2 sm:px-4">
       <div className="max-w-2xl mx-auto">
         <Button
           variant="ghost"
           onClick={() => navigate('/')}
-          className="mb-6 text-muted-foreground hover:text-foreground"
+          className="mb-4 sm:mb-6 text-muted-foreground hover:text-foreground"
         >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          {t("subscribe.backToHome")}
+          <ArrowLeft className="w-4 h-4 mr-1 sm:mr-2" />
+          <span className="sm:hidden">{t("subscribe.back")}</span>
+          <span className="hidden sm:inline">{t("subscribe.backToHome")}</span>
         </Button>
 
         <Card className="border-0 shadow-divine">
           <CardHeader className="text-center pb-4">
-            <div className="flex justify-center mb-4">
-              <div className="w-16 h-16 bg-gradient-divine rounded-full flex items-center justify-center shadow-gentle">
-                <Heart className="w-10 h-10 text-primary-foreground" fill="currentColor" />
+            <div className="flex justify-center mb-3 sm:mb-4">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-divine rounded-full flex items-center justify-center shadow-gentle">
+                <Heart className="w-6 h-6 sm:w-10 sm:h-10 text-primary-foreground" fill="currentColor" />
               </div>
             </div>
-            <h1 className="text-2xl font-bold text-foreground">
+            <h1 className="text-xl sm:text-2xl font-bold text-foreground">
                 { (user?.role !== UserRole.ECOMIEST) ? t("subscribe.ecomiestOnly") : t("subscribe.subscribeToChallenge", { challenge: challenge.name }) }
             </h1>
               {(user?.role === UserRole.ECOMIEST) && (
-            <p className="text-muted-foreground">
+            <p className="text-sm sm:text-base text-muted-foreground">
               {challenge.description || t("subscribe.commitToMakeDifference")}
             </p>
               )}
@@ -149,51 +150,51 @@ const Subscribe = () => {
 
           <CardContent>
               {(user?.role !== UserRole.ECOMIEST) ?
-              <div className="bg-muted/50 rounded-lg p-4 mb-6">
-                  <div className="flex items-center gap-2 text-sm">
+              <div className="bg-muted/50 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6">
+                  <div className="flex items-center gap-2 text-xs sm:text-sm">
                       <span className="text-foreground">{t("subscribe.contactAdmin")} <a href={""} className="font-bold" onClick={becomeAnEcomiest}>{t("subscribe.becomeAnEcomiest")}</a></span>
                   </div>
               </div>
                :
-            <div>
-            <div className="bg-muted/50 rounded-lg p-4 mb-6">
-              <div className="flex items-center gap-2 text-sm">
-                <Target className="w-4 h-4 text-primary" />
-                <span className="text-muted-foreground">{t("subscribe.challengeTarget")}</span>
-                <span className="font-semibold text-foreground">{challenge.target} {t("dashboard.souls")}</span>
-              </div>
-            </div>
+             <div>
+             <div className="bg-muted/50 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6">
+               <div className="flex items-center gap-2 text-xs sm:text-sm">
+                 <Target className="w-3 h-3 sm:w-4 sm:h-4 text-primary" />
+                 <span className="text-muted-foreground">{t("subscribe.challengeTarget")}</span>
+                 <span className="font-semibold text-foreground">{challenge.target} {t("dashboard.souls")}</span>
+               </div>
+             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+             <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
 
-              <div className="space-y-2">
-                <Label htmlFor="target">{t("subscribe.yourPersonalTarget")}</Label>
-                <Input
-                  id="target"
-                  type="number"
-                  min="1"
-                  placeholder={challenge.target.toString()}
-                  value={personalTarget}
-                  onChange={(e) => setPersonalTarget(e.target.value)}
-                  required
-                />
-                <p className="text-xs text-muted-foreground">
-                  {t("subscribe.setYourOwnGoal", { target: challenge.target })}
-                </p>
-              </div>
+               <div className="space-y-2">
+                 <Label htmlFor="target">{t("subscribe.yourPersonalTarget")}</Label>
+                 <Input
+                   id="target"
+                   type="number"
+                   min="1"
+                   placeholder={challenge.target.toString()}
+                   value={personalTarget}
+                   onChange={(e) => setPersonalTarget(e.target.value)}
+                   required
+                 />
+                 <p className="text-xs text-muted-foreground">
+                   {t("subscribe.setYourOwnGoal", { target: challenge.target })}
+                 </p>
+               </div>
 
-              <Button 
-                type="submit" 
-                variant="cta" 
-                className="w-full" 
-                size="lg"
-                disabled={submitting}
-              >
-                {submitting ? t("subscribe.subscribing") : t("subscribe.confirmSubscription")}
-              </Button>
-            </form>
-            </div>
-              }
+               <Button 
+                 type="submit" 
+                 variant="cta" 
+                 className="w-full" 
+                 size="lg"
+                 disabled={submitting}
+               >
+                 {submitting ? t("subscribe.subscribing") : t("subscribe.confirmSubscription")}
+               </Button>
+             </form>
+             </div>
+               }
           </CardContent>
         </Card>
       </div>

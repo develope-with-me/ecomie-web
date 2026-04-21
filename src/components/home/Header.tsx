@@ -58,14 +58,14 @@ const Header: React.FC<HeaderProps> = ({ hideNav = false }) => {
 
     return (
         <header className="fixed top-0 left-0 right-0 z-50 bg-primary/95 backdrop-blur-md shadow-gentle">
-            <div className="container mx-auto px-4 py-4">
+            <div className="container mx-auto px-2 sm:px-4 py-2 sm:py-4">
                 <div className="flex items-center justify-between">
                     {/* Logo */}
-                    <div className="flex items-center space-x-3 cursor-pointer" onClick={() => navigate('/')}>
-                        <div className="w-10 h-10 bg-gradient-heavenly rounded-full flex items-center justify-center shadow-gentle">
+                    <div className="flex items-center space-x-2 sm:space-x-3 cursor-pointer" onClick={() => navigate('/')}>
+                        <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-heavenly rounded-full flex items-center justify-center shadow-gentle">
                             <img src={ecomieLogo} className="w-full h-full" alt="ECOMIE Logo"/>
                         </div>
-                        <span className="text-xl font-bold text-primary-foreground">ECOMIE</span>
+                        <span className="text-lg sm:text-xl font-bold text-primary-foreground">ECOMIE</span>
                     </div>
 
           {/* Desktop Navigation */}

@@ -20,7 +20,6 @@ import Admin from "@/pages/Admin";
 import { AuthProvider } from "./contexts/AuthContext";
 
 const queryClient = new QueryClient();
-const isAuthenticated = false;
 
 const App = () => (
     <QueryClientProvider client={queryClient}>
@@ -34,11 +33,11 @@ const App = () => (
                     <Route path="/auth" element={<Auth />} />
                     <Route path="/auth/reset-password" element={<ResetPassword />} />
                     <Route path="/auth/confirm-account" element={<ConfirmAccount />} />
-                    <Route path="/dashboard" element={<Dashboard />} />
-                    <Route path="/subscribe/:challengeId" element={<Subscribe />} />
-                    <Route path="/report/new/:subscriptionId" element={<ReportForm />} />
-                    <Route path="/report/edit/:reportId" element={<ReportForm />} />
-                    <Route path="/admin" element={<Admin />} />
+                    <Route path="/dashboard" element={<AuthorizeRoute><Dashboard /></AuthorizeRoute>} />
+                    <Route path="/subscribe/:challengeId" element={<AuthorizeRoute><Subscribe /></AuthorizeRoute>} />
+                    <Route path="/report/new/:subscriptionId" element={<AuthorizeRoute><ReportForm /></AuthorizeRoute>} />
+                    <Route path="/report/edit/:reportId" element={<AuthorizeRoute><ReportForm /></AuthorizeRoute>} />
+                    <Route path="/admin" element={<AuthorizeRoute><Admin /></AuthorizeRoute>} />
 
                     {/*<Route path="/ui/EcomistPage" element={<EcomistPage/>}/>*/}
 

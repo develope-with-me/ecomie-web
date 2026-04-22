@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -40,6 +40,7 @@ const Auth = () => {
   
   const { signIn, signUp, user, loading, forgotPassword, resendConfirmationEmail } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
   const { t } = useTranslation();
 
@@ -83,7 +84,8 @@ const Auth = () => {
           title: t("auth.welcomeBackMessage"),
           description: t("auth.loggedInSuccessfully"),
         });
-        navigate('/dashboard');
+        const from = location.state?.from || '/dashboard';
+        navigate(from, { replace: true });
       }
     } finally {
       setIsSubmitting(false);
@@ -113,7 +115,8 @@ const Auth = () => {
               title: t("auth.welcomeToEcomie"),
               description: t("auth.accountCreated"),
           });
-          navigate('/dashboard');
+          const from = location.state?.from || '/dashboard';
+          navigate(from, { replace: true });
       } else if(error.title === "Unique Constraint") {
           toast({
               title: t("auth.accountExists"),

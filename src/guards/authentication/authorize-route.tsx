@@ -1,11 +1,20 @@
 import React from "react";
-import {Navigate} from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
-class AuthorizeRoute extends React.Component<{ isAuthenticated: any, children: any }> {
-    render() {
-        let {isAuthenticated, children} = this.props;
-        return isAuthenticated ? children : <Navigate to="/"/>;
-    }
-}
+const AuthorizeRoute = ({ children }: { children: React.ReactNode }) => {
+  const { user, loading } = useAuth();
+  const location = useLocation();
+
+  if (loading) {
+    return null;
+  }
+
+  if (!user) {
+    return <Navigate to="/auth" state={{ from: location.pathname }} replace />;
+  }
+
+  return <>{children}</>;
+};
 
 export default AuthorizeRoute;

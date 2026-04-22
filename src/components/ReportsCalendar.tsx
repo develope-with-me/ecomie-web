@@ -3,7 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { ChallengeReport } from '@/lib/api';
+import {ChallengeReport, User} from '@/lib/api';
+
 import {
     ChevronLeft,
     ChevronRight,
@@ -15,13 +16,15 @@ import {
     Edit,
     FileText,
 } from 'lucide-react';
-import { formatDate } from '@/lib/utils';
+import {computeUserName, formatDate} from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
+import {useAuth} from "@/contexts/AuthContext";
 
 type CalendarView = 'day' | 'week' | 'month' | 'year';
 
 interface ReportsCalendarProps {
     reports: ChallengeReport[];
+    authUserIsAdmin:boolean;
     onViewReport?: (report: ChallengeReport) => void;
     onEditReport?: (report: ChallengeReport) => void;
     title?: string;
@@ -31,6 +34,7 @@ interface ReportsCalendarProps {
 
 const ReportsCalendar: React.FC<ReportsCalendarProps> = ({
     reports,
+    authUserIsAdmin,
     onViewReport,
     onEditReport,
     title,
@@ -435,6 +439,13 @@ const ReportsCalendar: React.FC<ReportsCalendarProps> = ({
                     </DialogHeader>
                     {viewingReport && (
                         <div className="space-y-3 py-4">
+                            { authUserIsAdmin && (
+                                <>
+
+                                <div className="text-sm"><strong>{t("admin.user")}:</strong> {computeUserName(viewingReport.subscription?.user)}</div>
+                            <div className="text-sm"><strong>{t("admin.email")}:</strong> { (viewingReport.subscription?.user && viewingReport.subscription?.user?.email) ? viewingReport.subscription?.user?.email : computeUserName(viewingReport.subscription?.user)}</div>
+                                    </>
+                                        )}
                             <div className="text-sm"><strong>{t("reportsCalendar.session")}:</strong> {viewingReport.subscription?.session?.name || '-'}</div>
                             <div className="text-sm"><strong>{t("reportsCalendar.challenge")}:</strong> {viewingReport.subscription?.challenge?.name || '-'}</div>
                             <div className="text-sm"><strong>{t("reportsCalendar.pledge")}:</strong> {viewingReport.subscription?.target || '-'}</div>

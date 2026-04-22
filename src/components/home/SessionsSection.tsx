@@ -57,7 +57,7 @@ const SessionsSection = () => {
 
   const handleSubscribe = (challengeId: string) => {
     if (!user) {
-      navigate('/auth');
+      navigate('/auth', { state: { from: `/subscribe/${challengeId}` } });
     } else {
       navigate(`/subscribe/${challengeId}`);
     }

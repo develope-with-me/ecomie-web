@@ -137,34 +137,35 @@ const ReportForm = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-heavenly py-12 px-4">
+    <div className="min-h-screen bg-gradient-heavenly py-8 sm:py-12 px-2 sm:px-4">
       <div className="max-w-2xl mx-auto">
         <Button
           variant="ghost"
           onClick={() => navigate('/dashboard')}
-          className="mb-6 text-muted-foreground hover:text-foreground"
+          className="mb-4 sm:mb-6 text-muted-foreground hover:text-foreground"
         >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          {t("reportForm.backToDashboard")}
+          <ArrowLeft className="w-4 h-4 mr-1 sm:mr-2" />
+          <span className="sm:hidden">{t("common.back")}</span>
+          <span className="hidden sm:inline">{t("reportForm.backToDashboard")}</span>
         </Button>
 
         <Card className="border-0 shadow-divine">
           <CardHeader className="text-center pb-4">
-            <div className="flex justify-center mb-4">
-              <div className="w-16 h-16 bg-gradient-divine rounded-full flex items-center justify-center shadow-gentle">
-                <FileText className="w-10 h-10 text-primary-foreground" />
+            <div className="flex justify-center mb-3 sm:mb-4">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-divine rounded-full flex items-center justify-center shadow-gentle">
+                <FileText className="w-6 h-6 sm:w-10 sm:h-10 text-primary-foreground" />
               </div>
             </div>
-            <CardTitle className="text-2xl">
+            <CardTitle className="text-xl sm:text-2xl">
               {isEdit ? t("reportForm.editChallengeReport") : t("reportForm.submitChallengeReport")}
             </CardTitle>
             {subscription?.challenge && (
-              <p className="text-muted-foreground">{subscription.challenge.name}</p>
+              <p className="text-sm sm:text-base text-muted-foreground">{subscription.challenge.name}</p>
             )}
           </CardHeader>
 
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
               <div className="space-y-2">
                 <Label htmlFor="reportDate">{t("reportForm.reportDate")}</Label>
                 <Input
@@ -176,7 +177,7 @@ const ReportForm = () => {
                 />
               </div>
 
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="evangelizedTo">{t("reportForm.evangelizedTo")}</Label>
                   <Input

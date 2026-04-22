@@ -9,23 +9,23 @@ const SocialProofSection = () => {
 
     const testimonials = [
         {
-            name: "Pastor Michael Johnson",
-            role: "Senior Pastor, Grace Community Church",
-            content: "ECOMIE has revolutionized how our church approaches evangelism. We've seen a 300% increase in meaningful conversations and follow-ups.",
+            name: t("home.socialProof.testimonials.1.name"),
+            role: t("home.socialProof.testimonials.1.role"),
+            content: t("home.socialProof.testimonials.1.content"),
             rating: 5,
             image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face"
         },
         {
-            name: "Sarah Williams",
-            role: "Missionary, Asia Pacific",
-            content: "The global community feature has been incredible. I'm learning from evangelists worldwide and sharing strategies that work in different cultures.",
+            name: t("home.socialProof.testimonials.2.name"),
+            role: t("home.socialProof.testimonials.2.role"),
+            content: t("home.socialProof.testimonials.2.content"),
             rating: 5,
             image: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face"
         },
         {
-            name: "David Chen",
-            role: "Youth Pastor & Evangelist",
-            content: "As a young minister, this platform has given me confidence and structure. The analytics help me understand what resonates with different age groups.",
+            name: t("home.socialProof.testimonials.3.name"),
+            role: t("home.socialProof.testimonials.3.role"),
+            content: t("home.socialProof.testimonials.3.content"),
             rating: 5,
             image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face"
         }
@@ -39,12 +39,12 @@ const SocialProofSection = () => {
     ];
 
     const churches = [
-        "Hillsong Church",
-        "Elevation Church",
-        "Life.Church",
-        "Bethel Church",
-        "Gateway Church",
-        "North Point Community"
+        t("home.socialProof.churches.hillsong"),
+        t("home.socialProof.churches.elevation"),
+        t("home.socialProof.churches.lifeChurch"),
+        t("home.socialProof.churches.bethel"),
+        t("home.socialProof.churches.gateway"),
+        t("home.socialProof.churches.northPoint")
     ];
 
     return (
@@ -102,17 +102,17 @@ const SocialProofSection = () => {
                     ))}
                 </div>
 
-                {/* Church Logos */}
-                <div className="text-center">
-                    <p className="text-muted-foreground mb-8">{t("home.socialProof.trustedByChurches")}</p>
-                    <div className="flex flex-wrap justify-center items-center gap-8 opacity-60">
-                        {churches.map((church, index) => (
-                            <div key={index} className="text-lg font-semibold text-muted-foreground">
-                                {church}
-                            </div>
-                        ))}
-                    </div>
-                </div>
+                {/*/!* Church Logos *!/*/}
+                {/*<div className="text-center">*/}
+                {/*    <p className="text-muted-foreground mb-8">{t("home.socialProof.trustedByChurches")}</p>*/}
+                {/*    <div className="flex flex-wrap justify-center items-center gap-8 opacity-60">*/}
+                {/*        {churches.map((church, index) => (*/}
+                {/*            <div key={index} className="text-lg font-semibold text-muted-foreground">*/}
+                {/*                {church}*/}
+                {/*            </div>*/}
+                {/*        ))}*/}
+                {/*    </div>*/}
+                {/*</div>*/}
             </div>
         </section>
     );

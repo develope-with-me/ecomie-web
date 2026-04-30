@@ -2,14 +2,29 @@
   "name": "ecomie-app",
   "version": "0.1.0",
   "private": true,
+  "cloudflare": {
+    "label": "Vite React Template",
+    "products": [
+      "Workers"
+    ],
+    "categories": [],
+    "preview_icon_url": "https://imagedelivery.net/wSMYJvS3Xw-n339CbDyDIA/532a5378-9717-4964-385b-5fafd2160200/public",
+    "preview_image_url": "https://imagedelivery.net/wSMYJvS3Xw-n339CbDyDIA/ec7f4be5-d1d6-4e94-0851-126341745400/preview",
+    "publish": true
+  },
   "scripts": {
     "dev": "vite",
     "start": "vite",
-    "build": "vite build",
+    "build": "tsc -b && vite build && npm run clean",
     "build:dev": "vite build --mode development",
-    "preview": "vite preview",
+    "preview": "npm run build && vite preview",
+    "clean": "find src/react-app -name \"*.js\" ! -name \"*.tsx\" -delete && find src/react-app -name \"*.d.ts\" ! -name \"*.d.tsx\" ! -name \"images.d.ts\" ! -name \"*env.d.ts\" -delete",
     "test": "vitest",
-    "lint": "eslint ."
+    "lint": "eslint .",
+
+    "cf-typegen": "wrangler types",
+    "check": "tsc && vite build && wrangler deploy --dry-run",
+    "deploy": "wrangler deploy"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -65,9 +80,9 @@
     "input-otp": "^1.2.4",
     "lucide-react": "^0.462.0",
     "next-themes": "^0.3.0",
-    "react": "^18.3.1",
+    "react": "19.2.1",
     "react-day-picker": "^8.10.1",
-    "react-dom": "^18.3.1",
+    "react-dom": "19.2.1",
     "react-hook-form": "^7.54.2",
     "react-i18next": "^15.4.1",
     "react-icons": "^5.4.0",
@@ -80,14 +95,17 @@
     "tailwindcss-animate": "^1.0.7",
     "vaul": "^0.9.3",
     "web-vitals": "^2.1.4",
-    "zod": "^3.23.8"
+    "zod": "^3.23.8",
+    "hono": "4.11.1"
   },
   "devDependencies": {
+    "@cloudflare/vite-plugin": "1.34.0",
+    "@eslint/js": "9.39.1",
     "@types/axios": "^0.14.4",
     "@types/node": "^22.10.5",
     "@types/react": "^18.3.13",
     "@types/react-dom": "^18.3.0",
-    "@vitejs/plugin-react-swc": "^3.5.0",
+    "@vitejs/plugin-react-swc": "^4.3.0",
     "@vitest/ui": "^4.1.4",
     "autoprefixer": "^10.4.20",
     "connect-history-api-fallback": "^2.0.0",
@@ -95,15 +113,16 @@
     "eslint-plugin-react-hooks": "^5.1.0-rc.0",
     "eslint-plugin-react-refresh": "^0.4.9",
     "express": "^5.1.0",
-    "globals": "^15.9.0",
+    "globals": "^16.5.0",
     "jsdom": "^24.1.0",
-    "lovable-tagger": "^1.1.7",
+    "lovable-tagger": "^1.2.0",
     "postcss": "^8.4.47",
     "sass": "^1.83.0",
     "tailwindcss": "^3.4.11",
-    "typescript": "^5.5.3",
-    "typescript-eslint": "^8.0.1",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.48.1",
     "vite": "^8.0.8",
-    "vitest": "^4.1.4"
+    "vitest": "^4.1.4",
+    "wrangler": "4.56.0"
   }
 }

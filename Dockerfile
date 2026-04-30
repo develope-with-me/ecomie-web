@@ -1,5 +1,5 @@
 # Build Stage
-FROM node:24-alpine as build-stage
+FROM node:24-alpine AS build-stage
 LABEL authors="dbryzz"
 
 WORKDIR /app
@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies
-RUN npm install
+RUN npm install --legacy-peer-deps
 
 # Copy the rest of the application files to the working directory
 COPY . .

@@ -3,7 +3,8 @@
 // const API_BASE_URL =    'http://13.247.159.172:8080/api/v1';
 import {boolean, string} from "zod";
 
-const API_BASE_URL =    'http://localhost:8081/api/v1';
+// const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8081/api/v1';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 // Token management
 const getAuthToken = (): string | null => {

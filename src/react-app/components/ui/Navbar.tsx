@@ -1,5 +1,5 @@
 import React, {useState} from 'react'
-import DashboardComponent from '../dashboard/SideBar';
+import { Sidebar as DashboardComponent } from './sidebar';
 
 import ecomieLogo from '../../images/ecomie-logo.png'
 import {useTranslation} from "react-i18next";
@@ -79,7 +79,7 @@ const Navbar: React.FC = () => {
                             ✖
                         </button>
                         <div className='relative top-0'>
-                            <DashboardComponent style="  h-[140vh]  dashboard px-7 md:hidden block"/>
+                            <DashboardComponent />
                         </div>
                     </div>
                 </div>
